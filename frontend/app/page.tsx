@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { Send, MessageSquare, Download, Menu, X, Sparkles, ChevronDown, Plus, Sun, Moon, Database, BarChart2, Zap } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:5001/api';
 
 interface Message {
   id: number;
@@ -82,13 +82,23 @@ export default function Home() {
     }
   };
 
-  const exportToCSV = async (results: any[]) => {
-    try {
-      await axios.post(`${API_URL}/export`, { results });
-      alert('Data exported successfully');
-    } catch (error) {
-      alert('Error exporting data');
-    }
+  const exportToCSV = (results: any[]) => {
+    // Simple CSV export - download directly from browser
+    if (!results || results.length === 0) return;
+    
+    const columns = Object.keys(results[0]);
+    const csvContent = [
+      columns.join(','),
+      ...results.map(row => columns.map(col => JSON.stringify(row[col] || '')).join(','))
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `datasense-export-${Date.now()}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
   const clearHistory = () => {
@@ -114,16 +124,16 @@ export default function Home() {
   };
 
   return (
-    <div className={`flex h-screen ${darkMode ? 'bg-[#0f172a]' : 'bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50'} transition-all duration-300`}>
+    <div className={`flex h-screen ${darkMode ? 'bg-[#0f172a]' : 'bg-linear-to-br from-slate-50 via-purple-50 to-pink-50'} transition-all duration-300`}>
       {/* Sidebar */}
       <div className={`${sidebarOpen ? 'w-72' : 'w-0'} ${darkMode ? 'bg-[#1e293b]' : 'bg-white/80 backdrop-blur-xl'} flex flex-col transition-all duration-300 overflow-hidden border-r ${darkMode ? 'border-slate-700/50' : 'border-slate-200/60'} shadow-2xl`}>
         {/* Header */}
         <div className={`p-5 border-b ${darkMode ? 'border-slate-700/50' : 'border-slate-200/60'}`}>
           <div className="flex items-center gap-3 mb-5">
-            <div className="w-10 h-10 bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+            <div className="w-10 h-10 bg-linear-to-br from-violet-500 via-purple-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
               <Zap className="w-6 h-6 text-white" />
             </div>
-            <h2 className={`font-bold text-xl bg-gradient-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent`}>
+            <h2 className={`font-bold text-xl bg-linear-to-r from-violet-400 to-fuchsia-400 bg-clip-text text-transparent`}>
               DataSense
             </h2>
           </div>
@@ -131,7 +141,7 @@ export default function Home() {
           {/* New Chat Button */}
           <button
             onClick={clearHistory}
-            className={`flex items-center gap-3 w-full px-4 py-3 text-sm font-medium ${darkMode ? 'text-white bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500' : 'text-white bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600'} rounded-xl transition-all shadow-lg hover:shadow-xl hover:scale-[1.02]`}
+            className={`flex items-center gap-3 w-full px-4 py-3 text-sm font-medium ${darkMode ? 'text-white bg-linear-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500' : 'text-white bg-linear-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600'} rounded-xl transition-all shadow-lg hover:shadow-xl hover:scale-[1.02]`}
           >
             <Plus className="w-4 h-4" />
             <span>New Chat</span>
@@ -149,7 +159,7 @@ export default function Home() {
               onClick={() => setInput(msg.content)}
               className={`flex items-start gap-3 w-full px-3 py-3 text-sm ${darkMode ? 'text-slate-300 hover:bg-slate-700/50' : 'text-slate-700 hover:bg-slate-100'} rounded-xl transition-all mb-2 text-left group`}
             >
-              <MessageSquare className={`w-4 h-4 mt-0.5 flex-shrink-0 ${darkMode ? 'text-violet-400' : 'text-violet-500'}`} />
+              <MessageSquare className={`w-4 h-4 mt-0.5 shrink-0 ${darkMode ? 'text-violet-400' : 'text-violet-500'}`} />
               <span className="truncate group-hover:text-violet-400 transition-colors">{msg.content}</span>
             </button>
           ))}
@@ -192,10 +202,10 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center h-full px-6">
               <div className="w-full max-w-4xl">
                 <div className="text-center mb-12 animate-fade-in">
-                  <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 rounded-3xl mb-8 shadow-2xl shadow-purple-500/30 animate-pulse">
+                  <div className="inline-flex items-center justify-center w-20 h-20 bg-linear-to-br from-violet-500 via-purple-500 to-fuchsia-500 rounded-3xl mb-8 shadow-2xl shadow-purple-500/30 animate-pulse">
                     <Zap className="w-10 h-10 text-white" />
                   </div>
-                  <h1 className={`text-6xl font-extrabold mb-5 ${darkMode ? 'text-white' : 'bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 bg-clip-text text-transparent'}`}>
+                  <h1 className={`text-6xl font-extrabold mb-5 ${darkMode ? 'text-white' : 'bg-linear-to-r from-violet-600 via-purple-600 to-fuchsia-600 bg-clip-text text-transparent'}`}>
                     DataSense AI
                   </h1>
                   <p className={`text-xl ${darkMode ? 'text-slate-400' : 'text-slate-600'} font-light max-w-2xl mx-auto`}>
@@ -215,7 +225,7 @@ export default function Home() {
                       onClick={() => setInput(item.text)}
                       className={`group p-6 text-left border-2 ${darkMode ? 'border-slate-700/50 bg-slate-800/50 hover:bg-slate-700/50 hover:border-slate-600' : 'border-slate-200 bg-white/60 hover:bg-white hover:border-slate-300'} backdrop-blur-sm rounded-2xl transition-all hover:scale-105 hover:shadow-2xl`}
                     >
-                      <div className={`inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br ${item.color} rounded-xl mb-4 shadow-lg group-hover:shadow-xl transition-shadow`}>
+                      <div className={`inline-flex items-center justify-center w-12 h-12 bg-linear-to-br ${item.color} rounded-xl mb-4 shadow-lg group-hover:shadow-xl transition-shadow`}>
                         <item.icon className="w-6 h-6 text-white" />
                       </div>
                       <p className={`text-base font-semibold ${darkMode ? 'text-white' : 'text-slate-800'}`}>{item.text}</p>
@@ -233,7 +243,7 @@ export default function Home() {
                   <div key={message.id} className="mb-12 animate-slide-up">
                     {message.type === 'user' && (
                       <div className="flex gap-5 items-start">
-                        <div className={`w-10 h-10 rounded-2xl ${darkMode ? 'bg-gradient-to-br from-slate-700 to-slate-800' : 'bg-gradient-to-br from-slate-200 to-slate-300'} flex items-center justify-center flex-shrink-0 shadow-lg`}>
+                        <div className={`w-10 h-10 rounded-2xl ${darkMode ? 'bg-linear-to-br from-slate-700 to-slate-800' : 'bg-linear-to-br from-slate-200 to-slate-300'} flex items-center justify-center shrink-0 shadow-lg`}>
                           <span className={`text-sm font-bold ${darkMode ? 'text-white' : 'text-slate-700'}`}>You</span>
                         </div>
                         <div className="flex-1 pt-2">
@@ -244,7 +254,7 @@ export default function Home() {
 
                     {message.type === 'assistant' && (
                       <div className="flex gap-5 items-start">
-                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 flex items-center justify-center flex-shrink-0 shadow-xl shadow-purple-500/30">
+                        <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-violet-500 via-purple-500 to-fuchsia-500 flex items-center justify-center shrink-0 shadow-xl shadow-purple-500/30">
                           <Sparkles className="w-5 h-5 text-white" />
                         </div>
                         <div className="flex-1 space-y-5 min-w-0">
@@ -340,7 +350,7 @@ export default function Home() {
 
                     {message.type === 'error' && (
                       <div className="flex gap-5 items-start">
-                        <div className="w-10 h-10 rounded-2xl bg-red-500 flex items-center justify-center flex-shrink-0 text-white font-bold shadow-lg">
+                        <div className="w-10 h-10 rounded-2xl bg-red-500 flex items-center justify-center shrink-0 text-white font-bold shadow-lg">
                           !
                         </div>
                         <div className={`flex-1 ${darkMode ? 'bg-red-900/20 border-red-800' : 'bg-red-50 border-red-200'} border-2 rounded-2xl p-5`}>
@@ -353,7 +363,7 @@ export default function Home() {
 
                 {loading && (
                   <div className="flex gap-5 items-start mb-12">
-                    <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-violet-500 via-purple-500 to-fuchsia-500 flex items-center justify-center flex-shrink-0 shadow-xl shadow-purple-500/30">
+                    <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-violet-500 via-purple-500 to-fuchsia-500 flex items-center justify-center shrink-0 shadow-xl shadow-purple-500/30">
                       <Sparkles className="w-5 h-5 text-white" />
                     </div>
                     <div className="flex items-center gap-1.5 pt-2">
@@ -371,14 +381,14 @@ export default function Home() {
         </div>
 
         {/* Input Bar - Fixed at Bottom */}
-        <div className={`border-t ${darkMode ? 'border-slate-700/50 bg-[#0f172a]' : 'border-slate-200 bg-gradient-to-br from-slate-50 to-purple-50/30'} p-5`}>
+        <div className={`border-t ${darkMode ? 'border-slate-700/50 bg-[#0f172a]' : 'border-slate-200 bg-linear-to-br from-slate-50 to-purple-50/30'} p-5`}>
           <div className="max-w-4xl mx-auto">
             <form onSubmit={handleSubmit}>
               <div className={`relative flex items-center ${darkMode ? 'bg-slate-800/50 border-slate-700' : 'bg-white border-slate-300'} border-2 rounded-3xl shadow-2xl transition-all hover:shadow-purple-500/20`}>
                 <button
                   type="button"
                   onClick={() => setSidebarOpen(!sidebarOpen)}
-                  className={`flex-shrink-0 p-4 ${darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-100'} rounded-l-3xl transition-all`}
+                  className={`shrink-0 p-4 ${darkMode ? 'hover:bg-slate-700/50' : 'hover:bg-slate-100'} rounded-l-3xl transition-all`}
                 >
                   {sidebarOpen ? (
                     <X className={`w-5 h-5 ${darkMode ? 'text-slate-400' : 'text-slate-600'}`} />
@@ -397,7 +407,7 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={loading || !input.trim()}
-                  className="flex-shrink-0 m-2 p-3 bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 hover:from-violet-600 hover:via-purple-600 hover:to-fuchsia-600 disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed rounded-2xl transition-all shadow-lg hover:shadow-xl hover:scale-110"
+                  className="shrink-0 m-2 p-3 bg-linear-to-r from-violet-500 via-purple-500 to-fuchsia-500 hover:from-violet-600 hover:via-purple-600 hover:to-fuchsia-600 disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed rounded-2xl transition-all shadow-lg hover:shadow-xl hover:scale-110"
                 >
                   <Send className="w-5 h-5 text-white" />
                 </button>
