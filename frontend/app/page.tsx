@@ -447,7 +447,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
+    <div className="flex h-screen bg-gray-200 dark:bg-gray-900 transition-colors duration-200">
       {/* Sidebar Overlay for mobile */}
       {sidebarOpen && (
         <div 
@@ -457,8 +457,14 @@ export default function Home() {
       )}
 
       {/* Sidebar */}
-      <div className={`${sidebarOpen ? 'w-64' : 'w-0'} bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out overflow-hidden relative z-50 md:relative md:z-auto ${sidebarOpen ? 'fixed md:relative' : ''}`}>
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700 min-w-64">
+      <div 
+        className={`${sidebarOpen ? 'w-64' : 'w-0'} bg-gray-50 dark:bg-gray-800 border-r border-gray-300 dark:border-gray-700 flex flex-col transition-all duration-300 ease-in-out overflow-hidden relative z-50 md:relative md:z-auto ${sidebarOpen ? 'fixed md:relative' : ''} shadow-sm dark:shadow-xl dark:shadow-black/20`}
+        style={theme === 'light' ? { backgroundColor: '#edf5ee' } : undefined}
+      >
+        <div 
+          className="p-4 border-b border-gray-300 dark:border-gray-700 min-w-64 bg-gray-100 dark:bg-gray-800 dark:shadow-lg dark:shadow-black/10"
+          style={theme === 'light' ? { backgroundColor: '#f5faf7' } : undefined}
+        >
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img 
@@ -487,10 +493,11 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex-1 p-4 overflow-y-auto min-w-64">
+        <div className="flex-1 p-4 overflow-y-auto min-w-64 scrollbar-thin scrollbar-thumb-green-500 dark:scrollbar-thumb-green-400 scrollbar-track-green-100 dark:scrollbar-track-green-900/20 hover:scrollbar-thumb-green-600 dark:hover:scrollbar-thumb-green-300">
           <button
             onClick={clearChat}
-            className="w-full mb-4 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+            className="w-full mb-4 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 rounded-lg transition-colors shadow-sm dark:shadow-md dark:shadow-black/20"
+            style={theme === 'light' ? { backgroundColor: '#d0d6d2' } : undefined}
           >
             New Chat
           </button>
@@ -510,26 +517,66 @@ export default function Home() {
 
           {/* Recent Queries */}
           {recentQueries.length > 0 && (
-            <div className="space-y-2">
-              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                Recent Queries
-              </h3>
-              {recentQueries.slice(0, 8).map((query, index) => (
-                <button
-                  key={index}
-                  onClick={() => setInput(query)}
-                  className="w-full text-left p-3 text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors line-clamp-2"
-                  title={query}
-                >
-                  {query.length > 50 ? `${query.substring(0, 50)}...` : query}
-                </button>
-              ))}
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/20">
+                  <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                  Recent Queries
+                </h3>
+                <div className="flex-1 h-px bg-gradient-to-r from-gray-300 dark:from-gray-600 to-transparent"></div>
+                <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded-full">
+                  {recentQueries.length}
+                </span>
+              </div>
+              <div className="space-y-2">
+                {recentQueries.slice(0, 8).map((query, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setInput(query)}
+                    className="w-full group relative"
+                    title={query}
+                  >
+                    <div className="flex items-start gap-3 p-3 text-left bg-white/50 dark:bg-gray-800/50 hover:bg-white dark:hover:bg-gray-700 rounded-xl transition-all duration-200 border border-gray-200/50 dark:border-gray-700/50 hover:border-blue-200 dark:hover:border-blue-700 hover:shadow-sm dark:hover:shadow-lg dark:hover:shadow-black/20">
+                      <div className="flex-shrink-0 mt-0.5">
+                        <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 flex items-center justify-center">
+                          <span className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                            {index + 1}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed group-hover:text-gray-900 dark:group-hover:text-gray-100 transition-colors">
+                          {query.length > 80 ? `${query.substring(0, 80)}...` : query}
+                        </p>
+                        <div className="flex items-center gap-2 mt-2">
+                          <div className="flex items-center gap-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">Ready to run</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg className="w-4 h-4 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
 
         {/* Connection Status */}
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700 min-w-64">
+        <div 
+          className="p-4 border-t border-gray-300 dark:border-gray-700 min-w-64 bg-gray-100 dark:bg-gray-800 dark:shadow-lg dark:shadow-black/10"
+          style={theme === 'light' ? { backgroundColor: '#f5faf7' } : undefined}
+        >
           <div className="flex items-center gap-2 text-sm">
             <div className={`w-2 h-2 rounded-full ${
               isConnected === null ? 'bg-yellow-500' :
@@ -549,7 +596,7 @@ export default function Home() {
         {!sidebarOpen && (
           <button
             onClick={toggleSidebar}
-            className="fixed top-4 left-4 z-50 p-3 rounded-full hover:bg-green-700 text-white shadow-lg transition-all duration-200 hover:scale-105"
+            className="fixed top-4 left-4 z-50 p-3 rounded-full hover:bg-green-700 text-white shadow-lg dark:shadow-2xl dark:shadow-black/30 transition-all duration-200 hover:scale-105"
             style={{ backgroundColor: '#08834d' }}
             aria-label="Open sidebar"
           >
@@ -560,13 +607,13 @@ export default function Home() {
         )}
 
         {/* Header */}
-        <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between">
+        <header className="bg-gray-50 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-700 px-6 py-4 flex items-center justify-between shadow-sm dark:shadow-lg dark:shadow-black/10">
           <div className="flex items-center gap-3">
             {/* Only show header toggle when sidebar is open */}
             {sidebarOpen && (
               <button
                 onClick={toggleSidebar}
-                className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                className="p-2 rounded-lg bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors dark:shadow-md dark:shadow-black/20"
                 aria-label="Toggle sidebar"
               >
                 <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -596,7 +643,7 @@ export default function Home() {
 
             <button
               onClick={() => setSettingsOpen(true)}
-              className="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200"
+              className="p-2 rounded-lg bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 transition-all duration-200 dark:shadow-md dark:shadow-black/20"
               aria-label="Settings"
             >
               <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -607,7 +654,7 @@ export default function Home() {
 
             <button
               onClick={toggleTheme}
-              className="relative p-2 rounded-lg bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-all duration-200"
+              className="relative p-2 rounded-lg bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 transition-all duration-200 dark:shadow-md dark:shadow-black/20"
               aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
             >
               {theme === 'light' ? (
@@ -624,11 +671,11 @@ export default function Home() {
         </header>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 pb-32 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto p-6 pb-32 scrollbar-thin scrollbar-thumb-green-500 dark:scrollbar-thumb-green-400 scrollbar-track-green-100 dark:scrollbar-track-green-900/20 hover:scrollbar-thumb-green-600 dark:hover:scrollbar-thumb-green-300 bg-gray-100 dark:bg-gray-900">
           <div className="max-w-7xl mx-auto">
             {messages.length === 0 && (
               <div className="text-center py-12">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ backgroundColor: 'rgba(8, 131, 77, 0.1)' }}>
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg dark:shadow-2xl dark:shadow-black/30" style={{ backgroundColor: 'rgba(8, 131, 77, 0.15)' }}>
                   <svg className="w-8 h-8" style={{ color: '#08834d' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
@@ -646,29 +693,33 @@ export default function Home() {
               {messages.map((message) => (
                 <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-center'}`}>
                   <div className={`${message.role === 'user' ? 'max-w-lg' : 'max-w-6xl w-full'}`}>
-                    <div className={`rounded-2xl px-6 py-4 ${
+                    <div className={`rounded-2xl px-6 py-4 shadow-md dark:shadow-lg dark:shadow-black/20 ${
                       message.role === 'user'
-                        ? 'bg-gray-600 dark:bg-gray-700 text-white'
-                        : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700'
+                        ? 'bg-gray-700 dark:bg-gray-700 text-white'
+                        : message.error
+                        ? 'bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800'
+                        : 'bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-700'
                     }`}
                     >
-                      <div className="text-base whitespace-pre-wrap leading-relaxed">{message.content}</div>
+                      <div className={`text-base whitespace-pre-wrap leading-relaxed ${
+                        message.error ? 'text-red-700 dark:text-red-300' : ''
+                      }`}>{message.content}</div>
                     </div>
 
                     {message.sql && !message.error && (
-                      <div className="mt-3 bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
-                        <div className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-xs font-medium text-gray-700 dark:text-gray-300 border-b border-gray-300 dark:border-gray-600">
+                      <div className="mt-3 bg-gray-200 dark:bg-gray-800 rounded-lg overflow-hidden border border-gray-300 dark:border-gray-700 shadow-sm dark:shadow-md dark:shadow-black/20">
+                        <div className="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-xs font-medium text-gray-700 dark:text-gray-300 border-b border-gray-400 dark:border-gray-600">
                           SQL Query
                         </div>
-                        <pre className="p-4 text-sm text-gray-800 dark:text-green-400 overflow-x-auto bg-white dark:bg-gray-800">
+                        <pre className="p-4 text-sm text-gray-800 dark:text-green-400 overflow-x-auto bg-gray-50 dark:bg-gray-800">
                           {message.sql}
                         </pre>
                       </div>
                     )}
 
                     {message.results && message.results.length > 0 && message.columns && !message.error && (
-                      <div className="mt-3 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        <div className="px-4 py-3 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+                      <div className="mt-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 overflow-hidden shadow-sm dark:shadow-md dark:shadow-black/20">
+                        <div className="px-4 py-3 bg-gray-200 dark:bg-gray-700 border-b border-gray-300 dark:border-gray-600">
                           <div className="flex items-center justify-between">
                             <span className="text-sm font-medium text-gray-900 dark:text-white">
                               Results ({message.rowCount || message.results.length} rows)
@@ -676,17 +727,17 @@ export default function Home() {
                           </div>
                         </div>
                         <div className="overflow-x-auto">
-                          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                            <thead className="bg-gray-50 dark:bg-gray-700">
+                          <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
+                            <thead className="bg-gray-200 dark:bg-gray-700">
                               <tr>
                                 {message.columns.map((col, i) => (
-                                  <th key={i} className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                  <th key={i} className="px-6 py-3 text-left text-xs font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">
                                     {col}
                                   </th>
                                 ))}
                               </tr>
                             </thead>
-                            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <tbody className="bg-gray-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                               {message.results.map((row, i) => (
                                 <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                   {message.columns!.map((col, j) => (
@@ -702,28 +753,15 @@ export default function Home() {
                       </div>
                     )}
 
-                    {message.error && (
-                      <div className="mt-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                        <div className="flex items-start gap-3">
-                          <svg className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          <div className="text-sm text-red-700 dark:text-red-300">
-                            {message.content}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
                     {/* Like/Dislike/Retry buttons for assistant messages - moved to bottom */}
                     {message.role === 'assistant' && (
                       <div className="flex items-center justify-center gap-3 mt-4">
                         <button
                           onClick={() => handleLike(message.id)}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors group border ${
+                          className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors group border shadow-sm dark:shadow-md dark:shadow-black/10 ${
                             message.liked 
-                              ? 'bg-gray-100 dark:bg-gray-700 border-gray-400 dark:border-gray-500' 
-                              : 'border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                              ? 'bg-gray-300 dark:bg-gray-700 border-gray-400 dark:border-gray-500' 
+                              : 'border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 bg-gray-50 dark:bg-gray-800'
                           }`}
                           title="Like this response"
                         >
@@ -734,10 +772,10 @@ export default function Home() {
                         </button>
                         <button
                           onClick={() => handleDislike(message.id)}
-                          className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors group border ${
+                          className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors group border shadow-sm dark:shadow-md dark:shadow-black/10 ${
                             message.disliked 
                               ? 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700' 
-                              : 'border-gray-200 dark:border-gray-600 hover:bg-red-50 dark:hover:bg-red-900/20'
+                              : 'border-gray-300 dark:border-gray-600 hover:bg-red-50 dark:hover:bg-red-900/20 bg-gray-50 dark:bg-gray-800'
                           }`}
                           title="Dislike this response"
                         >
@@ -749,7 +787,7 @@ export default function Home() {
                         {message.results && message.columns && (
                           <button
                             onClick={() => copyAsCSV(message)}
-                            className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors group border border-gray-200 dark:border-gray-600"
+                            className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors group border border-gray-300 dark:border-gray-600 shadow-sm dark:shadow-md dark:shadow-black/10 bg-gray-50 dark:bg-gray-800"
                             title="Copy results as CSV"
                           >
                             <svg className="w-4 h-4 text-gray-500 group-hover:text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -760,7 +798,7 @@ export default function Home() {
                         )}
                         <button
                           onClick={() => retryMessage(message.id)}
-                          className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group border border-gray-200 dark:border-gray-600"
+                          className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group border border-gray-300 dark:border-gray-600 shadow-sm dark:shadow-md dark:shadow-black/10 bg-gray-50 dark:bg-gray-800"
                           title="Retry this response"
                         >
                           <svg className="w-4 h-4 text-gray-500 group-hover:text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -780,7 +818,7 @@ export default function Home() {
 
               {loading && (
                 <div className="flex justify-center">
-                  <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-3">
+                  <div className="bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-2xl px-4 py-3 shadow-md dark:shadow-lg dark:shadow-black/20">
                     <div className="flex items-center gap-3">
                       <div className="flex gap-1">
                         <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
@@ -798,13 +836,16 @@ export default function Home() {
         </div>
 
         {/* Floating Input Area */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <div className="max-w-5xl mx-auto">
-            <div className={`bg-white dark:bg-gray-800 rounded-2xl border-2 backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 transition-all duration-300 ${
-              isScrolled 
-                ? 'shadow-2xl border-gray-300 dark:border-gray-600' 
-                : 'shadow-lg border-gray-300 dark:border-gray-600 ring-2 ring-gray-200 dark:ring-gray-700'
-            }`}>
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-gray-100 dark:from-gray-900 via-gray-100/95 dark:via-gray-900/95 to-transparent pointer-events-none">
+          <div className="max-w-5xl mx-auto pointer-events-auto">
+            <div 
+              className={`bg-gray-50 dark:bg-gray-800 rounded-2xl border-2 backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 transition-all duration-300 ${
+                isScrolled 
+                  ? 'shadow-2xl dark:shadow-2xl dark:shadow-black/50 border-gray-400 dark:border-gray-500' 
+                  : 'shadow-xl dark:shadow-xl dark:shadow-black/40 border-gray-400 dark:border-gray-500'
+              } dark:ring-2 dark:ring-gray-600/20 dark:ring-offset-2 dark:ring-offset-gray-900`}
+              style={theme === 'light' ? { backgroundColor: '#f5faf7' } : undefined}
+            >
               <div className="flex gap-3 p-3">
               <div className="flex-1 relative">
                 <textarea
@@ -813,11 +854,12 @@ export default function Home() {
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Ask a question about your data..."
-                  className="w-full rounded-xl border-0 bg-transparent px-4 py-2 text-base text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-0 resize-none min-h-[40px] max-h-[150px] overflow-y-auto"
+                  className="w-full rounded-xl border-0 bg-transparent px-4 py-2 text-base text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-0 resize-none min-h-[40px] max-h-[150px] overflow-y-auto scrollbar-thin scrollbar-thumb-green-500 dark:scrollbar-thumb-green-400 scrollbar-track-green-100 dark:scrollbar-track-green-900/20 hover:scrollbar-thumb-green-600 dark:hover:scrollbar-thumb-green-300"
                   rows={1}
                   style={{
                     height: 'auto',
-                    minHeight: '40px'
+                    minHeight: '40px',
+                    ...(theme === 'light' ? { backgroundColor: '#edf5ee' } : { backgroundColor: 'rgba(31, 41, 55, 0.5)' })
                   }}
                   onInput={(e) => {
                     const target = e.target as HTMLTextAreaElement;
@@ -829,7 +871,7 @@ export default function Home() {
               {loading ? (
                 <button
                   onClick={stopGeneration}
-                  className="p-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-all duration-200 flex items-center gap-2 shadow-sm self-end group relative"
+                  className="p-3 bg-red-500 hover:bg-red-600 text-white rounded-xl font-medium transition-all duration-200 flex items-center gap-2 shadow-sm dark:shadow-md dark:shadow-black/20 self-end group relative"
                   title="Stop generation"
                 >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -850,7 +892,7 @@ export default function Home() {
                     }
                   }}
                   disabled={!input.trim()}
-                  className="p-3 hover:bg-green-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white rounded-xl font-medium transition-all duration-200 disabled:cursor-not-allowed flex items-center gap-2 shadow-sm self-end group relative"
+                  className="p-3 hover:bg-green-700 disabled:bg-gray-300 dark:disabled:bg-gray-600 text-white rounded-xl font-medium transition-all duration-200 disabled:cursor-not-allowed flex items-center gap-2 shadow-sm dark:shadow-md dark:shadow-black/20 self-end group relative"
                   style={{ backgroundColor: !input.trim() ? '' : '#16a34a' }}
                   title="Send message (Enter)"
                 >
@@ -878,7 +920,7 @@ export default function Home() {
 
       {/* Copied Message Notification */}
       {showCopiedMessage && (
-        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-gray-900 dark:bg-gray-700 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in">
+        <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-gray-900 dark:bg-gray-700 text-white px-4 py-2 rounded-lg shadow-lg dark:shadow-xl dark:shadow-black/30 flex items-center gap-2 animate-fade-in">
           <svg className="w-4 h-4 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
@@ -889,7 +931,7 @@ export default function Home() {
       {/* Settings Modal */}
       {settingsOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl dark:shadow-2xl dark:shadow-black/40 max-w-4xl w-full max-h-[90vh] overflow-hidden">
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
               <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Settings</h2>
@@ -949,13 +991,13 @@ export default function Home() {
             </div>
 
             {/* Content */}
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)] scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500">
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-200px)] scrollbar-thin scrollbar-thumb-green-500 dark:scrollbar-thumb-green-400 scrollbar-track-green-100 dark:scrollbar-track-green-900/20 hover:scrollbar-thumb-green-600 dark:hover:scrollbar-thumb-green-300">
               {/* Model Tab */}
               {activeSettingsTab === 'model' && (
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Select Model</h3>
                   <div className="space-y-3">
-                    <label className="flex items-center p-4 border-2 border-green-600 bg-green-50 dark:bg-green-900/20 rounded-lg cursor-pointer">
+                    <label className="flex items-center p-4 border-2 border-green-600 bg-green-50 dark:bg-green-900/20 rounded-lg cursor-pointer dark:shadow-md dark:shadow-black/20">
                       <input
                         type="radio"
                         name="model"
@@ -983,11 +1025,11 @@ export default function Home() {
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
                     Overview of all database tables and their relationships in the distribution management system.
                   </p>
-                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 border border-gray-200 dark:border-gray-700 overflow-x-auto">
+                  <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 border border-gray-200 dark:border-gray-700 overflow-x-auto dark:shadow-lg dark:shadow-black/10">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 min-w-max">
                       
                       {/* Core Tables */}
-                      <div className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg p-4">
+                      <div className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg p-4 dark:shadow-md dark:shadow-black/10">
                         <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm">distributors</h4>
                         <ul className="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                           <li className="font-medium text-gray-900 dark:text-gray-100">distributor_id (PK)</li>
@@ -1000,7 +1042,7 @@ export default function Home() {
                         </ul>
                       </div>
 
-                      <div className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg p-4">
+                      <div className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg p-4 dark:shadow-md dark:shadow-black/10">
                         <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm">products</h4>
                         <ul className="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                           <li className="font-medium text-gray-900 dark:text-gray-100">product_id (PK)</li>
@@ -1013,7 +1055,7 @@ export default function Home() {
                       </div>
 
                       {/* Order Management */}
-                      <div className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg p-4">
+                      <div className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded-lg p-4 dark:shadow-md dark:shadow-black/10">
                         <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm">orders</h4>
                         <ul className="space-y-1 text-xs text-gray-700 dark:text-gray-300">
                           <li className="font-medium text-gray-900 dark:text-gray-100">order_id (PK)</li>
@@ -1189,10 +1231,10 @@ export default function Home() {
                   </div>
 
                   {/* Relationships Legend */}
-                  <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                  <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg dark:shadow-md dark:shadow-black/10">
                     <h5 className="font-semibold text-gray-900 dark:text-gray-100 mb-3 text-sm">Key Relationships</h5>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-gray-700 dark:text-gray-300">
-                      <div className="p-3 bg-white dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700">
+                      <div className="p-3 bg-white dark:bg-gray-900 rounded border border-gray-200 dark:border-gray-700 dark:shadow-sm dark:shadow-black/10">
                         <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">Order Flow</p>
                         <ul className="space-y-1 pl-2">
                           <li>distributors → orders → order_items → products</li>
@@ -1230,7 +1272,7 @@ export default function Home() {
                 <div className="space-y-4">
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Interface Language</h3>
                   <div className="space-y-3">
-                    <label className="flex items-center p-4 border-2 border-green-600 bg-green-50 dark:bg-green-900/20 rounded-lg cursor-pointer">
+                    <label className="flex items-center p-4 border-2 border-green-600 bg-green-50 dark:bg-green-900/20 rounded-lg cursor-pointer dark:shadow-md dark:shadow-black/20">
                       <input
                         type="radio"
                         name="language"
@@ -1245,7 +1287,7 @@ export default function Home() {
                       </div>
                     </label>
 
-                    <label className="flex items-center p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg cursor-not-allowed opacity-50">
+                    <label className="flex items-center p-4 border-2 border-gray-200 dark:border-gray-700 rounded-lg cursor-not-allowed opacity-50 dark:shadow-sm dark:shadow-black/10">
                       <input
                         type="radio"
                         name="language"
@@ -1274,7 +1316,7 @@ export default function Home() {
                   <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Help & Documentation</h3>
                   
                   <div className="space-y-3">
-                    <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg dark:shadow-md dark:shadow-black/10">
                       <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
                         <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1286,7 +1328,7 @@ export default function Home() {
                       </p>
                     </div>
 
-                    <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg dark:shadow-md dark:shadow-black/10">
                       <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
                         <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -1313,7 +1355,7 @@ export default function Home() {
                       </div>
                     </div>
 
-                    <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg dark:shadow-md dark:shadow-black/10">
                       <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
                         <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
@@ -1330,7 +1372,7 @@ export default function Home() {
                       </ul>
                     </div>
 
-                    <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
+                    <div className="p-4 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg dark:shadow-md dark:shadow-black/10">
                       <h4 className="font-semibold text-gray-900 dark:text-gray-100 mb-2 flex items-center gap-2">
                         <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -1356,13 +1398,13 @@ export default function Home() {
             <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={() => setSettingsOpen(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors dark:shadow-md dark:shadow-black/10"
               >
                 {t('close')}
               </button>
               <button
                 onClick={saveSettings}
-                className="px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors shadow-sm hover:shadow-md"
+                className="px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors shadow-sm hover:shadow-md dark:shadow-md dark:shadow-black/20"
                 style={{ backgroundColor: '#16a34a' }}
               >
                 {t('save')}
