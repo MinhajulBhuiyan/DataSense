@@ -1,5 +1,6 @@
 import React from 'react';
 import { Message as MessageType } from '@/types';
+import { DataVisualization } from './DataVisualization';
 
 interface MessageProps {
   message: MessageType;
@@ -106,16 +107,7 @@ export function Message({ message, onLike, onDislike, onCopyCSV, onRetry }: Mess
               <span className={`text-sm ${message.disliked ? 'text-red-600' : 'text-gray-600 dark:text-gray-400 group-hover:text-red-600'}`}>Dislike</span>
             </button>
             {message.results && message.columns && (
-              <button
-                onClick={() => onCopyCSV(message)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors group border border-gray-300 dark:border-gray-600 shadow-sm bg-gray-50 dark:bg-gray-800"
-                title="Copy results as CSV"
-              >
-                <svg className="w-4 h-4 text-gray-500 group-hover:text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                </svg>
-                <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-purple-600">Copy CSV</span>
-              </button>
+              <DataVisualization message={message} />
             )}
             <button
               onClick={() => onRetry(message.id)}

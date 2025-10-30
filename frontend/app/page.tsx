@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Message as MessageType, SettingsTab, Language } from '@/types';
 import { Sidebar, Message, ChatInput } from '@/components';
+import type { ChatInputRef } from '@/components/ChatInput';
 import { useTheme, useConnectionStatus, useConversations } from '@/hooks';
 import { translations } from '@/utils/translations';
 import { API_BASE_URL, STORAGE_KEYS, COPIED_MESSAGE_DURATION } from '@/utils/constants';
@@ -15,6 +16,7 @@ export default function Home() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isRotating, setIsRotating] = useState(false);
   const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const abortedHandledRef = useRef(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [selectedModel, setSelectedModel] = useState('llama3-8b');
   const [language, setLanguage] = useState<Language>('en');
@@ -22,6 +24,7 @@ export default function Home() {
   const [showCopiedMessage, setShowCopiedMessage] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatInputRef = useRef<ChatInputRef>(null);
   
   const { theme, toggleTheme, mounted } = useTheme();
   const { isConnected } = useConnectionStatus();
@@ -126,8 +129,10 @@ export default function Home() {
     setInput('');
     setLoading(true);
 
-    const controller = new AbortController();
-    setAbortController(controller);
+  const controller = new AbortController();
+  // mark that no external stop has been handled yet for this request
+  abortedHandledRef.current = false;
+  setAbortController(controller);
 
     try {
       const response = await fetch(`${API_BASE_URL}/query`, {
@@ -159,14 +164,17 @@ export default function Home() {
       }
     } catch (error: any) {
       if (error.name === 'AbortError') {
-        const abortedMessage: MessageType = {
-          id: generateMessageId(),
-          role: 'assistant',
-          content: 'Query execution was stopped.',
-          timestamp: new Date()
-        };
-        if (convId) {
-          updateConversation(convId, [...messages, userMessage, abortedMessage]);
+        // If we already handled the abort (stop button), don't add duplicate message
+        if (!abortedHandledRef.current) {
+          const abortedMessage: MessageType = {
+            id: generateMessageId(),
+            role: 'assistant',
+            content: 'Query execution was stopped.',
+            timestamp: new Date()
+          };
+          if (convId) {
+            updateConversation(convId, [...messages, userMessage, abortedMessage]);
+          }
         }
       } else {
         const errorMessage: MessageType = {
@@ -187,10 +195,29 @@ export default function Home() {
   };
 
   const stopGeneration = () => {
+    // Immediate stop: abort the request and insert a stopped message so user sees instant feedback
     if (abortController) {
-      abortController.abort();
+      try {
+        console.log('stopGeneration: aborting controller', abortController);
+        abortedHandledRef.current = true;
+        abortController.abort();
+      } catch (e) {
+        console.warn('stopGeneration: error while aborting', e);
+      }
       setAbortController(null);
       setLoading(false);
+
+      const abortedMessage: MessageType = {
+        id: generateMessageId(),
+        role: 'assistant',
+        content: 'Query execution was stopped.',
+        timestamp: new Date()
+      };
+
+      if (currentConversationId) {
+        // append aborted message to current conversation messages
+        updateConversation(currentConversationId, [...messages, abortedMessage]);
+      }
     }
   };
 
@@ -316,7 +343,13 @@ export default function Home() {
         currentConversationId={currentConversationId}
         isConnected={isConnected}
         onToggle={toggleSidebar}
-        onNewChat={() => createNewConversation()}
+        onNewChat={() => {
+          createNewConversation();
+          // Focus the input after a short delay to ensure component is rendered
+          setTimeout(() => {
+            chatInputRef.current?.focus();
+          }, 100);
+        }}
         onConversationSelect={switchConversation}
         onConversationRename={renameConversation}
         onConversationDelete={deleteConversation}
@@ -385,6 +418,7 @@ export default function Home() {
 
         {/* Floating Input Area */}
         <ChatInput
+          ref={chatInputRef}
           input={input}
           loading={loading}
           theme={theme}

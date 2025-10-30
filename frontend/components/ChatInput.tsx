@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Theme } from '@/types';
 import { TEXTAREA_MAX_HEIGHT } from '@/utils/constants';
 
@@ -14,7 +14,11 @@ interface ChatInputProps {
   onKeyPress: (e: React.KeyboardEvent) => void;
 }
 
-export function ChatInput({
+export interface ChatInputRef {
+  focus: () => void;
+}
+
+export const ChatInput = forwardRef<ChatInputRef, ChatInputProps>(({
   input,
   loading,
   theme,
@@ -24,8 +28,15 @@ export function ChatInput({
   onSubmit,
   onStop,
   onKeyPress
-}: ChatInputProps) {
+}, ref) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Expose focus method to parent
+  useImperativeHandle(ref, () => ({
+    focus: () => {
+      inputRef.current?.focus();
+    }
+  }));
 
   // Auto-resize textarea based on content
   useEffect(() => {
@@ -111,4 +122,6 @@ export function ChatInput({
       </div>
     </div>
   );
-}
+});
+
+ChatInput.displayName = 'ChatInput';

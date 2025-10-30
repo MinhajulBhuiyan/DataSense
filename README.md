@@ -2,44 +2,73 @@
 
 A Natural Language to SQL system with a modern web interface for the DataSense ice cream distribution database.
 
-## 🚀 Features
+## Features
 
-- 💬 Natural language to SQL conversion using AI
-- 🌐 Modern Next.js web interface
-- 🔒 Read-only mode with query validation
-- 📊 Table-formatted results with CSV export
-- 🌓 Dark/Light mode
-- 📱 Responsive design
+- Natural language to SQL conversion using AI
+- Modern Next.js web interface
+- Read-only mode with query validation
+- Table-formatted results with CSV export
+- Data visualization with dynamic charts
+- Responsive design
 
-## 📁 Structure
+## Structure
 
 ```
 DataSense/
-├── nl2sql/           # Flask Backend API
-└── frontend/         # Next.js Frontend
+├── frontend/
+│   ├── app/
+│   │   ├── examples/
+│   │   │   └── page.tsx
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx             # Main chat interface
+│   ├── components/
+│   │   ├── ChatInput.tsx
+│   │   ├── DataVisualization.tsx  # Chart visualization
+│   │   ├── Message.tsx
+│   │   └── Sidebar.tsx
+│   ├── hooks/
+│   │   ├── useConnectionStatus.ts
+│   │   ├── useConversations.ts
+│   │   └── useTheme.ts
+│   ├── utils/
+│   │   ├── chartAnalyzer.ts     # Chart suggestions
+│   │   ├── constants.ts
+│   │   └── helpers.ts
+│   └── package.json
+│
+├── nl2sql/
+│   ├── app.py                   # Main Flask API
+│   ├── business_context.py
+│   ├── database_schema.json
+│   ├── db_connector.py
+│   ├── query_executor.py
+│   ├── query_validator.py
+│   ├── requirements.txt
+│   └── .env                     # Create this file
+│
+└── README.md
 ```
 
-## ⚡ Quick Start
+## Quick Start
 
 ### 1. Start Backend
 ```powershell
 cd nl2sql
 .\venv\Scripts\activate
 python app.py
-# Runs on http://localhost:5001
 ```
 
 ### 2. Start Frontend
 ```powershell
 cd frontend
 npm run dev
-# Runs on http://localhost:3000
 ```
 
 ### 3. Open Browser
 Navigate to **http://localhost:3000**
 
-## 📦 Installation
+## Installation
 
 ### Backend
 ```powershell
@@ -55,8 +84,7 @@ cd frontend
 npm install
 ```
 
-
-## � Example Queries
+## Example Queries
 
 - "Show all distributors"
 - "List all products with current stock"
@@ -65,7 +93,7 @@ npm install
 - "Find products with low stock levels"
 - "Show pending returns"
 
-## � Configuration
+## Configuration
 
 Create `.env` file in `nl2sql/`:
 ```env
@@ -77,7 +105,7 @@ DB_PASSWORD=your-password
 DB_NAME=datasense
 ```
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 **Backend not connecting to database?**
 - Check `.env` file credentials
@@ -88,7 +116,7 @@ DB_NAME=datasense
 **Port already in use?**
 - Kill the process or change the port
 
-## �️ Tech Stack
+## Tech Stack
 
 - **Frontend:** Next.js 16, React 19, TypeScript, Tailwind CSS
 - **Backend:** Flask 3.0, Python
@@ -97,4 +125,4 @@ DB_NAME=datasense
 
 ---
 
-*Made for DataSense Ice Cream Distribution*
+*Made Minhaj and Mahin*
