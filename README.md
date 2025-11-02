@@ -97,9 +97,9 @@ npm install
 
 Create `.env` file in `nl2sql/`:
 ```env
-OLLAMA_API_URL=http://192.168.11.10:11434/api/generate
-DB_HOST=10.101.13.28
-DB_PORT=6507
+OLLAMA_API_URL=http://ip/api/generate
+DB_HOST=your-host-ip
+DB_PORT=your-host-port
 DB_USER=your-username
 DB_PASSWORD=your-password
 DB_NAME=datasense
@@ -125,4 +125,4 @@ DB_NAME=datasense
 
 ---
 
-*Made Minhaj and Mahin*
+*Made Minhajul and Mahin*
