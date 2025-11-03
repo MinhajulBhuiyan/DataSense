@@ -11,13 +11,18 @@ from datetime import datetime
 OLLAMA_API_URL = "http://192.168.11.10:11434/api/generate"
 BACKEND_API_URL = "http://localhost:5001/api/query"
 
-# Test queries
+# Test queries: 10 concise mixed prompts (to the point)
 TEST_QUERIES = [
-    "Show all distributors",
-    "Show products with low stock",
-    "Calculate total revenue by distributor",
-    "Show recent orders from the last 30 days",
-    "Find distributors with pending invoices"
+    "show me all distributors",
+    "show me all products",
+    "which products have low stock",
+    "show recent orders",
+    "show cancelled orders",
+    "what is our total revenue",
+    "show unpaid invoices",
+    "show me all returns",
+    "what are our best selling products",
+    "show me recent payments"
 ]
 
 def test_ollama_model_direct(model_name):

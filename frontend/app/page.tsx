@@ -530,7 +530,7 @@ export default function Home() {
                       <div className="ml-3 flex-1">
                         <div className="font-medium text-gray-900 dark:text-white">Llama 3 8B</div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">
-                          Fast and accurate general-purpose model (Default)
+                          Optimized model for common tasks (Default)
                         </div>
                       </div>
                     </label>
@@ -605,7 +605,7 @@ export default function Home() {
               <button
                 onClick={saveSettings}
                 className="px-6 py-2 text-sm font-medium text-white rounded-lg transition-colors"
-                style={{ backgroundColor: '#16a34a' }}
+                style={{ backgroundColor: '#08834d' }}
               >
                 {t('save')}
               </button>
