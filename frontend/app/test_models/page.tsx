@@ -67,6 +67,14 @@ export default function TestModelsPage() {
     return { overall, perModel: perModelStats }
   }, [data])
 
+  // model -> accent config for summary cards and progress bars
+  const modelAccentConfig: Record<string, { gradient: string; text: string }> = {
+    'llama3:8b': { gradient: 'from-green-400 to-green-600', text: 'text-green-600 dark:text-green-300' },
+    'qwen2.5-coder': { gradient: 'from-purple-400 to-purple-600', text: 'text-purple-600 dark:text-purple-300' },
+    'sqlcoder:7b': { gradient: 'from-blue-400 to-blue-600', text: 'text-blue-600 dark:text-blue-300' },
+    'deepseek-coder:6.7b': { gradient: 'from-yellow-400 to-yellow-600', text: 'text-yellow-600 dark:text-yellow-300' }
+  }
+
   // Wait for theme hook to mount to avoid mismatch
   if (!mounted) return null
 
@@ -130,7 +138,7 @@ export default function TestModelsPage() {
                       <div className="text-xs">No timing data available yet.</div>
                     ) : (
                       <>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-3">
                           <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded p-3 flex flex-col">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Overall</div>
                             <div className="text-2xl font-semibold mt-2">{(data?.summary && Object.values(data.summary).reduce((a: any, b: any) => a + (b.success||0), 0)) || 0}/{(data?.summary && Object.values(data.summary).reduce((a: any, b: any) => a + (b.count||0), 0)) || 0}</div>
@@ -138,34 +146,44 @@ export default function TestModelsPage() {
                           </div>
                           <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded p-3 flex flex-col">
                             <div className="text-sm text-gray-500 dark:text-gray-400">llama3:8b</div>
-                            <div className="text-2xl font-semibold mt-2">{(data?.summary?.['llama3:8b']?.success ?? 0)}/{(data?.summary?.['llama3:8b']?.count ?? 0)}</div>
+                            <div className={`text-3xl font-semibold mt-2 ${modelAccentConfig['llama3:8b']?.text || ''}`}>{(data?.summary?.['llama3:8b']?.success ?? 0)}/{(data?.summary?.['llama3:8b']?.count ?? 0)}</div>
                             <div className="text-xs text-gray-500 mt-1">successful</div>
                           </div>
                           <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded p-3 flex flex-col">
                             <div className="text-sm text-gray-500 dark:text-gray-400">qwen2.5-coder</div>
-                            <div className="text-2xl font-semibold mt-2">{(data?.summary?.['qwen2.5-coder']?.success ?? 0)}/{(data?.summary?.['qwen2.5-coder']?.count ?? 0)}</div>
+                            <div className={`text-3xl font-semibold mt-2 ${modelAccentConfig['qwen2.5-coder']?.text || ''}`}>{(data?.summary?.['qwen2.5-coder']?.success ?? 0)}/{(data?.summary?.['qwen2.5-coder']?.count ?? 0)}</div>
+                            <div className="text-xs text-gray-500 mt-1">successful</div>
+                          </div>
+                          <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded p-3 flex flex-col">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">sqlcoder:7b</div>
+                            <div className={`text-3xl font-semibold mt-2 ${modelAccentConfig['sqlcoder:7b']?.text || ''}`}>{(data?.summary?.['sqlcoder:7b']?.success ?? 0)}/{(data?.summary?.['sqlcoder:7b']?.count ?? 0)}</div>
+                            <div className="text-xs text-gray-500 mt-1">successful</div>
+                          </div>
+                          <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded p-3 flex flex-col">
+                            <div className="text-sm text-gray-500 dark:text-gray-400">deepseek-coder:6.7b</div>
+                            <div className={`text-3xl font-semibold mt-2 ${modelAccentConfig['deepseek-coder:6.7b']?.text || ''}`}>{(data?.summary?.['deepseek-coder:6.7b']?.success ?? 0)}/{(data?.summary?.['deepseek-coder:6.7b']?.count ?? 0)}</div>
                             <div className="text-xs text-gray-500 mt-1">successful</div>
                           </div>
                           <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded p-3 flex flex-col">
                             <div className="text-sm text-gray-500 dark:text-gray-400">Measured runs</div>
-                            <div className="text-2xl font-semibold mt-2">{timeStats.overall.count}</div>
+                            <div className="text-3xl font-semibold mt-2 text-gray-900 dark:text-white">{timeStats.overall.count}</div>
                             <div className="text-xs text-gray-500 mt-1">total</div>
                           </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                           <div className="md:col-span-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded p-3">
-                            <div className="text-sm font-semibold">Overall</div>
-                            <div className="mt-2 text-xs text-gray-600 dark:text-gray-300">Measured runs</div>
-                            <div className="text-lg font-medium">{timeStats.overall.count}</div>
-                            <div className="mt-3 text-xs">Avg <span className="font-semibold">{timeStats.overall.avg.toFixed(2)}s</span></div>
-                            <div className="text-xs">Median <span className="font-semibold">{timeStats.overall.median.toFixed(2)}s</span></div>
-                            <div className="text-xs">Min / Max <span className="font-semibold">{timeStats.overall.min.toFixed(2)}s</span> / <span className="font-semibold">{timeStats.overall.max.toFixed(2)}s</span></div>
+                            <div className="text-base font-semibold">Overall</div>
+                            <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">Measured runs</div>
+                            <div className="text-xl font-semibold">{timeStats.overall.count}</div>
+                            <div className="mt-3 text-sm">Avg <span className="font-semibold text-base">{timeStats.overall.avg.toFixed(2)}s</span></div>
+                            <div className="text-sm">Median <span className="font-semibold text-base">{timeStats.overall.median.toFixed(2)}s</span></div>
+                            <div className="text-sm">Min / Max <span className="font-semibold text-base">{timeStats.overall.min.toFixed(2)}s</span> / <span className="font-semibold text-base">{timeStats.overall.max.toFixed(2)}s</span></div>
                           </div>
 
                           <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {Object.entries(timeStats.perModel).map(([m, v]: any) => {
-                              const accent = m.toLowerCase().includes('qwen') ? 'from-purple-400 to-purple-600 text-purple-600 dark:text-purple-300' : 'from-green-400 to-green-600 text-green-600 dark:text-green-300'
+                              const cfg = modelAccentConfig[m] || { gradient: 'from-green-400 to-green-600', text: 'text-green-600 dark:text-green-300' }
                               const widthPct = timeStats.overall.max > 0 ? Math.min(100, (v.avg / timeStats.overall.max) * 100) : 0
                               return (
                                 <div key={m} className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-700 rounded p-3">
@@ -173,12 +191,12 @@ export default function TestModelsPage() {
                                     <div className="text-sm font-semibold">{m}</div>
                                     <div className="text-xs text-gray-500 dark:text-gray-400">{v.count} runs</div>
                                   </div>
-                                  <div className="mt-2 text-sm">Avg: <span className={`font-medium ${accent}`}>{v.avg.toFixed(2)}s</span></div>
+                                  <div className="mt-2 text-sm">Avg: <span className={`font-medium ${cfg.text}`}>{v.avg.toFixed(2)}s</span></div>
                                   <div className="text-sm">Median: <span className="font-medium">{v.median.toFixed(2)}s</span></div>
                                   <div className="text-sm">Min: <span className="font-medium">{v.min.toFixed(2)}s</span> · Max: <span className="font-medium">{v.max.toFixed(2)}s</span></div>
                                   <div className="mt-3">
                                     <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded overflow-hidden">
-                                      <div className={`h-2 rounded bg-gradient-to-r ${accent}`} style={{ width: `${widthPct}%` }} />
+                                      <div className={`h-2 rounded bg-gradient-to-r ${cfg.gradient}`} style={{ width: `${widthPct}%` }} />
                                     </div>
                                   </div>
                                 </div>
@@ -192,17 +210,7 @@ export default function TestModelsPage() {
                 </div>
               )}
 
-              {data.summary && (
-                <div className="mb-4">
-                  <h3 className="text-sm font-medium text-gray-800 dark:text-gray-100">Summary</h3>
-                  <ul className="text-sm text-gray-700 dark:text-gray-300 mt-2 space-y-1">
-                    {Object.entries(data.summary).map(([m, s]) => {
-                      const ss: any = s
-                      return <li key={m}>{m}: {ss.success}/{ss.count} successful</li>
-                    })}
-                  </ul>
-                </div>
-              )}
+              {/* Summary removed per user request */}
 
               {data.results && (
                 <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-green-500 dark:scrollbar-thumb-green-400 scrollbar-track-green-100 dark:scrollbar-track-green-900/20 hover:scrollbar-thumb-green-600 dark:hover:scrollbar-thumb-green-300">

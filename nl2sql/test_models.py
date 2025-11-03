@@ -1,5 +1,5 @@
 """
-Test script to verify both Llama 3 8B and Qwen 2.5 Coder models are working correctly
+Test script to verify all available models are working correctly
 """
 
 import requests
@@ -10,6 +10,14 @@ from datetime import datetime
 # Configuration
 OLLAMA_API_URL = "http://192.168.11.10:11434/api/generate"
 BACKEND_API_URL = "http://localhost:5001/api/query"
+
+# Models to test
+TEST_MODELS = [
+    "llama3:8b",
+    "qwen2.5-coder",
+    "sqlcoder:7b",
+    "deepseek-coder:6.7b"
+]
 
 # Test queries: 10 concise mixed prompts (to the point)
 TEST_QUERIES = [
@@ -178,20 +186,23 @@ def main():
     logs.append('PHASE 1: Direct Ollama API Tests')
     post_update('phase1-start')
 
-    llama_direct = test_ollama_model_direct("llama3:8b")
-    logs.append(f"llama3:8b direct available: {llama_direct}")
-    post_update('phase1-llama-done')
-    qwen_direct = test_ollama_model_direct("qwen2.5-coder")
-    logs.append(f"qwen2.5-coder direct available: {qwen_direct}")
-    post_update('phase1-qwen-done')
+    # Test all models and track which are available
+    model_availability = {}
+    for model in TEST_MODELS:
+        is_available = test_ollama_model_direct(model)
+        model_availability[model] = is_available
+        logs.append(f"{model} direct available: {is_available}")
+        post_update(f'phase1-{model}-done')
     
     # Test 2: Backend integration tests
     print("\n" + "="*80)
     print("PHASE 2: Backend Integration Tests")
     print("="*80)
     
-    if not llama_direct and not qwen_direct:
-        print("\n❌ Skipping backend tests - Ollama models not accessible")
+    available_models = [m for m, avail in model_availability.items() if avail]
+    
+    if not available_models:
+        print("\n❌ Skipping backend tests - No Ollama models accessible")
         return
     
     # Check if backend is running
@@ -207,9 +218,9 @@ def main():
         print("\n💡 Start backend with: cd nl2sql && python app.py")
         return
     
-    # Test each query: run llama first, then qwen so results are directly comparable
-    models_order = ['llama3:8b', 'qwen2.5-coder']
-    available_models = [m for m in models_order if (m == 'llama3:8b' and llama_direct) or (m == 'qwen2.5-coder' and qwen_direct)]
+    # Test each query: run all available models
+    models_order = TEST_MODELS
+    available_models = [m for m in models_order if model_availability.get(m, False)]
 
     all_results = []
 
@@ -236,7 +247,7 @@ def main():
 
     # Print a comparison table
     print('\n' + '='*100)
-    print('COMPARISON TABLE (per query, models run in order: llama -> qwen)')
+    print(f'COMPARISON TABLE (per query, {len(available_models)} models tested)')
     print('='*100 + '\n')
 
     # Table header

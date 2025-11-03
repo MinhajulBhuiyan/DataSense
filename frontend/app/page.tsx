@@ -504,19 +504,10 @@ export default function Home() {
               {activeSettingsTab === 'model' && (
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">LLM Model Selection</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    Choose the AI model for generating SQL queries
-                  </p>
                   
-                  <div className="space-y-3">
-                    <label 
-                      className="flex items-start p-4 border-2 border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                      style={{
-                        borderColor: selectedModel === 'llama3:8b' ? '#08834d' : undefined,
-                        backgroundColor: selectedModel === 'llama3:8b' 
-                          ? 'rgba(8, 131, 77, 0.1)' 
-                          : undefined
-                      }}
+                  <div className="grid grid-cols-2 gap-2">
+                      <label
+                        className={`flex items-center p-2 border rounded-md transition-all duration-200 cursor-pointer ${selectedModel === 'llama3:8b' ? 'bg-green-200 dark:bg-green-900/50 border-green-400 dark:border-green-500' : 'bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-200 dark:hover:border-green-700'} hover:shadow-sm hover:shadow-green-900/10 dark:hover:shadow-lg dark:hover:shadow-black/20`}
                     >
                       <input
                         type="radio"
@@ -524,25 +515,16 @@ export default function Home() {
                         value="llama3:8b"
                         checked={selectedModel === 'llama3:8b'}
                         onChange={(e) => setSelectedModel(e.target.value)}
-                        className="mt-1 w-4 h-4"
+                        className="w-4 h-4"
                         style={{ accentColor: '#08834d' }}
                       />
-                      <div className="ml-3 flex-1">
-                        <div className="font-medium text-gray-900 dark:text-white">Llama 3 8B</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          Optimized model for common tasks (Default)
-                        </div>
+                      <div className="ml-2">
+                        <div className="font-medium text-base text-gray-900 dark:text-white">Llama 3 8B</div>
                       </div>
                     </label>
 
-                    <label 
-                      className="flex items-start p-4 border-2 border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                      style={{
-                        borderColor: selectedModel === 'qwen2.5-coder' ? '#08834d' : undefined,
-                        backgroundColor: selectedModel === 'qwen2.5-coder' 
-                          ? 'rgba(8, 131, 77, 0.1)' 
-                          : undefined
-                      }}
+                      <label
+                        className={`flex items-center p-2 border rounded-md transition-all duration-200 cursor-pointer ${selectedModel === 'qwen2.5-coder' ? 'bg-green-200 dark:bg-green-900/50 border-green-400 dark:border-green-500' : 'bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-200 dark:hover:border-green-700'} hover:shadow-sm hover:shadow-green-900/10 dark:hover:shadow-lg dark:hover:shadow-black/20`}
                     >
                       <input
                         type="radio"
@@ -550,14 +532,45 @@ export default function Home() {
                         value="qwen2.5-coder"
                         checked={selectedModel === 'qwen2.5-coder'}
                         onChange={(e) => setSelectedModel(e.target.value)}
-                        className="mt-1 w-4 h-4"
+                        className="w-4 h-4"
                         style={{ accentColor: '#08834d' }}
                       />
-                      <div className="ml-3 flex-1">
-                        <div className="font-medium text-gray-900 dark:text-white">Qwen 2.5 Coder</div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          Specialized coding model with enhanced SQL generation
-                        </div>
+                      <div className="ml-2">
+                        <div className="font-medium text-base text-gray-900 dark:text-white">Qwen 2.5 Coder</div>
+                      </div>
+                    </label>
+
+                      <label
+                        className={`flex items-center p-2 border rounded-md transition-all duration-200 cursor-pointer ${selectedModel === 'sqlcoder:7b' ? 'bg-green-200 dark:bg-green-900/50 border-green-400 dark:border-green-500' : 'bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-200 dark:hover:border-green-700'} hover:shadow-sm hover:shadow-green-900/10 dark:hover:shadow-lg dark:hover:shadow-black/20`}
+                    >
+                      <input
+                        type="radio"
+                        name="model"
+                        value="sqlcoder:7b"
+                        checked={selectedModel === 'sqlcoder:7b'}
+                        onChange={(e) => setSelectedModel(e.target.value)}
+                        className="w-4 h-4"
+                        style={{ accentColor: '#08834d' }}
+                      />
+                      <div className="ml-2">
+                        <div className="font-medium text-base text-gray-900 dark:text-white">SQLCoder 7B</div>
+                      </div>
+                    </label>
+
+                      <label
+                        className={`flex items-center p-2 border rounded-md transition-all duration-200 cursor-pointer ${selectedModel === 'deepseek-coder:6.7b' ? 'bg-green-200 dark:bg-green-900/50 border-green-400 dark:border-green-500' : 'bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-200 dark:hover:border-green-700'} hover:shadow-sm hover:shadow-green-900/10 dark:hover:shadow-lg dark:hover:shadow-black/20`}
+                    >
+                      <input
+                        type="radio"
+                        name="model"
+                        value="deepseek-coder:6.7b"
+                        checked={selectedModel === 'deepseek-coder:6.7b'}
+                        onChange={(e) => setSelectedModel(e.target.value)}
+                        className="w-4 h-4"
+                        style={{ accentColor: '#08834d' }}
+                      />
+                      <div className="ml-2">
+                        <div className="font-medium text-base text-gray-900 dark:text-white">DeepSeek Coder 6.7B</div>
                       </div>
                     </label>
                   </div>
