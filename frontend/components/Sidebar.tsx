@@ -15,6 +15,7 @@ interface SidebarProps {
   onExamplesClick: () => void;
   onThemeToggle: () => void;
   onSettingsOpen: () => void;
+  selectedModel?: string;
 }
 
 export function Sidebar({
@@ -30,7 +31,8 @@ export function Sidebar({
   onConversationDelete,
   onExamplesClick,
   onThemeToggle,
-  onSettingsOpen
+  onSettingsOpen,
+  selectedModel
 }: SidebarProps) {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
@@ -284,6 +286,14 @@ export function Sidebar({
                 </>
               )}
             </button>
+          </div>
+
+          {/* Model indicator (minimal) */}
+          <div className="px-3 pt-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-gray-600 dark:text-gray-400">Model</span>
+              <span className="text-gray-800 dark:text-gray-100 text-sm font-medium">{selectedModel ?? 'llama3:8b'}</span>
+            </div>
           </div>
 
           {/* Connection Status */}

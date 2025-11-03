@@ -77,12 +77,13 @@ def format_schema_for_prompt(schema_data):
 DATABASE_SCHEMA, SCHEMA_JSON = load_schema()
 
 
-def generate_sql(natural_language_query):
+def generate_sql(natural_language_query, model="llama3:8b"):
     """
     Convert natural language to SQL query using Ollama LLM
     
     Args:
         natural_language_query (str): The natural language question
+        model (str): The Ollama model to use (default: llama3:8b)
     
     Returns:
         str: Generated SQL query only
@@ -113,7 +114,7 @@ Natural Language Query: {natural_language_query}
 SQL:"""
     
     payload = {
-        "model": "llama3:8b",
+        "model": model,
         "prompt": prompt,
         "stream": False
     }
@@ -192,7 +193,8 @@ def process_query():
     
     Request body:
     {
-        "prompt": "Show me all distributors"
+        "prompt": "Show me all distributors",
+        "model": "llama3:8b"  // optional, defaults to llama3:8b
     }
     
     Response:
@@ -212,14 +214,15 @@ def process_query():
             }), 400
         
         natural_language_query = data['prompt'].strip()
+        model = data.get('model', 'llama3:8b')  # Get model from request, default to llama3:8b
         
         if not natural_language_query:
             return jsonify({
                 'error': 'Prompt cannot be empty'
             }), 400
         
-        # Step 1: Generate SQL using LLM
-        sql_query = generate_sql(natural_language_query)
+        # Step 1: Generate SQL using LLM with selected model
+        sql_query = generate_sql(natural_language_query, model)
         
         # Check if it's an error message from LLM
         if sql_query.startswith("ERROR:") or sql_query.startswith("Error:"):

@@ -7,6 +7,7 @@ export const API_BASE_URL = 'http://localhost:5001/api';
 export const STORAGE_KEYS = {
   THEME: 'datasense-theme',
   LANGUAGE: 'datasense-language',
+  SELECTED_MODEL: 'datasense-selected-model',
   RECENT_QUERIES: 'datasense-recent-queries',
   CONVERSATIONS: 'datasense-conversations',
   CURRENT_CONVERSATION: 'datasense-current-conversation',

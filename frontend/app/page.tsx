@@ -18,7 +18,7 @@ export default function Home() {
   const [abortController, setAbortController] = useState<AbortController | null>(null);
   const abortedHandledRef = useRef(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [selectedModel, setSelectedModel] = useState('llama3-8b');
+  const [selectedModel, setSelectedModel] = useState('llama3:8b');
   const [language, setLanguage] = useState<Language>('en');
   const [activeSettingsTab, setActiveSettingsTab] = useState<SettingsTab>('model');
   const [showCopiedMessage, setShowCopiedMessage] = useState(false);
@@ -57,6 +57,12 @@ export default function Home() {
     const savedLanguage = localStorage.getItem(STORAGE_KEYS.LANGUAGE) as Language | null;
     if (savedLanguage) {
       setLanguage(savedLanguage);
+    }
+    
+    // Load model preference from localStorage
+    const savedModel = localStorage.getItem(STORAGE_KEYS.SELECTED_MODEL);
+    if (savedModel) {
+      setSelectedModel(savedModel);
     }
     
     // Load sidebar state from localStorage
@@ -102,6 +108,7 @@ export default function Home() {
 
   const saveSettings = () => {
     localStorage.setItem(STORAGE_KEYS.LANGUAGE, language);
+    localStorage.setItem(STORAGE_KEYS.SELECTED_MODEL, selectedModel);
     setSettingsOpen(false);
   };
 
@@ -138,7 +145,10 @@ export default function Home() {
       const response = await fetch(`${API_BASE_URL}/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: userMessage.content }),
+        body: JSON.stringify({ 
+          prompt: userMessage.content,
+          model: selectedModel 
+        }),
         signal: controller.signal,
       });
 
@@ -240,7 +250,10 @@ export default function Home() {
       const response = await fetch(`${API_BASE_URL}/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: queryText }),
+        body: JSON.stringify({ 
+          prompt: queryText,
+          model: selectedModel 
+        }),
       });
 
       const data = await response.json();
@@ -356,6 +369,7 @@ export default function Home() {
         onExamplesClick={navigateToExamples}
         onThemeToggle={toggleTheme}
         onSettingsOpen={() => setSettingsOpen(true)}
+        selectedModel={selectedModel}
       />
 
       {/* Main Chat Area */}
@@ -441,25 +455,147 @@ export default function Home() {
         </div>
       )}
 
-      {/* Settings Modal - Placeholder for now */}
+      {/* Settings Modal */}
       {settingsOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Settings</h2>
-              <button
-                onClick={() => setSettingsOpen(false)}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-              >
-                <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 z-10">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Settings</h2>
+                <button
+                  onClick={() => setSettingsOpen(false)}
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                >
+                  <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              {/* Tabs */}
+              <div className="flex gap-2 mt-4">
+                <button
+                  onClick={() => setActiveSettingsTab('model')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    activeSettingsTab === 'model'
+                      ? 'text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                  style={activeSettingsTab === 'model' ? { backgroundColor: '#08834d' } : {}}
+                >
+                  Model
+                </button>
+                <button
+                  onClick={() => setActiveSettingsTab('language')}
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                    activeSettingsTab === 'language'
+                      ? 'text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                  style={activeSettingsTab === 'language' ? { backgroundColor: '#08834d' } : {}}
+                >
+                  Language
+                </button>
+              </div>
             </div>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Settings panel - Full implementation coming soon!
-            </p>
-            <div className="flex justify-end gap-3">
+
+            <div className="p-6">
+              {/* Model Settings */}
+              {activeSettingsTab === 'model' && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">LLM Model Selection</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    Choose the AI model for generating SQL queries
+                  </p>
+                  
+                  <div className="space-y-3">
+                    <label 
+                      className="flex items-start p-4 border-2 border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                      style={{
+                        borderColor: selectedModel === 'llama3:8b' ? '#08834d' : undefined,
+                        backgroundColor: selectedModel === 'llama3:8b' 
+                          ? 'rgba(8, 131, 77, 0.1)' 
+                          : undefined
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="model"
+                        value="llama3:8b"
+                        checked={selectedModel === 'llama3:8b'}
+                        onChange={(e) => setSelectedModel(e.target.value)}
+                        className="mt-1 w-4 h-4"
+                        style={{ accentColor: '#08834d' }}
+                      />
+                      <div className="ml-3 flex-1">
+                        <div className="font-medium text-gray-900 dark:text-white">Llama 3 8B</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                          Fast and accurate general-purpose model (Default)
+                        </div>
+                      </div>
+                    </label>
+
+                    <label 
+                      className="flex items-start p-4 border-2 border-gray-300 dark:border-gray-700 rounded-lg cursor-pointer transition-all hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                      style={{
+                        borderColor: selectedModel === 'qwen2.5-coder' ? '#08834d' : undefined,
+                        backgroundColor: selectedModel === 'qwen2.5-coder' 
+                          ? 'rgba(8, 131, 77, 0.1)' 
+                          : undefined
+                      }}
+                    >
+                      <input
+                        type="radio"
+                        name="model"
+                        value="qwen2.5-coder"
+                        checked={selectedModel === 'qwen2.5-coder'}
+                        onChange={(e) => setSelectedModel(e.target.value)}
+                        className="mt-1 w-4 h-4"
+                        style={{ accentColor: '#08834d' }}
+                      />
+                      <div className="ml-3 flex-1">
+                        <div className="font-medium text-gray-900 dark:text-white">Qwen 2.5 Coder</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                          Specialized coding model with enhanced SQL generation
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <p className="text-sm text-blue-800 dark:text-blue-200">
+                        Models are served via Ollama running at {API_BASE_URL.replace('/api', '')}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Language Settings */}
+              {activeSettingsTab === 'language' && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">Interface Language</h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                    Select your preferred language for the interface
+                  </p>
+                  
+                  <select
+                    value={language}
+                    onChange={(e) => setLanguage(e.target.value as Language)}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-green-500 focus:border-transparent transition-colors"
+                  >
+                    <option value="en">English</option>
+                    <option value="bn">বাংলা (Bangla)</option>
+                  </select>
+                </div>
+              )}
+            </div>
+
+            <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-6 flex justify-end gap-3">
               <button
                 onClick={() => setSettingsOpen(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
