@@ -125,4 +125,4 @@ DB_NAME=datasense
 
 ---
 
-*Made buy Minhajul and Mahin*
+*Made by Minhajul and Mahin*
