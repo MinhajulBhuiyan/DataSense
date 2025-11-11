@@ -1,0 +1,419 @@
+{
+  "database": "datasense",
+  "tables": [
+    {
+      "name": "cancellations",
+      "columns": [
+        {"name": "cancellation_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "reference_id", "type": "INT", "nullable": false},
+        {"name": "reference_type", "type": "ENUM", "values": ["order", "invoice"], "nullable": false},
+        {"name": "cancellation_date", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "reason", "type": "TEXT", "nullable": false},
+        {"name": "notes", "type": "TEXT"}
+      ]
+    },
+    {
+      "name": "challans",
+      "columns": [
+        {"name": "challan_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "load_plan_id", "type": "INT", "nullable": false, "foreign_key": {"table": "load_plans", "column": "load_plan_id"}},
+        {"name": "challan_date", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "details", "type": "JSON"}
+      ]
+    },
+    {
+      "name": "detailed_fg_store_req",
+      "columns": [
+        {"name": "req_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "id", "type": "INT", "nullable": false},
+        {"name": "unique_id", "type": "VARCHAR(100)", "nullable": false},
+        {"name": "req_from", "type": "VARCHAR(10)"},
+        {"name": "req_from_code", "type": "VARCHAR(45)"},
+        {"name": "req_from_name", "type": "VARCHAR(100)"},
+        {"name": "req_to", "type": "VARCHAR(10)"},
+        {"name": "req_to_code", "type": "VARCHAR(45)"},
+        {"name": "req_to_name", "type": "VARCHAR(100)"},
+        {"name": "requested_by", "type": "VARCHAR(100)"},
+        {"name": "requested_by_name", "type": "VARCHAR(100)"},
+        {"name": "requested_on", "type": "VARCHAR(70)"},
+        {"name": "status", "type": "VARCHAR(10)"},
+        {"name": "req_from_region", "type": "INT"},
+        {"name": "req_from_region_name", "type": "VARCHAR(100)"},
+        {"name": "req_from_depot", "type": "INT"},
+        {"name": "req_from_depot_name", "type": "VARCHAR(100)"},
+        {"name": "req_to_region", "type": "INT"},
+        {"name": "req_to_region_name", "type": "VARCHAR(100)"},
+        {"name": "req_to_depot", "type": "INT"},
+        {"name": "req_to_depot_name", "type": "VARCHAR(100)"},
+        {"name": "vehicle_id", "type": "VARCHAR(100)"},
+        {"name": "vehicle_name", "type": "VARCHAR(100)"},
+        {"name": "status_update", "type": "INT", "nullable": false},
+        {"name": "cancel_status", "type": "INT", "nullable": false},
+        {"name": "cancelled_on", "type": "VARCHAR(50)"},
+        {"name": "fg_store_id", "type": "INT"},
+        {"name": "fg_store_name", "type": "VARCHAR(100)"},
+        {"name": "fg_store_req_from_id", "type": "INT"},
+        {"name": "fg_store_req_from_name", "type": "VARCHAR(100)"},
+        {"name": "approved_on", "type": "VARCHAR(70)"},
+        {"name": "approved_by", "type": "INT"},
+        {"name": "approved_by_name", "type": "VARCHAR(100)"},
+        {"name": "vehicle_approved_on", "type": "VARCHAR(100)"},
+        {"name": "vehicle_approved_by", "type": "INT"},
+        {"name": "vehicle_approved_by_name", "type": "VARCHAR(100)"},
+        {"name": "unloaded_on", "type": "VARCHAR(100)"},
+        {"name": "unloaded_by", "type": "INT"},
+        {"name": "unloaded_by_name", "type": "VARCHAR(100)"},
+        {"name": "accepted_on", "type": "VARCHAR(100)"},
+        {"name": "accepted_by", "type": "INT"},
+        {"name": "accepted_by_name", "type": "VARCHAR(100)"},
+        {"name": "note", "type": "LONGTEXT"},
+        {"name": "sent_note", "type": "LONGTEXT"}
+      ]
+    },
+    {
+      "name": "detailed_fg_store_req_det",
+      "columns": [
+        {"name": "req_det_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "id", "type": "INT", "nullable": false},
+        {"name": "fg_store_req_id", "type": "INT", "nullable": false},
+        {"name": "product_id", "type": "INT", "nullable": false},
+        {"name": "product_code", "type": "VARCHAR(100)"},
+        {"name": "product_name", "type": "VARCHAR(155)"},
+        {"name": "category", "type": "INT"},
+        {"name": "product_cat_name", "type": "VARCHAR(255)"},
+        {"name": "root_category", "type": "VARCHAR(11)"},
+        {"name": "root_category_name", "type": "VARCHAR(255)"},
+        {"name": "item_vol", "type": "VARCHAR(100)"},
+        {"name": "item_sz", "type": "VARCHAR(100)"},
+        {"name": "ctn_qty", "type": "VARCHAR(10)"},
+        {"name": "pcs_qty", "type": "VARCHAR(100)"},
+        {"name": "adj_ctn_qty", "type": "INT"},
+        {"name": "adj_pcs_qty", "type": "INT"},
+        {"name": "rcv_ctn_qty", "type": "INT", "default": 0},
+        {"name": "rcv_pcs_qty", "type": "INT", "default": 0},
+        {"name": "status", "type": "INT", "default": 1},
+        {"name": "sell_ctn_qty", "type": "INT", "default": 0},
+        {"name": "sell_pcs_qty", "type": "INT", "default": 0}
+      ]
+    },
+    {
+      "name": "detailed_inv_details",
+      "columns": [
+        {"name": "rel_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "id", "type": "INT", "nullable": false},
+        {"name": "inv_id", "type": "INT", "nullable": false},
+        {"name": "product_id", "type": "INT", "nullable": false},
+        {"name": "code", "type": "VARCHAR(100)", "nullable": false},
+        {"name": "name", "type": "VARCHAR(255)", "nullable": false},
+        {"name": "category", "type": "INT", "nullable": false},
+        {"name": "product_cat_name", "type": "VARCHAR(255)", "nullable": false},
+        {"name": "root_category", "type": "INT", "nullable": false},
+        {"name": "root_category_name", "type": "VARCHAR(255)", "nullable": false},
+        {"name": "vol", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "ctnsz", "type": "INT", "nullable": false},
+        {"name": "price_type", "type": "ENUM", "values": ["MRP", "TP", "DP", "SP"], "nullable": false},
+        {"name": "ctn_price", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "pc_price", "type": "DECIMAL(16,2)", "default": "0.00"},
+        {"name": "pqty_in_ctn", "type": "INT", "nullable": false},
+        {"name": "pqty_in_pcs", "type": "INT", "default": 0},
+        {"name": "a_qty_ctn", "type": "INT", "default": 0},
+        {"name": "a_qty_pcs", "type": "INT", "nullable": false},
+        {"name": "compl_ctn", "type": "INT", "default": 0},
+        {"name": "compl_pcs", "type": "INT", "nullable": false},
+        {"name": "line_total", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "is_gift", "type": "INT", "default": 0},
+        {"name": "order_id", "type": "INT", "nullable": false},
+        {"name": "inserted_time", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "dlv_status", "type": "INT", "default": 1},
+        {"name": "is_active", "type": "INT", "default": 1}
+      ]
+    },
+    {
+      "name": "detailed_invoice",
+      "columns": [
+        {"name": "det_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "id", "type": "INT", "nullable": false},
+        {"name": "inv_date", "type": "DATE", "nullable": false},
+        {"name": "exp_delivery_date", "type": "DATE", "nullable": false},
+        {"name": "inv_number", "type": "VARCHAR(50)", "nullable": false},
+        {"name": "demand_id", "type": "VARCHAR(50)", "nullable": false},
+        {"name": "sales_ref_number", "type": "VARCHAR(50)", "nullable": false},
+        {"name": "challan_number", "type": "VARCHAR(50)", "nullable": false},
+        {"name": "grand_tot", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "discount", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "cash_com", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "dsr_com", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "total_payable", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "total_paid", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "created_by", "type": "INT", "nullable": false},
+        {"name": "created_on", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "is_active", "type": "INT", "default": 1},
+        {"name": "pay_status", "type": "ENUM", "values": ["Canceled", "Due", "Paid", "Settled"], "nullable": false},
+        {"name": "dlv_status", "type": "ENUM", "values": ["Delivered", "Partially Delivered", "Pending", "Cancelled", "Partially Cancelled"], "default": "Delivered"},
+        {"name": "route", "type": "INT", "default": 0},
+        {"name": "outlet", "type": "INT", "default": -1},
+        {"name": "notes", "type": "LONGTEXT", "nullable": false},
+        {"name": "inv_ref_no", "type": "VARCHAR(50)", "nullable": false},
+        {"name": "store_id", "type": "INT", "nullable": false},
+        {"name": "order_id", "type": "VARCHAR(50)", "nullable": false},
+        {"name": "order_number", "type": "VARCHAR(50)", "nullable": false},
+        {"name": "cancel_order", "type": "INT", "default": 0},
+        {"name": "req_id", "type": "INT", "default": 0},
+        {"name": "cancel_invoice", "type": "INT", "default": 0},
+        {"name": "region_id", "type": "INT"},
+        {"name": "region_name", "type": "VARCHAR(255)"},
+        {"name": "depot_id", "type": "INT"},
+        {"name": "depot_name", "type": "VARCHAR(255)"},
+        {"name": "area_id", "type": "INT"},
+        {"name": "area_name", "type": "VARCHAR(255)"},
+        {"name": "territory_id", "type": "INT"},
+        {"name": "territory_name", "type": "VARCHAR(255)"},
+        {"name": "distri_id", "type": "INT", "nullable": false},
+        {"name": "distri_name", "type": "VARCHAR(255)"},
+        {"name": "distri_code", "type": "VARCHAR(255)"},
+        {"name": "d_identity", "type": "VARCHAR(50)"},
+        {"name": "month", "type": "INT", "default": 0},
+        {"name": "additional_address", "type": "TEXT"},
+        {"name": "special_permission", "type": "TINYINT", "default": 0}
+      ]
+    },
+    {
+      "name": "detailed_order",
+      "columns": [
+        {"name": "rel_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "id", "type": "INT", "nullable": false},
+        {"name": "ord_date", "type": "DATE", "nullable": false},
+        {"name": "exp_delivery_date", "type": "VARCHAR(50)", "nullable": false},
+        {"name": "ord_number", "type": "VARCHAR(50)", "nullable": false},
+        {"name": "distri_id", "type": "INT", "nullable": false},
+        {"name": "distri_code", "type": "VARCHAR(50)", "nullable": false},
+        {"name": "distri_name", "type": "VARCHAR(255)", "nullable": false},
+        {"name": "d_identity", "type": "VARCHAR(50)", "nullable": false},
+        {"name": "grand_tot", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "discount", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "cash_com", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "dsr_com", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "total_payable", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "total_paid", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "created_by", "type": "INT", "nullable": false},
+        {"name": "created_on", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "is_active", "type": "INT", "default": 1},
+        {"name": "pay_status", "type": "ENUM", "values": ["Canceled", "Due", "Paid", "Settled"], "nullable": false},
+        {"name": "dlv_status", "type": "ENUM", "values": ["Delivered", "Partially Delivered", "Pending", "Cancelled", "Partially Cancelled"], "default": "Pending"},
+        {"name": "route", "type": "INT", "default": 0},
+        {"name": "outlet", "type": "INT", "default": -1},
+        {"name": "notes", "type": "LONGTEXT"},
+        {"name": "inv_ref", "type": "VARCHAR(50)"},
+        {"name": "req_id", "type": "INT", "nullable": false},
+        {"name": "region_id", "type": "VARCHAR(255)", "default": "0"},
+        {"name": "region_name", "type": "VARCHAR(255)"},
+        {"name": "depot_id", "type": "VARCHAR(255)", "default": "0"},
+        {"name": "depot_name", "type": "VARCHAR(255)"},
+        {"name": "area_id", "type": "INT", "default": 0},
+        {"name": "area_name", "type": "VARCHAR(255)"},
+        {"name": "territory_id", "type": "INT", "default": 0},
+        {"name": "territory_name", "type": "VARCHAR(255)"},
+        {"name": "month", "type": "INT", "default": 0},
+        {"name": "valid_till", "type": "DATE", "default": "0000-00-00"}
+      ]
+    },
+    {
+      "name": "detailed_order_details",
+      "columns": [
+        {"name": "rel_id", "type": "BIGINT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "id", "type": "INT", "default": 0},
+        {"name": "ord_id", "type": "INT", "nullable": false},
+        {"name": "product_id", "type": "INT", "nullable": false},
+        {"name": "code", "type": "VARCHAR(10)"},
+        {"name": "name", "type": "VARCHAR(100)"},
+        {"name": "category", "type": "INT"},
+        {"name": "product_cat_name", "type": "VARCHAR(30)"},
+        {"name": "root_category", "type": "INT"},
+        {"name": "root_category_name", "type": "VARCHAR(30)"},
+        {"name": "vol", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "ctnsz", "type": "INT", "nullable": false},
+        {"name": "price_type", "type": "ENUM", "values": ["MRP", "TP", "DP", "SP"], "nullable": false},
+        {"name": "ctn_price", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "pc_price", "type": "DECIMAL(16,2)", "default": "0.00"},
+        {"name": "pqty_in_ctn", "type": "INT", "nullable": false},
+        {"name": "pqty_in_pcs", "type": "INT", "default": 0},
+        {"name": "a_qty_ctn", "type": "INT", "default": 0},
+        {"name": "a_qty_pcs", "type": "INT", "nullable": false},
+        {"name": "compl_ctn", "type": "INT", "default": 0},
+        {"name": "compl_pcs", "type": "INT", "nullable": false},
+        {"name": "line_total", "type": "DECIMAL(16,2)", "nullable": false},
+        {"name": "is_gift", "type": "INT", "default": 0},
+        {"name": "is_active", "type": "INT", "default": 1},
+        {"name": "inv_id", "type": "INT", "default": 0},
+        {"name": "created_on", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "ofr_id", "type": "INT", "default": 0}
+      ]
+    },
+    {
+      "name": "distributors",
+      "columns": [
+        {"name": "distributor_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "name", "type": "VARCHAR(255)", "nullable": false},
+        {"name": "address", "type": "TEXT", "nullable": false},
+        {"name": "contact_phone", "type": "VARCHAR(50)"},
+        {"name": "contact_email", "type": "VARCHAR(255)"},
+        {"name": "registration_date", "type": "DATE", "nullable": false, "default": "curdate()"},
+        {"name": "is_active", "type": "TINYINT", "default": 1}
+      ]
+    },
+    {
+      "name": "gate_passes",
+      "columns": [
+        {"name": "gate_pass_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "load_plan_id", "type": "INT", "nullable": false, "foreign_key": {"table": "load_plans", "column": "load_plan_id"}},
+        {"name": "gate_pass_date", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "details", "type": "JSON"}
+      ]
+    },
+    {
+      "name": "inventory_transactions",
+      "columns": [
+        {"name": "tx_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "product_id", "type": "INT", "nullable": false, "foreign_key": {"table": "products", "column": "product_id"}},
+        {"name": "tx_date", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "tx_type", "type": "ENUM", "values": ["production_add", "sale_deduct", "return_add", "cancellation_add"], "nullable": false},
+        {"name": "quantity", "type": "INT", "nullable": false},
+        {"name": "reference_id", "type": "INT"},
+        {"name": "reference_type", "type": "VARCHAR(50)"},
+        {"name": "notes", "type": "TEXT"}
+      ]
+    },
+    {
+      "name": "invoice_items",
+      "columns": [
+        {"name": "invoice_item_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "invoice_id", "type": "INT", "nullable": false, "foreign_key": {"table": "invoices", "column": "invoice_id"}},
+        {"name": "product_id", "type": "INT", "nullable": false, "foreign_key": {"table": "products", "column": "product_id"}},
+        {"name": "quantity_invoiced", "type": "INT", "nullable": false},
+        {"name": "quantity_delivered", "type": "INT", "default": 0},
+        {"name": "price_per_unit", "type": "DECIMAL(10,2)", "nullable": false}
+      ]
+    },
+    {
+      "name": "invoices",
+      "columns": [
+        {"name": "invoice_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "order_id", "type": "INT", "nullable": false, "foreign_key": {"table": "orders", "column": "order_id"}},
+        {"name": "invoice_date", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "status", "type": "ENUM", "values": ["invoiced", "partial_delivered", "fully_delivered", "returned", "cancelled"], "nullable": false, "default": "invoiced"},
+        {"name": "total_amount", "type": "DECIMAL(10,2)", "nullable": false},
+        {"name": "delivered_amount", "type": "DECIMAL(10,2)", "default": "0.00"},
+        {"name": "notes", "type": "TEXT"}
+      ]
+    },
+    {
+      "name": "load_plan_items",
+      "columns": [
+        {"name": "load_plan_item_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "load_plan_id", "type": "INT", "nullable": false, "foreign_key": {"table": "load_plans", "column": "load_plan_id"}},
+        {"name": "invoice_id", "type": "INT", "nullable": false, "foreign_key": {"table": "invoices", "column": "invoice_id"}},
+        {"name": "status", "type": "VARCHAR(50)", "nullable": false, "default": "assigned"}
+      ]
+    },
+    {
+      "name": "load_plans",
+      "columns": [
+        {"name": "load_plan_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "vehicle_id", "type": "INT", "nullable": false, "foreign_key": {"table": "vehicles", "column": "vehicle_id"}},
+        {"name": "plan_date", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "status", "type": "VARCHAR(50)", "nullable": false, "default": "planned"}
+      ]
+    },
+    {
+      "name": "order_items",
+      "columns": [
+        {"name": "order_item_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "order_id", "type": "INT", "nullable": false, "foreign_key": {"table": "orders", "column": "order_id"}},
+        {"name": "product_id", "type": "INT", "nullable": false, "foreign_key": {"table": "products", "column": "product_id"}},
+        {"name": "quantity", "type": "INT", "nullable": false},
+        {"name": "price_per_unit", "type": "DECIMAL(10,2)", "nullable": false}
+      ]
+    },
+    {
+      "name": "orders",
+      "columns": [
+        {"name": "order_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "distributor_id", "type": "INT", "nullable": false, "foreign_key": {"table": "distributors", "column": "distributor_id"}},
+        {"name": "order_date", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "status", "type": "ENUM", "values": ["placed", "invoiced", "cancelled"], "nullable": false, "default": "placed"},
+        {"name": "total_amount", "type": "DECIMAL(10,2)", "nullable": false},
+        {"name": "notes", "type": "TEXT"}
+      ]
+    },
+    {
+      "name": "payments",
+      "columns": [
+        {"name": "payment_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "invoice_id", "type": "INT", "nullable": false, "foreign_key": {"table": "invoices", "column": "invoice_id"}},
+        {"name": "payment_date", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "amount", "type": "DECIMAL(10,2)", "nullable": false},
+        {"name": "method", "type": "ENUM", "values": ["cash", "cheque", "bank_deposit"], "nullable": false},
+        {"name": "cheque_number", "type": "VARCHAR(100)"},
+        {"name": "bank_deposit_ref", "type": "VARCHAR(100)"},
+        {"name": "notes", "type": "TEXT"}
+      ]
+    },
+    {
+      "name": "products",
+      "columns": [
+        {"name": "product_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "name", "type": "VARCHAR(255)", "nullable": false, "unique": true},
+        {"name": "description", "type": "TEXT"},
+        {"name": "unit_price", "type": "DECIMAL(10,2)", "nullable": false},
+        {"name": "current_stock", "type": "INT", "nullable": false, "default": 0},
+        {"name": "is_active", "type": "TINYINT", "default": 1}
+      ]
+    },
+    {
+      "name": "refunds",
+      "columns": [
+        {"name": "refund_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "invoice_id", "type": "INT", "nullable": false, "foreign_key": {"table": "invoices", "column": "invoice_id"}},
+        {"name": "refund_date", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "amount", "type": "DECIMAL(10,2)", "nullable": false},
+        {"name": "method", "type": "ENUM", "values": ["cash", "cheque", "bank_deposit", "credit_note"], "nullable": false},
+        {"name": "reason", "type": "TEXT"},
+        {"name": "status", "type": "ENUM", "values": ["pending", "issued", "processed"], "nullable": false, "default": "pending"},
+        {"name": "reference_id", "type": "INT"},
+        {"name": "reference_type", "type": "VARCHAR(50)"},
+        {"name": "notes", "type": "TEXT"}
+      ]
+    },
+    {
+      "name": "return_items",
+      "columns": [
+        {"name": "return_item_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "return_id", "type": "INT", "nullable": false, "foreign_key": {"table": "sales_returns", "column": "return_id"}},
+        {"name": "invoice_item_id", "type": "INT", "nullable": false, "foreign_key": {"table": "invoice_items", "column": "invoice_item_id"}},
+        {"name": "quantity_returned", "type": "INT", "nullable": false}
+      ]
+    },
+    {
+      "name": "sales_returns",
+      "columns": [
+        {"name": "return_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "invoice_id", "type": "INT", "nullable": false, "foreign_key": {"table": "invoices", "column": "invoice_id"}},
+        {"name": "return_date", "type": "TIMESTAMP", "nullable": false, "default": "CURRENT_TIMESTAMP"},
+        {"name": "reason", "type": "TEXT", "nullable": false},
+        {"name": "total_returned_amount", "type": "DECIMAL(10,2)", "nullable": false},
+        {"name": "status", "type": "ENUM", "values": ["pending", "processed"], "nullable": false, "default": "pending"},
+        {"name": "notes", "type": "TEXT"}
+      ]
+    },
+    {
+      "name": "vehicles",
+      "columns": [
+        {"name": "vehicle_id", "type": "INT", "primary_key": true, "nullable": false, "auto_increment": true},
+        {"name": "plate_number", "type": "VARCHAR(50)", "nullable": false, "unique": true},
+        {"name": "capacity", "type": "INT", "nullable": false},
+        {"name": "description", "type": "TEXT"},
+        {"name": "is_active", "type": "TINYINT", "default": 1}
+      ]
+    }
+  ]
+}

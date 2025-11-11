@@ -22,12 +22,19 @@ export default function Home() {
   const [language, setLanguage] = useState<Language>('en');
   const [activeSettingsTab, setActiveSettingsTab] = useState<SettingsTab>('model');
   const [showCopiedMessage, setShowCopiedMessage] = useState(false);
+  const [loraAvailable, setLoraAvailable] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatInputRef = useRef<ChatInputRef>(null);
   
   const { theme, toggleTheme, mounted } = useTheme();
-  const { isConnected } = useConnectionStatus();
+  const { isConnected, loraAvailable: loraStatus } = useConnectionStatus();
+  const mountedRef = useRef(true);
+
+  // Update loraAvailable when loraStatus changes
+  useEffect(() => {
+    setLoraAvailable(loraStatus);
+  }, [loraStatus]);
   const {
     conversations,
     currentConversationId,
@@ -77,6 +84,23 @@ export default function Home() {
       setInput(selectedQuery);
       localStorage.removeItem(STORAGE_KEYS.SELECTED_QUERY);
     }
+  }, []);
+
+  // Track component mount state and ensure any in-flight request is aborted on unmount
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      if (abortController) {
+        try {
+          abortedHandledRef.current = true;
+          abortController.abort();
+        } catch (e) {
+          // ignore
+        }
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Handle scroll effect for input area
@@ -165,6 +189,9 @@ export default function Home() {
         columns: data.columns || [],
         error: data.error,
         rowCount: data.row_count,
+        has_more: data.has_more,
+        exportToken: data.export_token,
+        previewCount: data.preview_count,
         timestamp: new Date()
       };
 
@@ -194,13 +221,49 @@ export default function Home() {
           error: 'Connection error',
           timestamp: new Date()
         };
-        if (convId) {
+        if (convId && mountedRef.current) {
           updateConversation(convId, [...messages, userMessage, errorMessage]);
         }
       }
     } finally {
-      setLoading(false);
-      setAbortController(null);
+      // Only update local component state if still mounted
+      if (mountedRef.current) {
+        setLoading(false);
+        setAbortController(null);
+      }
+    }
+  };
+
+  // Export full result as XLSX using export token returned by backend
+  const handleExport = async (token?: string) => {
+    if (!token) return;
+    try {
+      setLoading(true);
+      const res = await fetch(`${API_BASE_URL}/export`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        alert(`Export failed: ${err.error || res.statusText}`);
+        return;
+      }
+
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `export_${Date.now()}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (e: any) {
+      alert('Export failed: ' + (e.message || e));
+    } finally {
+      if (mountedRef.current) setLoading(false);
     }
   };
 
@@ -269,6 +332,9 @@ export default function Home() {
         columns: data.columns || [],
         error: data.error,
         rowCount: data.row_count,
+        has_more: data.has_more,
+        exportToken: data.export_token,
+        previewCount: data.preview_count,
         timestamp: new Date()
       };
 
@@ -283,7 +349,9 @@ export default function Home() {
       };
       updateConversation(currentConversationId, [...updatedMessages, errorMessage]);
     } finally {
-      setLoading(false);
+      if (mountedRef.current) {
+        setLoading(false);
+      }
     }
   };
 
@@ -351,7 +419,6 @@ export default function Home() {
       {/* Sidebar */}
       <Sidebar
         isOpen={sidebarOpen}
-        theme={theme}
         conversations={conversations}
         currentConversationId={currentConversationId}
         isConnected={isConnected}
@@ -370,6 +437,7 @@ export default function Home() {
         onThemeToggle={toggleTheme}
         onSettingsOpen={() => setSettingsOpen(true)}
         selectedModel={selectedModel}
+        loraAvailable={loraAvailable}
       />
 
       {/* Main Chat Area */}
@@ -408,6 +476,7 @@ export default function Home() {
                   onDislike={handleDislike}
                   onCopyCSV={copyAsCSV}
                   onRetry={retryMessage}
+                  onExport={handleExport}
                 />
               ))}
 
@@ -435,7 +504,6 @@ export default function Home() {
           ref={chatInputRef}
           input={input}
           loading={loading}
-          theme={theme}
           isScrolled={isScrolled}
           isRotating={isRotating}
           onInputChange={setInput}
@@ -464,9 +532,9 @@ export default function Home() {
                 <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Settings</h2>
                 <button
                   onClick={() => setSettingsOpen(false)}
-                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-red-500 hover:text-white transition-colors"
                 >
-                  <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -507,72 +575,68 @@ export default function Home() {
                   
                   <div className="grid grid-cols-2 gap-2">
                       <label
-                        className={`flex items-center p-2 border rounded-md transition-all duration-200 cursor-pointer ${selectedModel === 'llama3:8b' ? 'bg-green-200 dark:bg-green-900/50 border-green-400 dark:border-green-500' : 'bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-200 dark:hover:border-green-700'} hover:shadow-sm hover:shadow-green-900/10 dark:hover:shadow-lg dark:hover:shadow-black/20`}
-                    >
-                      <input
-                        type="radio"
-                        name="model"
-                        value="llama3:8b"
-                        checked={selectedModel === 'llama3:8b'}
-                        onChange={(e) => setSelectedModel(e.target.value)}
-                        className="w-4 h-4"
-                        style={{ accentColor: '#08834d' }}
-                      />
-                      <div className="ml-2">
-                        <div className="font-medium text-base text-gray-900 dark:text-white">Llama 3 8B</div>
-                      </div>
-                    </label>
+                        className={`group flex items-center p-2 border rounded-md transition-all duration-200 cursor-pointer ${selectedModel === 'llama3:8b' ? 'bg-[#08834d] dark:bg-[#08834d] border-[#08834d] text-white' : 'bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 hover:bg-[#08834d] dark:hover:bg-[#08834d] hover:shadow-md'}`}
+                      >
+                        <input
+                          type="radio"
+                          name="model"
+                          value="llama3:8b"
+                          checked={selectedModel === 'llama3:8b'}
+                          onChange={(e) => setSelectedModel(e.target.value)}
+                          className="w-4 h-4 accent-[#08834d] bg-transparent dark:bg-transparent border border-gray-300 dark:border-gray-600"
+                        />
+                        <div className="ml-2">
+                          <div className={`${selectedModel === 'llama3:8b' ? 'text-white font-medium' : 'text-gray-900 dark:text-white group-hover:text-white'} font-medium text-base`}>Llama 3 8B</div>
+                        </div>
+                      </label>
 
                       <label
-                        className={`flex items-center p-2 border rounded-md transition-all duration-200 cursor-pointer ${selectedModel === 'qwen2.5-coder' ? 'bg-green-200 dark:bg-green-900/50 border-green-400 dark:border-green-500' : 'bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-200 dark:hover:border-green-700'} hover:shadow-sm hover:shadow-green-900/10 dark:hover:shadow-lg dark:hover:shadow-black/20`}
-                    >
-                      <input
-                        type="radio"
-                        name="model"
-                        value="qwen2.5-coder"
-                        checked={selectedModel === 'qwen2.5-coder'}
-                        onChange={(e) => setSelectedModel(e.target.value)}
-                        className="w-4 h-4"
-                        style={{ accentColor: '#08834d' }}
-                      />
-                      <div className="ml-2">
-                        <div className="font-medium text-base text-gray-900 dark:text-white">Qwen 2.5 Coder</div>
-                      </div>
-                    </label>
+                        className={`group flex items-center p-2 border rounded-md transition-all duration-200 cursor-pointer ${selectedModel === 'qwen2.5-coder' ? 'bg-[#08834d] dark:bg-[#08834d] border-[#08834d] text-white' : 'bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 hover:bg-[#08834d] dark:hover:bg-[#08834d] hover:shadow-md'}`}
+                      >
+                        <input
+                          type="radio"
+                          name="model"
+                          value="qwen2.5-coder"
+                          checked={selectedModel === 'qwen2.5-coder'}
+                          onChange={(e) => setSelectedModel(e.target.value)}
+                          className="w-4 h-4 accent-[#08834d] bg-transparent dark:bg-transparent border border-gray-300 dark:border-gray-600"
+                        />
+                        <div className="ml-2">
+                          <div className={`${selectedModel === 'qwen2.5-coder' ? 'text-white font-medium' : 'text-gray-900 dark:text-white group-hover:text-white'} font-medium text-base`}>Qwen 2.5 Coder</div>
+                        </div>
+                      </label>
 
                       <label
-                        className={`flex items-center p-2 border rounded-md transition-all duration-200 cursor-pointer ${selectedModel === 'sqlcoder:7b' ? 'bg-green-200 dark:bg-green-900/50 border-green-400 dark:border-green-500' : 'bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-200 dark:hover:border-green-700'} hover:shadow-sm hover:shadow-green-900/10 dark:hover:shadow-lg dark:hover:shadow-black/20`}
-                    >
-                      <input
-                        type="radio"
-                        name="model"
-                        value="sqlcoder:7b"
-                        checked={selectedModel === 'sqlcoder:7b'}
-                        onChange={(e) => setSelectedModel(e.target.value)}
-                        className="w-4 h-4"
-                        style={{ accentColor: '#08834d' }}
-                      />
-                      <div className="ml-2">
-                        <div className="font-medium text-base text-gray-900 dark:text-white">SQLCoder 7B</div>
-                      </div>
-                    </label>
+                        className={`group flex items-center p-2 border rounded-md transition-all duration-200 cursor-pointer ${selectedModel === 'sqlcoder:7b' ? 'bg-[#08834d] dark:bg-[#08834d] border-[#08834d] text-white' : 'bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 hover:bg-[#08834d] dark:hover:bg-[#08834d] hover:shadow-md'}`}
+                      >
+                        <input
+                          type="radio"
+                          name="model"
+                          value="sqlcoder:7b"
+                          checked={selectedModel === 'sqlcoder:7b'}
+                          onChange={(e) => setSelectedModel(e.target.value)}
+                          className="w-4 h-4 accent-[#08834d] bg-transparent dark:bg-transparent border border-gray-300 dark:border-gray-600"
+                        />
+                        <div className="ml-2">
+                          <div className={`${selectedModel === 'sqlcoder:7b' ? 'text-white font-medium' : 'text-gray-900 dark:text-white group-hover:text-white'} font-medium text-base`}>SQLCoder 7B</div>
+                        </div>
+                      </label>
 
                       <label
-                        className={`flex items-center p-2 border rounded-md transition-all duration-200 cursor-pointer ${selectedModel === 'deepseek-coder:6.7b' ? 'bg-green-200 dark:bg-green-900/50 border-green-400 dark:border-green-500' : 'bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-200 dark:hover:border-green-700'} hover:shadow-sm hover:shadow-green-900/10 dark:hover:shadow-lg dark:hover:shadow-black/20`}
-                    >
-                      <input
-                        type="radio"
-                        name="model"
-                        value="deepseek-coder:6.7b"
-                        checked={selectedModel === 'deepseek-coder:6.7b'}
-                        onChange={(e) => setSelectedModel(e.target.value)}
-                        className="w-4 h-4"
-                        style={{ accentColor: '#08834d' }}
-                      />
-                      <div className="ml-2">
-                        <div className="font-medium text-base text-gray-900 dark:text-white">DeepSeek Coder 6.7B</div>
-                      </div>
-                    </label>
+                        className={`group flex items-center p-2 border rounded-md transition-all duration-200 cursor-pointer ${selectedModel === 'deepseek-coder:6.7b' ? 'bg-[#08834d] dark:bg-[#08834d] border-[#08834d] text-white' : 'bg-white/50 dark:bg-gray-800/50 border-gray-200/50 dark:border-gray-700/50 hover:bg-[#08834d] dark:hover:bg-[#08834d] hover:shadow-md'}`}
+                      >
+                        <input
+                          type="radio"
+                          name="model"
+                          value="deepseek-coder:6.7b"
+                          checked={selectedModel === 'deepseek-coder:6.7b'}
+                          onChange={(e) => setSelectedModel(e.target.value)}
+                          className="w-4 h-4 accent-[#08834d] bg-transparent dark:bg-transparent border border-gray-300 dark:border-gray-600"
+                        />
+                        <div className="ml-2">
+                          <div className={`${selectedModel === 'deepseek-coder:6.7b' ? 'text-white font-medium' : 'text-gray-900 dark:text-white group-hover:text-white'} font-medium text-base`}>DeepSeek Coder 6.7B</div>
+                        </div>
+                      </label>
                   </div>
 
                   <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
@@ -608,10 +672,10 @@ export default function Home() {
               )}
             </div>
 
-            <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-6 flex justify-end gap-3">
+              <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-6 flex justify-end gap-3">
               <button
                 onClick={() => setSettingsOpen(false)}
-                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-red-500 hover:text-white rounded-lg transition-colors"
               >
                 {t('close')}
               </button>

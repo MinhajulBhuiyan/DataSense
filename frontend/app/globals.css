@@ -2,19 +2,83 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --primary-green: #08834d;
+@layer base {
+  :root {
+    --font-sans: var(--font-geist-sans);
+    --font-mono: var(--font-geist-mono);
+    
+    /* shadcn/ui theme variables - Light mode */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 9%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 9%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 9%;
+    
+    --primary: 220 13% 18%; /* #202938 - Your brand dark blue */
+    --primary-foreground: 0 0% 100%;
+    /* Sidebar background for light mode */
+    --sidebar-bg: #e7f7e9;
+    
+    --secondary: 220 20% 93%; /* Light variant */
+    --secondary-foreground: 0 0% 9%;
+    
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+    
+    --accent: 220 13% 22%; /* Accent variant */
+    --accent-foreground: 0 0% 9%;
+    
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 0 0% 83%;
+    --input: 0 0% 83%;
+    --ring: 220 13% 18%;
+    
+    --radius: 0.5rem;
+  }
+  
+  .dark {
+    /* shadcn/ui theme variables - Dark mode */
+    --background: 0 0% 9%;
+    --foreground: 0 0% 98%;
+    
+    --card: 0 0% 13%;
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 0 0% 13%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 220 13% 18%; /* #202938 - Your brand dark blue */
+    --primary-foreground: 0 0% 100%;
+    /* Sidebar background for dark mode */
+    --sidebar-bg: #202938;
+    
+    --secondary: 0 0% 22%;
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 0 0% 22%;
+    --muted-foreground: 0 0% 63%;
+    
+    --accent: 0 0% 22%;
+    --accent-foreground: 0 0% 98%;
+    
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 0 0% 27%;
+    --input: 0 0% 27%;
+    --ring: 220 13% 18%;
+  }
 }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-/* Custom focus ring color */
-.focus\:ring-primary:focus {
-  --tw-ring-color: #08834d;
+@layer base {
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+  }
 }
 
 /* Custom Scrollbar Styles */
@@ -72,3 +136,5 @@ body {
 .animate-fade-in {
   animation: fade-in 0.2s ease-out;
 }
+
+/* Sidebar background helper - removed as we use inline styles with CSS variables */

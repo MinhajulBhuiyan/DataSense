@@ -1,48 +1,30 @@
-import { useState, useEffect } from 'react';
+import { useTheme as useNextTheme } from 'next-themes';
+import { useEffect, useState } from 'react';
 import { Theme } from '@/types';
-import { STORAGE_KEYS } from '@/utils/constants';
 
 /**
- * Custom hook for managing theme state with localStorage persistence
+ * Custom hook for managing theme state with next-themes
+ * Wraps next-themes to maintain backward compatibility with existing code
  */
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>('light');
+  const { theme: nextTheme, setTheme: setNextTheme, systemTheme } = useNextTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    
-    // Initialize theme from localStorage or system preference
-    const savedTheme = window.localStorage.getItem(STORAGE_KEYS.THEME) as Theme | null;
-    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const initialTheme = savedTheme || (systemPrefersDark ? 'dark' : 'light');
-    
-    setTheme(initialTheme);
-    
-    // Apply theme immediately
-    if (initialTheme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
   }, []);
 
-  // Apply theme changes when theme state changes (after mount)
-  useEffect(() => {
-    if (!mounted) return;
-
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    
-    window.localStorage.setItem(STORAGE_KEYS.THEME, theme);
-  }, [theme, mounted]);
+  // Determine the actual theme being used
+  const resolvedTheme = (nextTheme === 'system' ? systemTheme : nextTheme) as Theme;
 
   const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+    setNextTheme(resolvedTheme === 'light' ? 'dark' : 'light');
   };
 
-  return { theme, toggleTheme, mounted };
+  return { 
+    theme: resolvedTheme || 'light',
+    toggleTheme, 
+    mounted 
+  };
 }
+

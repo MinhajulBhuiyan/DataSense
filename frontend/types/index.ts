@@ -11,6 +11,9 @@ export interface Message {
   columns?: string[];
   error?: string;
   rowCount?: number;
+  has_more?: boolean;
+  exportToken?: string;
+  previewCount?: number;
   timestamp: Date;
   liked?: boolean;
   disliked?: boolean;

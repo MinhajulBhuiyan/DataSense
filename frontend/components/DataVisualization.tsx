@@ -347,9 +347,9 @@ export function DataVisualization({ message }: DataVisualizationProps) {
               </div>
               <button
                 onClick={() => setShowModal(false)}
-                className="p-1.5 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                className="p-1.5 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-red-500 hover:text-white transition-colors"
               >
-                <svg className="w-5 h-5 text-gray-400 dark:text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -366,23 +366,23 @@ export function DataVisualization({ message }: DataVisualizationProps) {
                       <button
                         key={suggestion.type}
                         onClick={() => setSelectedChart(suggestion.type)}
-                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all ${
+                        className={`group flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-all shadow-sm ${
                           selectedChart === suggestion.type
-                            ? 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800'
-                            : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800/50'
+                            ? 'bg-[#08834d] border-[#08834d] text-white'
+                            : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:bg-[#08834d] dark:hover:bg-[#08834d] hover:text-white hover:shadow-md'
                         }`}
                       >
-                        <IconComponent 
+                        <IconComponent
                           className={`w-4 h-4 ${
                             selectedChart === suggestion.type
-                              ? 'text-gray-600 dark:text-gray-300'
-                              : 'text-gray-400 dark:text-gray-500'
+                              ? 'text-white'
+                              : 'text-gray-400 dark:text-gray-500 group-hover:text-white'
                           }`}
                         />
                         <span className={`text-sm ${
                           selectedChart === suggestion.type
-                            ? 'text-gray-700 dark:text-gray-300 font-medium'
-                            : 'text-gray-600 dark:text-gray-400'
+                            ? 'text-white font-medium'
+                            : 'text-gray-600 dark:text-gray-400 group-hover:text-white'
                         }`}>
                           {suggestion.label}
                         </span>
@@ -410,13 +410,14 @@ export function DataVisualization({ message }: DataVisualizationProps) {
               <div className="flex gap-2">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors border border-gray-200 dark:border-gray-700"
+                  className="px-3 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-800 hover:bg-red-500 hover:text-white rounded-lg transition-colors border border-gray-200 dark:border-gray-700"
                 >
                   Close
                 </button>
                 <button
                   onClick={handleDownload}
-                  className="px-4 py-1.5 text-sm font-medium text-gray-600 dark:text-gray-300 rounded-lg transition-colors bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 flex items-center gap-1.5 border border-gray-200 dark:border-gray-700"
+                  className="px-4 py-1.5 text-sm font-medium text-white rounded-lg transition-colors flex items-center gap-1.5 border"
+                  style={{ backgroundColor: '#08834d', borderColor: '#08834d' }}
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

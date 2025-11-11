@@ -2,91 +2,39 @@
   DATASENSE - Natural Language to SQL with Web Interface
 ====================================================================
 
-QUICK START GUIDE
-================
+QUICK START
+===========
 
-STEP 1: Start the Backend API Server
--------------------------------------
+STEP 1: Backend (nl2sql folder)
+--------------------------------
+cd nl2sql
+python -m venv venv
+.\venv\Scripts\activate
+pip install -r requirements.txt
+python app.py
+→ Wait for: "API will be available at: http://localhost:5001"
 
-1. Open PowerShell/Command Prompt
+STEP 2: Frontend (frontend folder) - NEW TERMINAL
+-------------------------------------------------
+cd frontend
+npm install
+npm run dev
+→ Open: http://localhost:3000
 
-2. Navigate to backend directory:
-   cd C:\Users\Legion\Desktop\Internship\datasense\nl2sql
-
-3. Create a virtual environment (if not already created)
-   python -m venv venv
-   C:\Python314\python.exe -m venv venv
-
-4. Activate virtual environment:
-   .\venv\Scripts\activate
-   pip install -r requirements.txt
-
-5. Run the API server:
-   python app.py
-
-6. Wait for this message:
-   "🚀 Starting Flask API server..."
-   "📡 API will be available at: http://localhost:5001"
-
-7. Keep this terminal window open!
-
-
-STEP 2: Start the Frontend
----------------------------
-
-1. Open a NEW PowerShell/Command Prompt window
-
-2. Navigate to frontend directory:
-   cd C:\Users\Legion\Desktop\Internship\datasense\frontend
-
-3. Start the development server:
-   npm run dev
-
-4. Wait for this message:
-   "Local: http://localhost:3000"
-
-
-STEP 3: Open the Application
------------------------------
-
-1. Open your web browser (Chrome/Edge/Firefox)
-
-2. Go to: http://localhost:3000
-
-3. Start asking questions in natural language!
-
-   Example questions:
-   - Show all distributors
-   - List all products
-   - Calculate total revenue
-   - Show recent orders
-
-
-TROUBLESHOOTING
-===============
-
-Problem: "Port already in use"
-Solution: Kill the process using that port or change the port number
-
-Problem: "Cannot connect to database"
-Solution: Check .env file in nl2sql folder has correct credentials
-
-Problem: "Frontend can't connect to backend"
-Solution: Make sure backend is running at http://localhost:5001
-
-Problem: "Module not found"
-Solution: Run "pip install -r requirements.txt" in backend
-         Or "npm install" in frontend
+STEP 3: Train Model (OPTIONAL)
+-------------------------------
+cd nl2sql/training
+.\RUN_ME.ps1
+→ Creates fine-tuned model in ~2 minutes
+→ Restart backend to use it
 
 
 NOTES
 =====
-
-- Backend runs on port 5001
-- Frontend runs on port 3000
-- Both must be running simultaneously
-- Do NOT close the terminal windows while using the app
-- To stop: Press Ctrl+C in each terminal window
+- Backend: port 5001
+- Frontend: port 3000
+- Both must run together
+- Check .env for database config
 
 
 ====================================================================

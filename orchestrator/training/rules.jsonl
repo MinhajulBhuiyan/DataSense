@@ -1,0 +1,59 @@
+{"id": 1, "rule": "Canonical transactional tables are immutable; adjustments are recorded separately.", "explanation": "Do not update historical invoice or payment rows — record returns, refunds, or adjustment rows instead."}
+
+{"id": 2, "rule": "Use `orders` and `order_items` for canonical order data.", "explanation": "Denormalized `detailed_order*` tables are for reporting only."}
+
+{"id": 3, "rule": "Use `invoices` and `invoice_items` as canonical invoice data.", "explanation": "Denormalized `detailed_invoice*` mirrors invoice fields for analytics but not for primary transactional writes."}
+
+{"id": 4, "rule": "Inventory changes are recorded in `inventory_transactions`.", "explanation": "Stock updates should be appended as tx rows (production_add, sale_deduct, return_add, cancellation_add) and triggers adjust `products.current_stock`."}
+
+{"id": 5, "rule": "Quantities must be positive where applicable.", "explanation": "Order and invoice line quantity columns have CHECK constraints; negative quantities indicate data modeling errors."}
+
+{"id": 6, "rule": "Prices and amounts must be non-negative.", "explanation": "Unit prices, totals, and payment amounts use CHECK constraints to prevent negative values."}
+
+{"id": 7, "rule": "Unique product names enforced.", "explanation": "`products.name` is unique to avoid ambiguity in queries and reporting."}
+
+{"id": 8, "rule": "Invoice items should match an invoice's associated order where applicable.", "explanation": "Where invoices are derived from orders, invoice_items.product_id should reference products present in the original order_items unless business allows free-form invoicing."}
+
+{"id": 9, "rule": "Returns reference the original invoice.", "explanation": "`sales_returns.invoice_id` must point to the original `invoices.invoice_id` so returns are auditable and tied to original revenue."}
+
+{"id": 10, "rule": "Refunds reference invoices and have a method and status.", "explanation": "`refunds.invoice_id` links to invoice; record method (cash/card/bank) and track status for reconciliation."}
+
+{"id": 11, "rule": "Cancellations store reference type and id.", "explanation": "`cancellations.reference_type` indicates whether the cancellation applies to an order or invoice; keep an audit trail instead of deleting rows."}
+
+{"id": 12, "rule": "Load plans tie vehicles to sets of invoices.", "explanation": "Use `load_plan_items` to attach invoice IDs to load plans; vehicles are referenced via `vehicle_id`."}
+
+{"id": 13, "rule": "Challans and gate passes are delivery artifacts, not financial records.", "explanation": "They contain timestamps and driver/vehicle info; do not use them to change invoice totals."}
+
+{"id": 14, "rule": "Denormalized tables mirror fields but do not replace canonical records.", "explanation": "When reconciling, always compare to `orders`, `invoices`, or `inventory_transactions` as ground truth."}
+
+{"id": 15, "rule": "Payments apply to invoices and can be partial or multiple.", "explanation": "Allow multiple payment rows per invoice; compute invoice balance by summing payments minus refunds."}
+
+{"id": 16, "rule": "Do not perform destructive schema changes without migration scripts.", "explanation": "Additive migrations preferred; preserve historical rows and use new columns/tables for changed requirements."}
+
+{"id": 17, "rule": "Enforce FK integrity for analytics and OLTP queries.", "explanation": "Foreign keys exist between orders->distributors, invoice->order, items->products to prevent orphan rows."}
+
+{"id": 18, "rule": "Date-range queries should use timezone-naive stored timestamps (server local) consistently.", "explanation": "Follow the existing DB convention (timestamps in SQL dump). Note timezone handling at app layer if necessary."}
+
+{"id": 19, "rule": "Aggregate revenue using invoices + invoice_items - returns - refunds.", "explanation": "Net revenue = sum(invoice_items.price*quantity) - sum(returned_amounts) - sum(refunds)."}
+
+{"id": 20, "rule": "Stock reconciliation uses `inventory_transactions` not `products.current_stock` alone.", "explanation": "To rebuild stock, sum inventory_transactions per product; `products.current_stock` is a cached value."}
+
+{"id": 21, "rule": "When generating NL→SQL examples include realistic sample values.", "explanation": "Use values from `Insert-datasense.sql` for distributor names, product names, dates and regions to improve model fidelity."}
+
+{"id": 22, "rule": "Disallow DDL and destructive DML in automated execution without explicit sandbox flag.", "explanation": "Static validator should block DROP/TRUNCATE/ALTER and DELETE/UPDATE without WHERE in automated runs."}
+
+{"id": 23, "rule": "Prefer explicit column lists in INSERT/SELECT for evolving schemas.", "explanation": "Avoid SELECT * in generated queries to remain robust to schema changes and for predictable column order."}
+
+{"id": 24, "rule": "Use joins when combining invoice metadata with line items.", "explanation": "Typical pattern: join `invoices`->`invoice_items`->`products`->`distributors` for detailed reports."}
+
+{"id": 25, "rule": "Include grouping and date-range filters for monthly KPIs.", "explanation": "Common queries: monthly revenue per region, total returns percent, vehicle utilization per day."}
+
+{"id": 26, "rule": "Validate table and column names against `database_schema.json` before execution.", "explanation": "Static check to prevent typos and reference to non-existing fields."}
+
+{"id": 27, "rule": "When computing delivered vs invoiced quantities, use `invoice_items.quantity_invoiced` and `invoice_items.quantity_delivered` fields.", "explanation": "Delivered may be less or equal to invoiced depending on partial deliveries; calculations should respect both columns."}
+
+{"id": 28, "rule": "Mark soft-deletes by `is_active` flag where used, do not physically delete.", "explanation": "Master tables (products, vehicles, distributors) use `is_active` to keep history."}
+
+{"id": 29, "rule": "Use transactional semantics for write flows that touch multiple tables.", "explanation": "Order-to-invoice-to-inventory flows should be in a DB transaction to maintain consistency."}
+
+{"id": 30, "rule": "For RAG/context retrieval prefer chunk sizes of ~150-400 tokens and include headers (table names, PKs) in each chunk.", "explanation": "This improves retrieval precision and makes prompts clear to the model."}

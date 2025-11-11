@@ -1,0 +1,39 @@
+{"id": 1, "title": "overview", "text": "Datasense is a MySQL-based schema for an ice-cream manufacturing and distribution business. It models distributors, products, orders, invoices, deliveries, returns, cancellations, payments, refunds, inventory transactions, vehicles and load-planning documents. The schema emphasizes immutability: original financial records are not mutated; adjustments are recorded separately (returns, refunds)."}
+
+{"id": 2, "title": "database_name_and_features", "text": "Database: `datasense`. Key features: normalized design, auditability, ENUM and CHECK constraints, foreign keys, triggers that maintain stock (inventory_transactions update products.current_stock). Use the SQL dump in `create-datasense.sql` as canonical source."}
+
+{"id": 3, "title": "distributors_table", "text": "Table `distributors`: stores distributor master data (distributor_id PK, name, address, contact_phone, contact_email, registration_date, is_active). Referenced by `orders` and denormalized invoice/order tables."}
+
+{"id": 4, "title": "products_table", "text": "Table `products`: stores products (product_id PK, name unique, description, unit_price > 0, current_stock >= 0, is_active). Referenced by order_items, invoice_items, inventory_transactions and many denormalized detail tables."}
+
+{"id": 5, "title": "orders_and_order_items", "text": "`orders` and `order_items` model sales orders: orders(order_id PK, distributor_id FK, order_date, status enum, total_amount) and order_items(order_item_id PK, order_id FK, product_id FK, quantity >0, price_per_unit>0). Orders reference distributors; order_items reference products."}
+
+{"id": 6, "title": "invoices_and_invoice_items", "text": "`invoices` and `invoice_items` represent invoicing: invoices(invoice_id PK, order_id FK, invoice_date, status enum, total_amount, delivered_amount) and invoice_items(invoice_item_id PK, invoice_id FK, product_id FK, quantity_invoiced>0, quantity_delivered>=0, price_per_unit>0). Invoice items have a unique index (invoice_id, product_id)."}
+
+{"id": 7, "title": "detailed_invoice_and_details", "text": "Denormalized tables `detailed_invoice` and `detailed_inv_details` store richer invoice/order metadata and line-level denormalized fields that mirror operational data (route, region, depot, pay_status, dlv_status, various totals and flags). Use them for analytics or examples but canonical transactional data are `invoices` and `invoice_items`."}
+
+{"id": 8, "title": "returns_and_refunds", "text": "Returns are tracked in `sales_returns` and `return_items` (return_id PK, invoice_id FK, return_date, reason, total_returned_amount >0; return_items link to invoice_items). Financial adjustments use `refunds` (refunds.refund_id PK, invoice_id FK, amount>0, method enum, status)."}
+
+{"id": 9, "title": "cancellations", "text": "`cancellations` records cancellations of orders or invoices (cancellation_id PK, reference_id, reference_type enum('order'|'invoice'), cancellation_date, reason). This table captures cancellation audit trails rather than mutating originals."}
+
+{"id": 10, "title": "inventory_transactions", "text": "`inventory_transactions` is the stock audit log (tx_id PK, product_id FK, tx_date, tx_type enum('production_add','sale_deduct','return_add','cancellation_add'), quantity != 0). Triggers typically adjust `products.current_stock` on insert. Keep audit entries immutable."}
+
+{"id": 11, "title": "load_plans_and_items", "text": "Delivery planning uses `load_plans` (load_plan_id PK, vehicle_id FK, plan_date, status) and `load_plan_items` (associate invoices to load plans). Load plans are linked to vehicles and create lists for challans/gate passes."}
+
+{"id": 12, "title": "challans_and_gate_passes", "text": "Operational documents: `challans` and `gate_passes` (both reference `load_plans`) store JSON details and timestamps for physical deliveries, driver info, and gate control. These are for delivery tracking, not core financials."}
+
+{"id": 13, "title": "vehicles", "text": "`vehicles` holds vehicle fleet data (vehicle_id PK, plate_number unique, capacity>0, description, is_active). Vehicles are referenced by load_plans and FG store requests where applicable."}
+
+{"id": 14, "title": "detailed_fg_store_requests", "text": "`detailed_fg_store_req` and `detailed_fg_store_req_det` are operational tables for store/warehouse transfer requests and their line items. They contain extensive metadata (regions, depots, requested_by, approval timestamps, multiple status flags) and product quantity fields for receiving/adjustments."}
+
+{"id": 15, "title": "denormalized_order_tables", "text": "`detailed_order` and `detailed_order_details` are denormalized order headers and lines (mirror key fields from orders/order_items with extra region/route/discount and pricing breakdowns). Use canonical `orders` and `order_items` for transactional logic; denormalized tables are useful for analytics and examples."}
+
+{"id": 16, "title": "payments_and_financials", "text": "Financial flows: `payments` (payment_id PK, invoice_id FK, amount>0, method enum, cheque/bank refs) records incoming payments. Combine invoices, sales_returns and refunds to compute net revenue. Always treat finances as immutable records with separate adjustment entries."}
+
+{"id": 17, "title": "constraints_and_indexes", "text": "Many tables include CHECK constraints (amounts/prices non-negative, quantities positive) and indexes on foreign keys for performance. Unique constraints exist for product names and some composite keys (invoice_id+product_id, order_id+product_id)."}
+
+{"id": 18, "title": "naming_conventions_and_usage", "text": "Canonical transactional tables: `orders`, `order_items`, `invoices`, `invoice_items`, `inventory_transactions`, `payments`, `refunds`, `sales_returns`, `return_items`. Denormalized helpers: `detailed_*` tables, `challans`, `gate_passes`, `load_plans` and `load_plan_items`. Use canonical tables for CRUD and denormalized for reporting."}
+
+{"id": 19, "title": "examples_and_training_guidance", "text": "When generating training examples, prefer realistic values from `Insert-datasense.sql`. Include joins between `orders`->`invoices`->`invoice_items`, aggregations over invoices or inventory, and date-range filters for monthly reports. Always show schema names exactly as in JSON schema."}
+
+{"id": 20, "title": "safety_and_execution_guidelines", "text": "Never run generated SQL against production without sandbox validation. Add static checks to disallow DDL or destructive DML (DROP, TRUNCATE, DELETE without WHERE). Validate table/column names against `database_schema.json` before execution."}
