@@ -5,9 +5,9 @@
 QUICK START
 ===========
 
-STEP 1: Backend (nl2sql folder)
---------------------------------
-cd nl2sql
+STEP 1: Backend (orchestrator folder)
+------------------------------------
+cd orchestrator
 python -m venv venv
 .\venv\Scripts\activate
 pip install -r requirements.txt
@@ -23,7 +23,7 @@ npm run dev
 
 STEP 3: Train Model (OPTIONAL)
 -------------------------------
-cd nl2sql/training
+cd orchestrator/training
 .\RUN_ME.ps1
 → Creates fine-tuned model in ~2 minutes
 → Restart backend to use it
