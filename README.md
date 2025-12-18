@@ -1,6 +1,6 @@
 ﻿# DataSense - Natural Language to SQL
 
-A Natural Language to SQL system with a modern web interface for the DataSense ice cream distribution database.
+A Natural Language to SQL system with a modern web interface for the Savoy Ice Cream Factory Ltd. database.
 
 ## Features
 
