@@ -90,7 +90,4 @@ Key tech (concise):
 If you want exact pinned versions, I can append a developer subsection listing dependencies from `frontend/package.json` and `orchestrator/requirements.txt`.
 
 ---
-
-*Made by Minhajul and Mahin*
-
 *Made by [Minhajul](https://minhajul-bhuiyan.vercel.app/) and [Mahin](https://portfolio-vert-six-31.vercel.app/)*
