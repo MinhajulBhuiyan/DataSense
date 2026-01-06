@@ -1,0 +1,1546 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{anyfontsize}
+\usepackage{sectsty}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[most]{tcolorbox}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{pifont}
+
+% Define custom colors
+\definecolor{datasensegreen}{HTML}{08834d}
+\definecolor{headerbg}{HTML}{08834d}
+\definecolor{lightgreen}{HTML}{e8f5e9}
+\definecolor{lightgray}{HTML}{f5f5f5}
+\definecolor{sectionbg}{HTML}{fff8e1}
+\definecolor{tablebg}{HTML}{f9f9f9}
+
+\geometry{left=0.75in, right=0.75in, top=0.9in, bottom=0.9in, headheight=28pt}
+
+% Code listing settings
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10},
+    keywordstyle=\color{datasensegreen},
+    commentstyle=\color{green!60!black},
+    stringstyle=\color{red},
+    showstringspaces=false,
+    frameround=tttt,
+    rulecolor=\color{datasensegreen!50}
+}
+
+% Enhanced table styling
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\arrayrulecolor{datasensegreen!50}
+
+% Header and footer
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{white}{\textbf{DataSense}}}
+\fancyhead[R]{\textcolor{white}{\textit{Technical Report}}}
+\fancyfoot[C]{\textcolor{gray}{\thepage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyfoot[R]{\textcolor{gray}{\small January 2026}}
+
+% Colored header background
+\usepackage{eso-pic}
+\AddToShipoutPictureBG{%
+  \AtPageUpperLeft{%
+    \ifnum\value{page}>2
+      \color{headerbg}\rule{\paperwidth}{28pt}
+    \fi
+  }
+}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=datasensegreen,
+    filecolor=magenta,
+    urlcolor=datasensegreen,
+}
+
+% Section styling
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{datasensegreen}}
+  {\thesection}{1em}{}
+  [\color{datasensegreen}\titlerule]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{datasensegreen!80}}
+  {\thesubsection}{1em}{}
+
+% Custom colored box for key sections
+\newtcolorbox{keybox}[1][]{
+  colback=sectionbg,
+  colframe=datasensegreen!50,
+  fonttitle=\bfseries,
+  title=#1,
+  boxrule=0.5pt,
+  arc=2mm
+}
+
+\newtcolorbox{infobox}[1][]{
+  colback=lightgreen,
+  colframe=datasensegreen,
+  fonttitle=\bfseries,
+  title=#1,
+  boxrule=0.5pt,
+  arc=2mm,
+  left=5pt,
+  right=5pt,
+  top=5pt,
+  bottom=5pt
+}
+
+% Checkmark and cross symbols
+\newcommand{\cmark}{\textcolor{datasensegreen}{\ding{51}}}
+\newcommand{\xmark}{\textcolor{red}{\ding{55}}}
+
+\title{\textbf{DataSense: Natural Language to SQL Query Interface}\\
+\large{A Comprehensive Technical Report}}
+\author{Minhajul Bhuiyan \and Mahin Ahmed}
+\date{January 6, 2026}
+
+\begin{document}
+
+% Custom TikZ Cover Page
+\pagestyle{empty}
+
+\begin{tikzpicture}[overlay,remember picture]
+
+% Background color
+\fill[black!2] (current page.south west) rectangle (current page.north east);
+
+% Decorative rectangles with gradients
+\shade[
+left color=Emerald, 
+right color=Emerald!40,
+transform canvas ={rotate around ={45:($(current page.north west)+(0,-6)$)}}] 
+($(current page.north west)+(0,-6)$) rectangle ++(9,1.5);
+
+\shade[
+left color=lightgray,
+right color=lightgray!50,
+rounded corners=0.75cm,
+transform canvas ={rotate around ={45:($(current page.north west)+(.5,-10)$)}}]
+($(current page.north west)+(0.5,-10)$) rectangle ++(15,1.5);
+
+\shade[
+left color=lightgray,
+rounded corners=0.3cm,
+transform canvas ={rotate around ={45:($(current page.north west)+(.5,-10)$)}}] 
+($(current page.north west)+(1.5,-9.55)$) rectangle ++(7,.6);
+
+\shade[
+left color=Green!70,
+right color=Green!50,
+rounded corners=0.4cm,
+transform canvas ={rotate around ={45:($(current page.north)+(-1.5,-3)$)}}]
+($(current page.north)+(-1.5,-3)$) rectangle ++(9,0.8);
+
+\shade[
+left color=ForestGreen!80,
+right color=ForestGreen!60,
+rounded corners=0.9cm,
+transform canvas ={rotate around ={45:($(current page.north)+(-3,-8)$)}}] 
+($(current page.north)+(-3,-8)$) rectangle ++(15,1.8);
+
+\shade[
+left color=Green,
+right color=Emerald,
+rounded corners=0.9cm,
+transform canvas ={rotate around ={45:($(current page.north west)+(4,-15.5)$)}}]
+($(current page.north west)+(4,-15.5)$) rectangle ++(30,1.8);
+
+\shade[
+left color=RoyalBlue,
+right color=Emerald,
+rounded corners=0.75cm,
+transform canvas ={rotate around ={45:($(current page.north west)+(13,-10)$)}}]
+($(current page.north west)+(13,-10)$) rectangle ++(15,1.5);
+
+\shade[
+left color=lightgray,
+rounded corners=0.3cm,
+transform canvas ={rotate around ={45:($(current page.north west)+(18,-8)$)}}]
+($(current page.north west)+(18,-8)$) rectangle ++(15,0.6);
+
+\shade[
+left color=lightgray,
+rounded corners=0.4cm,
+transform canvas ={rotate around ={45:($(current page.north west)+(19,-5.65)$)}}]
+($(current page.north west)+(19,-5.65)$) rectangle ++(15,0.8);
+
+\shade[
+left color=ForestGreen!90,
+right color=Green!70,
+rounded corners=0.6cm,
+transform canvas ={rotate around ={45:($(current page.north west)+(20,-9)$)}}] 
+($(current page.north west)+(20,-9)$) rectangle ++(14,1.2);
+
+% Year label
+\draw[ultra thick,gray]
+($(current page.center)+(5,2)$) -- ++(0,-3cm) 
+node[
+midway,
+left=0.25cm,
+text width=5cm,
+align=right,
+black!75
+]
+{
+{\fontsize{25}{30} \selectfont \bf TECHNICAL \\[10pt] REPORT}
+} 
+node[
+midway,
+right=0.25cm,
+text width=6cm,
+align=left,
+ForestGreen]
+{
+{\fontsize{72}{86.4} \selectfont 2026}
+};
+
+% Title and authors
+\node[align=center] at ($(current page.center)+(0,-5)$) 
+{
+{\fontsize{50}{60} \selectfont \bf {{DataSense}}} \\[0.5cm]
+{\fontsize{28}{33.6} \selectfont {{Natural Language to SQL}}} \\[1cm]
+{\fontsize{16}{19.2} \selectfont \textcolor{ForestGreen}{ \bf Minhajul Bhuiyan \& Mahin Ahmed}}\\[5pt]
+Ice Cream Distribution Management\\[3pt]
+A Comprehensive Technical Report};
+\end{tikzpicture}
+
+\newpage
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{abstract}
+DataSense is a modern full-stack Natural Language to SQL (NL2SQL) application that enables non-technical users to query complex databases using plain English. Designed for an ice cream manufacturing and distribution company, the system provides an intelligent interface for data exploration, business intelligence, and reporting. This report presents a comprehensive technical overview of the system architecture, implementation details, key features, and design decisions that make DataSense a production-ready enterprise solution.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+\subsection{Project Overview}
+DataSense is an enterprise-grade Natural Language to SQL application that bridges the gap between business users and database systems. By leveraging state-of-the-art Large Language Models (LLMs) and modern web technologies, DataSense enables users to query complex databases using conversational English, eliminating the need for SQL expertise.
+
+\subsection{Business Context}
+The system is designed for an ice cream manufacturing company that manages a complex distribution network. The business involves:
+\begin{itemize}
+    \item Sales to registered distributors
+    \item Multi-level order and invoice processing
+    \item Inventory management with real-time stock tracking
+    \item Delivery planning and logistics coordination
+    \item Returns, refunds, and payment processing
+    \item Financial reporting and business analytics
+\end{itemize}
+
+\subsection{Key Objectives}
+\begin{keybox}[Project Objectives]
+\begin{enumerate}
+    \item \textbf{Democratize Data Access}: Enable business users without SQL knowledge to extract insights from the database
+    \item \textbf{Ensure Data Safety}: Implement read-only access with comprehensive query validation
+    \item \textbf{Provide Intelligence}: Use AI to generate accurate, context-aware SQL queries
+    \item \textbf{Deliver Insights}: Visualize data with intelligent chart generation
+    \item \textbf{Scale Efficiently}: Handle large datasets with preview and export mechanisms
+\end{enumerate}
+\end{keybox}
+
+\section{System Architecture}
+
+\subsection{High-Level Architecture}
+DataSense follows a modern three-tier architecture consisting of:
+
+\begin{enumerate}
+    \item \textbf{Presentation Layer}: Next.js-based React frontend with responsive UI
+    \item \textbf{Application Layer}: Python Flask RESTful API server
+    \item \textbf{Data Layer}: MySQL relational database with 23 normalized tables
+    \item \textbf{AI Layer}: Ollama-powered LLM inference engine
+\end{enumerate}
+
+\subsection{Technology Stack}
+
+\subsubsection{Frontend Technologies}
+\begin{infobox}
+\begin{itemize}
+    \item \textbf{Framework}: Next.js 16 (App Router)
+    \item \textbf{UI Library}: React 19
+    \item \textbf{Language}: TypeScript 5
+    \item \textbf{Styling}: Tailwind CSS 3.4
+    \item \textbf{Charts}: Recharts 3.3
+    \item \textbf{Theme}: next-themes for dark/light mode
+    \item \textbf{State Management}: React hooks with localStorage persistence
+\end{itemize}
+\end{infobox}
+
+\subsubsection{Backend Technologies}
+\begin{infobox}
+\begin{itemize}
+    \item \textbf{Framework}: Flask 3.0
+    \item \textbf{Language}: Python 3.x
+    \item \textbf{Database Driver}: PyMySQL 1.1
+    \item \textbf{Excel Export}: openpyxl 3.1
+    \item \textbf{CORS}: flask-cors 4.0
+    \item \textbf{Environment}: python-dotenv 1.0
+    \item \textbf{HTTP Client}: requests 2.31
+\end{itemize}
+\end{infobox}
+
+\subsubsection{AI/ML Technologies}
+\begin{infobox}
+\begin{itemize}
+    \item \textbf{LLM Engine}: Ollama
+    \item \textbf{Models}: Llama 3 8B, Qwen 2.5 Coder, SQLCoder 7B, DeepSeek Coder 6.7B
+    \item \textbf{Fine-tuning}: Optional LoRA adapters
+    \item \textbf{Training}: Transformers, PEFT, PyTorch
+\end{itemize}
+\end{infobox}
+
+\subsection{Component Architecture}
+
+\subsubsection{Frontend Components}
+\begin{itemize}
+    \item \textbf{page.tsx}: Main chat interface with conversation orchestration
+    \item \textbf{ChatInput}: Dynamic textarea with auto-resize and submission controls
+    \item \textbf{Message}: Message display with SQL visualization and results table
+    \item \textbf{Sidebar}: Navigation with conversation management and settings
+    \item \textbf{DataVisualization}: Intelligent chart generation component
+    \item \textbf{ThemeProvider}: Global theme state management
+    \item \textbf{Header}: Application branding and navigation
+\end{itemize}
+
+\subsubsection{Backend Modules}
+\begin{itemize}
+    \item \textbf{app.py}: Main Flask server with REST API endpoints
+    \item \textbf{query\_executor.py}: Query execution and result formatting
+    \item \textbf{query\_validator.py}: SQL validation and safety enforcement
+    \item \textbf{db\_connector.py}: Database connection management with pooling
+    \item \textbf{business\_context.py}: Business rules and domain knowledge loader
+    \item \textbf{query\_store.py}: Temporary token store for export functionality
+\end{itemize}
+
+\section{Database Design}
+
+\subsection{Schema Overview}
+The DataSense database consists of 23 tables normalized to Third Normal Form (3NF), organized into the following functional groups:
+
+\subsubsection{Core Business Tables}
+\begin{itemize}
+    \item \textbf{distributors}: Customer/distributor master data
+    \item \textbf{products}: Ice cream product catalog with stock levels
+    \item \textbf{orders}: Customer orders with status tracking
+    \item \textbf{order\_items}: Order line items with pricing
+    \item \textbf{invoices}: Invoices generated from orders
+    \item \textbf{invoice\_items}: Invoice line items with delivery tracking
+\end{itemize}
+
+\subsubsection{Financial Tables}
+\begin{itemize}
+    \item \textbf{payments}: Payment records from distributors
+    \item \textbf{refunds}: Refund transactions with status tracking
+    \item \textbf{sales\_returns}: Return requests from distributors
+    \item \textbf{return\_items}: Line items for returns
+    \item \textbf{cancellations}: Order and invoice cancellations
+\end{itemize}
+
+\subsubsection{Inventory Tables}
+\begin{itemize}
+    \item \textbf{inventory\_transactions}: All stock movements with transaction types
+    \item \textbf{detailed\_fg\_store\_req}: Finished goods store requests
+    \item \textbf{detailed\_fg\_store\_req\_det}: Store request line items
+\end{itemize}
+
+\subsubsection{Logistics Tables}
+\begin{itemize}
+    \item \textbf{vehicles}: Delivery vehicle master
+    \item \textbf{load\_plans}: Delivery schedules by vehicle
+    \item \textbf{load\_plan\_items}: Invoices assigned to load plans
+    \item \textbf{challans}: Delivery challans (shipping documents)
+    \item \textbf{gate\_passes}: Exit gate passes for deliveries
+\end{itemize}
+
+\subsubsection{Denormalized View Tables}
+\begin{itemize}
+    \item \textbf{detailed\_invoice}: Denormalized invoice header with metadata
+    \item \textbf{detailed\_inv\_details}: Denormalized invoice line items
+    \item \textbf{detailed\_order}: Denormalized order header
+    \item \textbf{detailed\_order\_details}: Denormalized order line items
+\end{itemize}
+
+\subsection{Key Design Principles}
+
+\subsubsection{Immutability}
+The schema follows an immutable data pattern where original records (orders, invoices) are never modified. All adjustments are recorded in separate tables:
+\begin{itemize}
+    \item Returns recorded in \texttt{sales\_returns} and \texttt{return\_items}
+    \item Cancellations recorded in \texttt{cancellations}
+    \item Refunds recorded in \texttt{refunds}
+    \item Inventory adjustments in \texttt{inventory\_transactions}
+\end{itemize}
+
+This design ensures:
+\begin{itemize}
+    \item Complete audit trail
+    \item Historical data preservation
+    \item Simplified rollback procedures
+    \item Accurate financial reporting
+\end{itemize}
+
+\subsubsection{Referential Integrity}
+All relationships are enforced through foreign key constraints:
+\begin{lstlisting}[language=SQL]
+FOREIGN KEY (invoice_id) 
+    REFERENCES invoices(invoice_id)
+FOREIGN KEY (product_id) 
+    REFERENCES products(product_id)
+\end{lstlisting}
+
+\subsubsection{Status Flow Management}
+Status fields use ENUM types to enforce valid states:
+\begin{itemize}
+    \item Orders: \texttt{placed → invoiced → cancelled}
+    \item Invoices: \texttt{invoiced → partial\_delivered → fully\_delivered → returned/cancelled}
+    \item Returns: \texttt{pending → processed}
+    \item Refunds: \texttt{pending → issued → processed}
+\end{itemize}
+
+\section{Business Logic and Workflows}
+
+\subsection{Order Processing Flow}
+
+\begin{enumerate}
+    \item \textbf{Order Placement}: Distributor places order
+    \begin{itemize}
+        \item Record created in \texttt{orders} table
+        \item Line items in \texttt{order\_items}
+        \item Status: \texttt{placed}
+    \end{itemize}
+    
+    \item \textbf{Invoice Generation}: Order converted to invoice
+    \begin{itemize}
+        \item Invoice created with reference to order
+        \item Stock deducted via \texttt{inventory\_transactions}
+        \item Transaction type: \texttt{sale\_deduct}
+        \item Order status: \texttt{invoiced}
+    \end{itemize}
+    
+    \item \textbf{Delivery Planning}: Invoice assigned to vehicle
+    \begin{itemize}
+        \item Load plan created for vehicle
+        \item Invoice added to \texttt{load\_plan\_items}
+        \item Challan and gate pass auto-generated
+    \end{itemize}
+    
+    \item \textbf{Delivery Execution}: Products delivered to distributor
+    \begin{itemize}
+        \item Update \texttt{quantity\_delivered} in \texttt{invoice\_items}
+        \item Update \texttt{delivered\_amount} in \texttt{invoices}
+        \item Invoice status: \texttt{partial\_delivered} or \texttt{fully\_delivered}
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Return Processing Flow}
+
+\begin{enumerate}
+    \item \textbf{Return Initiation}: Distributor requests return
+    \begin{itemize}
+        \item Return record created in \texttt{sales\_returns}
+        \item Line items in \texttt{return\_items}
+        \item Status: \texttt{pending}
+    \end{itemize}
+    
+    \item \textbf{Return Processing}: Return approved and processed
+    \begin{itemize}
+        \item Stock added back via \texttt{inventory\_transactions}
+        \item Transaction type: \texttt{return\_add}
+        \item Return status: \texttt{processed}
+    \end{itemize}
+    
+    \item \textbf{Refund Issuance}: Money returned to distributor
+    \begin{itemize}
+        \item Refund record created in \texttt{refunds}
+        \item Reference to return record
+        \item Refund status: \texttt{pending → issued → processed}
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Inventory Management}
+
+\subsubsection{Transaction Types}
+\begin{itemize}
+    \item \textbf{production\_add}: Manufacturing adds new stock
+    \item \textbf{sale\_deduct}: Stock removed for invoicing
+    \item \textbf{return\_add}: Stock restored from returns
+    \item \textbf{cancellation\_add}: Stock restored from cancellations
+\end{itemize}
+
+\subsubsection{Stock Calculation}
+Current stock is maintained in \texttt{products.current\_stock} and updated via database triggers:
+
+\begin{lstlisting}[language=SQL]
+CREATE TRIGGER update_stock_after_transaction
+AFTER INSERT ON inventory_transactions
+FOR EACH ROW
+BEGIN
+    UPDATE products 
+    SET current_stock = current_stock + NEW.quantity
+    WHERE product_id = NEW.product_id;
+END;
+\end{lstlisting}
+
+\section{AI and Natural Language Processing}
+
+\subsection{LLM Integration}
+
+\subsubsection{Model Selection}
+DataSense supports multiple LLM models via Ollama:
+\begin{enumerate}
+    \item \textbf{Llama 3 8B} (Default)
+    \begin{itemize}
+        \item General-purpose model
+        \item Excellent instruction following
+        \item Balanced performance and accuracy
+    \end{itemize}
+    
+    \item \textbf{Qwen 2.5 Coder}
+    \begin{itemize}
+        \item Code-specialized model
+        \item Strong SQL generation capabilities
+        \item Better for complex queries
+    \end{itemize}
+    
+    \item \textbf{SQLCoder 7B}
+    \begin{itemize}
+        \item SQL-specific fine-tuned model
+        \item Optimized for database queries
+        \item High accuracy for standard SQL patterns
+    \end{itemize}
+    
+    \item \textbf{DeepSeek Coder 6.7B}
+    \begin{itemize}
+        \item Efficient code generation
+        \item Good balance of speed and accuracy
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Prompt Engineering}
+
+\subsubsection{Prompt Structure}
+The system constructs prompts with three main components:
+
+\begin{enumerate}
+    \item \textbf{Business Context}: Domain-specific rules and definitions
+    \item \textbf{Database Schema}: Relevant table and column information
+    \item \textbf{User Query}: The natural language question
+\end{enumerate}
+
+\subsubsection{Smart Schema Filtering}
+To optimize token usage and improve accuracy, the system implements intelligent schema filtering:
+
+\begin{lstlisting}[language=Python]
+def build_prompt(query_text: str) -> str:
+    matched_tables = []
+    q = query_text.lower()
+    
+    for table in SCHEMA_JSON.get('tables', []):
+        name = table.get('name', '').lower()
+        if name in q or name.replace('_', ' ') in q:
+            matched_tables.append(table)
+    
+    if matched_tables:
+        # Include only relevant tables
+        schema_section = format_tables(matched_tables)
+    else:
+        # Fallback to full schema
+        schema_section = DATABASE_SCHEMA
+    
+    return f"""You are a SQL expert for DataSense.
+    {BUSINESS_CONTEXT}
+    {schema_section}
+    
+    Rules:
+    1) Only use tables/columns present above
+    2) Return ONLY the SQL query, no explanation
+    
+    User question: {query_text}
+    SQL:"""
+\end{lstlisting}
+
+\subsection{LoRA Fine-tuning}
+
+\subsubsection{Training Dataset}
+The system includes 120 curated training examples in JSONL format:
+\begin{itemize}
+    \item Business-specific queries
+    \item Common reporting scenarios
+    \item Complex join patterns
+    \item Aggregation and grouping examples
+\end{itemize}
+
+\subsubsection{Training Process}
+Fine-tuning is simplified through a PowerShell script:
+\begin{lstlisting}[language=bash]
+cd orchestrator/training
+.\RUN_ME.ps1
+\end{lstlisting}
+
+The script:
+\begin{enumerate}
+    \item Installs required packages (transformers, peft, torch)
+    \item Downloads base model (DistilGPT-2)
+    \item Trains LoRA adapter (1-100 steps, configurable)
+    \item Saves adapter to \texttt{lora\_adapter/}
+    \item Completes in approximately 30 seconds
+\end{enumerate}
+
+\subsubsection{LoRA Benefits}
+\begin{itemize}
+    \item Domain-specific accuracy improvement
+    \item Minimal storage overhead (adapter only)
+    \item Fast training (single-step possible)
+    \item No modification to base model
+    \item Easy deployment and rollback
+\end{itemize}
+
+\section{Security and Safety Mechanisms}
+
+\subsection{Query Validation}
+
+\subsubsection{Multi-Layer Validation}
+DataSense implements comprehensive query validation:
+
+\begin{enumerate}
+    \item \textbf{Whitelist Approach}: Only specific operations allowed
+    \begin{lstlisting}[language=Python]
+ALLOWED_KEYWORDS = ['SELECT', 'SHOW', 
+                   'DESCRIBE', 'DESC', 'EXPLAIN']
+    \end{lstlisting}
+    
+    \item \textbf{Blacklist Check}: Dangerous operations blocked
+    \begin{lstlisting}[language=Python]
+DANGEROUS_KEYWORDS = ['INSERT', 'UPDATE', 'DELETE', 
+                     'DROP', 'CREATE', 'ALTER', 
+                     'TRUNCATE', 'GRANT', 'REVOKE']
+    \end{lstlisting}
+    
+    \item \textbf{SQL Injection Prevention}: Pattern detection
+    \begin{itemize}
+        \item Multi-statement queries blocked
+        \item SQL comments removed
+        \item Suspicious patterns flagged
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{Read-Only Enforcement}
+All database operations are strictly read-only:
+\begin{itemize}
+    \item No INSERT, UPDATE, or DELETE operations
+    \item No schema modifications
+    \item No privilege changes
+    \item SELECT queries only
+\end{itemize}
+
+\subsection{Connection Security}
+
+\subsubsection{Environment-Based Configuration}
+Sensitive credentials stored in environment variables:
+\begin{lstlisting}[language=bash]
+DB_HOST=your-host-ip
+DB_PORT=3306
+DB_USER=your-username
+DB_PASSWORD=your-password
+DB_NAME=datasense
+OLLAMA_API_URL=http://ip:port/api/generate
+\end{lstlisting}
+
+\subsubsection{Connection Management}
+\begin{itemize}
+    \item Auto-reconnect on connection loss
+    \item Connection timeout (10 seconds)
+    \item Proper connection cleanup
+    \item Error handling and logging
+\end{itemize}
+
+\section{Performance Optimization}
+
+\subsection{Preview and Export Pattern}
+
+\subsubsection{Problem Statement}
+Large query results (10,000+ rows) cause:
+\begin{itemize}
+    \item Slow initial response times
+    \item High memory consumption
+    \item Poor user experience
+    \item Browser performance issues
+\end{itemize}
+
+\subsubsection{Solution: Two-Phase Approach}
+
+\textbf{Phase 1: Preview (Immediate)}
+\begin{enumerate}
+    \item Execute query with LIMIT 51
+    \item Return first 50 rows immediately
+    \item Display in UI within seconds
+    \item Generate export token if more rows exist
+\end{enumerate}
+
+\textbf{Phase 2: Export (On-Demand)}
+\begin{enumerate}
+    \item User clicks "Download Excel" button
+    \item Backend validates token
+    \item Streams full result using server-side cursor
+    \item Generates XLSX file with openpyxl
+    \item Downloads to user's browser
+\end{enumerate}
+
+\subsubsection{Implementation}
+\begin{lstlisting}[language=Python]
+# Preview with limit
+PREVIEW_LIMIT = 50
+PREVIEW_CHECK = PREVIEW_LIMIT + 1
+
+success, rows, columns = executor.db.execute_query_with_limit(
+    cleaned_query, PREVIEW_CHECK
+)
+
+if len(rows) <= PREVIEW_LIMIT:
+    # Return all rows
+    return jsonify({
+        'results': format_results(rows),
+        'has_more': False
+    })
+else:
+    # Return preview + token
+    preview_rows = rows[:PREVIEW_LIMIT]
+    token = create_token(cleaned_query)
+    return jsonify({
+        'results': format_results(preview_rows),
+        'has_more': True,
+        'export_token': token
+    })
+\end{lstlisting}
+
+\subsection{Server-Side Cursor Streaming}
+
+For export operations, server-side cursors prevent memory overflow:
+\begin{lstlisting}[language=Python]
+def stream_query_with_columns(self, query: str):
+    cursor = self.connection.cursor(pymysql.cursors.SSCursor)
+    cursor.execute(query)
+    columns = [desc[0] for desc in cursor.description]
+    
+    def generator():
+        while True:
+            rows = cursor.fetchmany(1000)
+            if not rows:
+                break
+            for r in rows:
+                yield r
+    
+    return columns, generator()
+\end{lstlisting}
+
+Benefits:
+\begin{itemize}
+    \item Constant memory usage
+    \item Handles millions of rows
+    \item Progressive processing
+    \item Lower latency
+\end{itemize}
+
+\subsection{Database Query Optimization}
+
+\subsubsection{Schema-Aware Query Wrapping}
+\begin{lstlisting}[language=SQL]
+SELECT * FROM (
+    -- User's original query
+    SELECT * FROM distributors WHERE is_active = 1
+) AS _sub LIMIT 51;
+\end{lstlisting}
+
+This approach:
+\begin{itemize}
+    \item Preserves original query logic
+    \item Applies limit safely
+    \item Avoids query rewriting errors
+    \item Maintains column aliases
+\end{itemize}
+
+\subsubsection{Index Recommendations}
+For optimal performance, the following indexes are recommended:
+\begin{itemize}
+    \item Primary keys (auto-indexed)
+    \item Foreign keys for joins
+    \item Status columns for filtering
+    \item Date columns for range queries
+    \item Frequently queried columns
+\end{itemize}
+
+\section{User Interface Design}
+
+\subsection{Design Philosophy}
+DataSense UI follows modern design principles:
+\begin{itemize}
+    \item \textbf{Simplicity}: Clean, uncluttered interface
+    \item \textbf{Responsiveness}: Mobile-first design
+    \item \textbf{Accessibility}: ARIA labels, keyboard shortcuts
+    \item \textbf{Feedback}: Real-time status indicators
+    \item \textbf{Consistency}: Unified color scheme and typography
+\end{itemize}
+
+\subsection{Color Scheme}
+\begin{itemize}
+    \item \textbf{Primary}: \texttt{\#08834d} (DataSense green)
+    \item \textbf{Light Theme}: Gray-based palette with white backgrounds
+    \item \textbf{Dark Theme}: Dark gray backgrounds with high contrast text
+    \item \textbf{Accent Colors}: Blue, amber, red for status indicators
+\end{itemize}
+
+\subsection{Key UI Components}
+
+\subsubsection{Chat Interface}
+\begin{itemize}
+    \item Message bubbles with role-based styling
+    \item User messages: right-aligned, dark background
+    \item Assistant messages: centered, light background
+    \item SQL queries: syntax-highlighted code blocks
+    \item Results: responsive data tables
+\end{itemize}
+
+\subsubsection{Input Area}
+\begin{itemize}
+    \item Auto-resizing textarea (max 200px height)
+    \item Send button (enabled when text present)
+    \item Stop button (during query execution)
+    \item Keyboard shortcuts (Enter to send, Shift+Enter for newline)
+\end{itemize}
+
+\subsubsection{Sidebar}
+\begin{itemize}
+    \item Collapsible design (mobile-friendly)
+    \item Conversation list with rename/delete actions
+    \item New chat button
+    \item Settings modal trigger
+    \item Theme toggle
+    \item Connection status indicator
+\end{itemize}
+
+\subsection{Data Visualization}
+
+\subsubsection{Intelligent Chart Detection}
+The system analyzes result data to suggest appropriate chart types:
+
+\begin{enumerate}
+    \item \textbf{Column Analysis}
+    \begin{itemize}
+        \item Detect data types (numeric, categorical, temporal, boolean)
+        \item Count unique values
+        \item Identify null values
+        \item Sample data for patterns
+    \end{itemize}
+    
+    \item \textbf{Chart Suggestions}
+    \begin{itemize}
+        \item \textbf{Bar Chart}: Categorical + numeric columns
+        \item \textbf{Horizontal Bar}: Many categories (better readability)
+        \item \textbf{Pie Chart}: Few categories (2-8) with proportions
+        \item \textbf{Line Chart}: Temporal + numeric (trend analysis)
+        \item \textbf{Area Chart}: Temporal + numeric (volume emphasis)
+        \item \textbf{Scatter Plot}: Two numeric columns (correlation)
+    \end{itemize}
+    
+    \item \textbf{Chart Generation}
+    \begin{itemize}
+        \item Data transformation for chart format
+        \item Professional color palette
+        \item Responsive sizing
+        \item Interactive tooltips
+        \item Legend display
+    \end{itemize}
+\end{enumerate}
+
+\section{Conversation Management}
+
+\subsection{Features}
+\begin{itemize}
+    \item \textbf{Multiple Conversations}: Up to 20 conversations stored
+    \item \textbf{Auto-Naming}: First user message becomes conversation name
+    \item \textbf{Manual Rename}: Click to edit conversation names
+    \item \textbf{Deletion}: Remove unwanted conversations
+    \item \textbf{Switching}: Easy navigation between conversations
+    \item \textbf{Persistence}: localStorage-based storage (client-side)
+\end{itemize}
+
+\subsection{Message Structure}
+Each message contains:
+\begin{itemize}
+    \item Unique ID (timestamp + random string)
+    \item Role (user or assistant)
+    \item Content (natural language text)
+    \item SQL query (if applicable)
+    \item Results array (if applicable)
+    \item Column names (if applicable)
+    \item Error message (if applicable)
+    \item Timestamp
+    \item Like/dislike status
+    \item Export token (if applicable)
+\end{itemize}
+
+\subsection{Storage Implementation}
+\begin{lstlisting}[language=JavaScript]
+const saveConversations = (conversations) => {
+    localStorage.setItem(
+        'datasense-conversations',
+        JSON.stringify(conversations)
+    );
+};
+
+const loadConversations = () => {
+    const saved = localStorage.getItem('datasense-conversations');
+    return saved ? JSON.parse(saved) : [];
+};
+\end{lstlisting}
+
+\section{API Design}
+
+\subsection{REST Endpoints}
+
+\subsubsection{Health Check}
+\textbf{Endpoint}: \texttt{GET /api/health}
+
+\textbf{Purpose}: Verify database connectivity and system status
+
+\textbf{Response}:
+\begin{lstlisting}[language=JSON]
+{
+    "status": "healthy",
+    "database": "connected",
+    "message": "Connection successful",
+    "lora_available": true
+}
+\end{lstlisting}
+
+\subsubsection{Schema Information}
+\textbf{Endpoint}: \texttt{GET /api/schema}
+
+\textbf{Purpose}: Retrieve database schema for display
+
+\textbf{Response}:
+\begin{lstlisting}[language=JSON]
+{
+    "schema": "distributors:\n  distributor_id (INT)\n  name (VARCHAR)",
+    "database": "datasense",
+    "tables": [...]
+}
+\end{lstlisting}
+
+\subsubsection{Query Execution}
+\textbf{Endpoint}: \texttt{POST /api/query}
+
+\textbf{Request}:
+\begin{lstlisting}[language=JSON]
+{
+    "prompt": "Show me all distributors",
+    "model": "llama3:8b"
+}
+\end{lstlisting}
+
+\textbf{Response (Preview)}:
+\begin{lstlisting}[language=JSON]
+{
+    "sql_query": "SELECT * FROM distributors",
+    "results": [...],
+    "columns": ["distributor_id", "name", "address"],
+    "row_count": 50,
+    "has_more": true,
+    "export_token": "abc123...",
+    "success": true,
+    "model_used": "llama3:8b",
+    "lora_trained": true
+}
+\end{lstlisting}
+
+\subsubsection{Export Full Results}
+\textbf{Endpoint}: \texttt{POST /api/export}
+
+\textbf{Request}:
+\begin{lstlisting}[language=JSON]
+{
+    "token": "abc123..."
+}
+\end{lstlisting}
+
+\textbf{Response}: Binary XLSX file (application/vnd.openxmlformats-officedocument.spreadsheetml.sheet)
+
+\subsection{Error Handling}
+
+All endpoints return appropriate HTTP status codes:
+\begin{itemize}
+    \item \texttt{200 OK}: Successful operation
+    \item \texttt{400 Bad Request}: Invalid input or unsafe query
+    \item \texttt{404 Not Found}: Endpoint not found
+    \item \texttt{413 Payload Too Large}: Export exceeds maximum rows
+    \item \texttt{500 Internal Server Error}: Server-side failure
+\end{itemize}
+
+Error response format:
+\begin{lstlisting}[language=JSON]
+{
+    "error": "Query contains dangerous keyword: DELETE",
+    "sql_query": "DELETE FROM..."
+}
+\end{lstlisting}
+
+\section{Deployment and Configuration}
+
+\subsection{System Requirements}
+
+\subsubsection{Backend Requirements}
+\begin{itemize}
+    \item Python 3.8 or higher
+    \item 2GB RAM minimum (4GB recommended)
+    \item MySQL 5.7 or higher
+    \item Ollama with pulled models
+\end{itemize}
+
+\subsubsection{Frontend Requirements}
+\begin{itemize}
+    \item Node.js 18 or higher
+    \item npm 9 or higher
+    \item Modern web browser (Chrome, Firefox, Safari, Edge)
+\end{itemize}
+
+\subsection{Installation Steps}
+
+\subsubsection{Backend Setup}
+\begin{lstlisting}[language=bash]
+# Navigate to orchestrator directory
+cd orchestrator
+
+# Create virtual environment
+python -m venv venv
+
+# Activate virtual environment (Windows)
+.\venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Create .env file with database credentials
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=your_password
+DB_NAME=datasense
+OLLAMA_API_URL=http://localhost:11434/api/generate
+
+# Start Flask server
+python app.py
+\end{lstlisting}
+
+\subsubsection{Frontend Setup}
+\begin{lstlisting}[language=bash]
+# Navigate to frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Or build for production
+npm run build
+npm start
+\end{lstlisting}
+
+\subsubsection{Optional: LoRA Training}
+\begin{lstlisting}[language=bash]
+cd orchestrator/training
+.\RUN_ME.ps1
+\end{lstlisting}
+
+\subsection{Configuration Options}
+
+\subsubsection{Backend Configuration}
+\begin{itemize}
+    \item \texttt{PREVIEW\_LIMIT}: Number of rows in preview (default: 50)
+    \item \texttt{EXPORT\_MAX\_ROWS}: Maximum exportable rows (default: 200,000)
+    \item \texttt{EXPORT\_ROW\_WARNING\_THRESHOLD}: Warning threshold (default: 10,000)
+\end{itemize}
+
+\subsubsection{Frontend Configuration}
+File: \texttt{frontend/utils/constants.ts}
+\begin{itemize}
+    \item \texttt{API\_BASE\_URL}: Backend API URL
+    \item \texttt{MAX\_RECENT\_QUERIES}: Recent queries to store (default: 10)
+    \item \texttt{MAX\_CONVERSATIONS}: Maximum conversations (default: 20)
+    \item \texttt{TEXTAREA\_MAX\_HEIGHT}: Input area max height (default: 200px)
+\end{itemize}
+
+\section{Testing and Quality Assurance}
+
+\subsection{Model Testing}
+The system includes a model comparison tool (\texttt{test\_models.py}) that:
+\begin{itemize}
+    \item Tests multiple models against example queries
+    \item Measures response time and accuracy
+    \item Posts results to frontend test page (\texttt{/test\_models})
+    \item Generates statistical reports (avg, median, min, max)
+\end{itemize}
+
+\subsection{Testing Strategy}
+\begin{enumerate}
+    \item \textbf{Unit Tests}: Individual component testing
+    \item \textbf{Integration Tests}: API endpoint testing
+    \item \textbf{End-to-End Tests}: Full workflow validation
+    \item \textbf{Performance Tests}: Load and stress testing
+    \item \textbf{Security Tests}: SQL injection attempts
+    \item \textbf{Usability Tests}: User acceptance testing
+\end{enumerate}
+
+\subsection{Quality Metrics}
+\begin{itemize}
+    \item Query accuracy: \textgreater 90\% correct SQL generation
+    \item Response time: \textless 5 seconds for typical queries
+    \item System availability: \textgreater 99\% uptime
+    \item Error rate: \textless 1\% for valid inputs
+\end{itemize}
+
+\section{Future Enhancements}
+
+\subsection{Planned Features}
+\begin{enumerate}
+    \item \textbf{Query History}: Global search across all conversations
+    \item \textbf{Query Suggestions}: Auto-complete based on schema
+    \item \textbf{Scheduled Reports}: Periodic query execution and email delivery
+    \item \textbf{User Authentication}: Role-based access control
+    \item \textbf{Query Sharing}: Share queries with team members
+    \item \textbf{Advanced Visualizations}: More chart types (heatmaps, treemaps)
+    \item \textbf{Natural Language Follow-ups}: Context-aware query refinement
+    \item \textbf{Export Formats}: PDF, CSV in addition to XLSX
+    \item \textbf{Data Caching}: Redis-based query result caching
+    \item \textbf{Multi-Database Support}: PostgreSQL, SQL Server
+\end{enumerate}
+
+\subsection{Performance Improvements}
+\begin{itemize}
+    \item Query result pagination
+    \item Virtual scrolling for large tables
+    \item WebSocket for real-time updates
+    \item CDN integration for frontend assets
+    \item Database read replicas for scaling
+\end{itemize}
+
+\subsection{AI Enhancements}
+\begin{itemize}
+    \item Multi-turn conversations with context retention
+    \item Query explanation in natural language
+    \item Anomaly detection in results
+    \item Predictive analytics suggestions
+    \item Voice input support
+\end{itemize}
+
+\section{Best Practices and Lessons Learned}
+
+\subsection{Development Best Practices}
+\begin{enumerate}
+    \item \textbf{Type Safety}: Use TypeScript for frontend to catch errors early
+    \item \textbf{Component Modularity}: Keep components small and focused
+    \item \textbf{API Versioning}: Plan for future API changes
+    \item \textbf{Error Handling}: Graceful degradation and user-friendly messages
+    \item \textbf{Logging}: Comprehensive logging for debugging
+    \item \textbf{Documentation}: Inline comments and external documentation
+\end{enumerate}
+
+\subsection{Security Best Practices}
+\begin{enumerate}
+    \item \textbf{Input Validation}: Never trust user input
+    \item \textbf{Least Privilege}: Database user with minimal permissions
+    \item \textbf{Environment Variables}: Keep secrets out of code
+    \item \textbf{HTTPS}: Use SSL/TLS in production
+    \item \textbf{CORS Configuration}: Restrict allowed origins
+    \item \textbf{Rate Limiting}: Prevent abuse and DoS attacks
+\end{enumerate}
+
+\subsection{Performance Best Practices}
+\begin{enumerate}
+    \item \textbf{Connection Pooling}: Reuse database connections
+    \item \textbf{Query Optimization}: Use indexes and avoid N+1 queries
+    \item \textbf{Caching}: Cache static data and frequent queries
+    \item \textbf{Lazy Loading}: Load data only when needed
+    \item \textbf{Code Splitting}: Split frontend bundles for faster loading
+\end{enumerate}
+
+\section{Conclusion}
+
+\subsection{Project Summary}
+DataSense successfully demonstrates how modern AI technologies can democratize data access in enterprise environments. By combining state-of-the-art LLMs with robust engineering practices, the system provides a safe, efficient, and user-friendly interface for database querying.
+
+\subsection{Key Achievements}
+\begin{itemize}
+    \item \textbf{User-Friendly Interface}: Non-technical users can query databases
+    \item \textbf{Safety First}: Comprehensive validation prevents data corruption
+    \item \textbf{High Performance}: Preview and export pattern handles large datasets
+    \item \textbf{Intelligent Visualization}: Automatic chart generation
+    \item \textbf{Extensible Architecture}: Easy to add new models and features
+    \item \textbf{Production-Ready}: Complete error handling and monitoring
+\end{itemize}
+
+\subsection{Technical Excellence}
+The project showcases best practices in:
+\begin{itemize}
+    \item Full-stack development with modern frameworks
+    \item RESTful API design
+    \item Database schema design and normalization
+    \item AI/ML integration
+    \item Security and validation
+    \item Performance optimization
+    \item User experience design
+\end{itemize}
+
+\subsection{Business Value}
+DataSense provides significant business value:
+\begin{itemize}
+    \item Reduces dependency on technical staff for data queries
+    \item Enables faster decision-making with instant data access
+    \item Improves data literacy across the organization
+    \item Reduces errors from manual SQL writing
+    \item Scales easily to handle growing data volumes
+    \item Provides audit trail for all queries
+\end{itemize}
+
+\subsection{Final Thoughts}
+DataSense represents a successful implementation of Natural Language to SQL technology in a real-world business context. The system demonstrates that with careful design, proper validation, and user-centered development, AI can be safely and effectively integrated into enterprise data workflows. The modular architecture and comprehensive documentation ensure that the system can be maintained, extended, and scaled to meet future business needs.
+
+\newpage
+\section{Appendices}
+
+\subsection{Appendix A: Database Schema Reference}
+
+\subsubsection{Core Tables Summary}
+\begin{table}[H]
+\centering
+\rowcolors{2}{tablebg}{white}
+\begin{tabular}{@{}L{4cm}L{3cm}L{5cm}@{}}
+\rowcolor{headerbg}
+\textcolor{white}{\textbf{Table}} & \textcolor{white}{\textbf{Primary Key}} & \textcolor{white}{\textbf{Purpose}} \\ \midrule
+distributors & distributor\_id & Customer master data \\
+products & product\_id & Product catalog \\
+orders & order\_id & Customer orders \\
+order\_items & order\_item\_id & Order line items \\
+invoices & invoice\_id & Invoice headers \\
+invoice\_items & invoice\_item\_id & Invoice line items \\
+payments & payment\_id & Payment records \\
+refunds & refund\_id & Refund transactions \\
+sales\_returns & return\_id & Return requests \\
+return\_items & return\_item\_id & Return line items \\
+cancellations & cancellation\_id & Cancellations \\
+inventory\_transactions & tx\_id & Stock movements \\
+vehicles & vehicle\_id & Delivery vehicles \\
+load\_plans & load\_plan\_id & Delivery schedules \\
+load\_plan\_items & load\_plan\_item\_id & Load assignments \\
+challans & challan\_id & Delivery documents \\
+gate\_passes & gate\_pass\_id & Exit passes \\ \bottomrule
+\end{tabular}
+\caption{Core Database Tables}
+\end{table}
+
+\subsection{Appendix B: Example Queries}
+
+\subsubsection{Distributors}
+\begin{lstlisting}[language=SQL]
+-- All active distributors
+SELECT * FROM distributors WHERE is_active = 1;
+
+-- Distributor with highest orders
+SELECT d.name, COUNT(o.order_id) as order_count
+FROM distributors d
+JOIN orders o ON d.distributor_id = o.distributor_id
+GROUP BY d.distributor_id
+ORDER BY order_count DESC;
+\end{lstlisting}
+
+\subsubsection{Inventory}
+\begin{lstlisting}[language=SQL]
+-- Low stock products
+SELECT name, current_stock 
+FROM products 
+WHERE current_stock < 100;
+
+-- Inventory movements by type
+SELECT tx_type, SUM(quantity) as total_quantity
+FROM inventory_transactions
+GROUP BY tx_type;
+\end{lstlisting}
+
+\subsubsection{Financial}
+\begin{lstlisting}[language=SQL]
+-- Net revenue calculation
+SELECT 
+    SUM(i.total_amount) - COALESCE(SUM(sr.total_returned_amount), 0) 
+    AS net_revenue
+FROM invoices i
+LEFT JOIN sales_returns sr ON i.invoice_id = sr.invoice_id;
+
+-- Outstanding payments
+SELECT 
+    d.name,
+    i.invoice_id,
+    i.total_amount - COALESCE(SUM(p.amount), 0) AS outstanding
+FROM invoices i
+JOIN distributors d ON i.distributor_id = d.distributor_id
+LEFT JOIN payments p ON i.invoice_id = p.invoice_id
+GROUP BY i.invoice_id
+HAVING outstanding > 0;
+\end{lstlisting}
+
+\subsection{Appendix C: Configuration Templates}
+
+\subsubsection{Backend .env Template}
+\begin{lstlisting}[language=bash]
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=datasense_user
+DB_PASSWORD=secure_password_here
+DB_NAME=datasense
+
+# Ollama Configuration
+OLLAMA_API_URL=http://localhost:11434/api/generate
+
+# Optional: Performance Tuning
+PREVIEW_LIMIT=50
+EXPORT_MAX_ROWS=200000
+EXPORT_ROW_WARNING_THRESHOLD=10000
+\end{lstlisting}
+
+\subsubsection{Frontend constants.ts}
+\begin{lstlisting}[language=TypeScript]
+export const API_BASE_URL = 'http://localhost:5001/api';
+
+export const STORAGE_KEYS = {
+  THEME: 'datasense-theme',
+  LANGUAGE: 'datasense-language',
+  SELECTED_MODEL: 'datasense-selected-model',
+  CONVERSATIONS: 'datasense-conversations',
+  CURRENT_CONVERSATION: 'datasense-current-conversation',
+  SIDEBAR_OPEN: 'datasense-sidebar-open',
+} as const;
+
+export const PRIMARY_COLOR = '#08834d';
+export const MAX_RECENT_QUERIES = 10;
+export const MAX_CONVERSATIONS = 20;
+export const TEXTAREA_MAX_HEIGHT = 200;
+\end{lstlisting}
+
+\subsection{Appendix D: Troubleshooting Guide}
+
+\subsubsection{Common Issues}
+
+\textbf{Issue}: Backend not connecting to database
+
+\textbf{Solution}:
+\begin{itemize}
+    \item Verify \texttt{.env} file has correct credentials
+    \item Check MySQL server is running
+    \item Test network connectivity to database host
+    \item Verify database user has SELECT privileges
+\end{itemize}
+
+\textbf{Issue}: Frontend can't reach backend
+
+\textbf{Solution}:
+\begin{itemize}
+    \item Ensure backend is running on port 5001
+    \item Check \texttt{API\_BASE\_URL} in \texttt{constants.ts}
+    \item Verify CORS is enabled in Flask
+    \item Check firewall settings
+\end{itemize}
+
+\textbf{Issue}: Ollama models not responding
+
+\textbf{Solution}:
+\begin{itemize}
+    \item Verify Ollama is running: \texttt{ollama list}
+    \item Pull required models: \texttt{ollama pull llama3:8b}
+    \item Check Ollama API URL in \texttt{.env}
+    \item Review Ollama logs for errors
+\end{itemize}
+
+\textbf{Issue}: Export fails for large datasets
+
+\textbf{Solution}:
+\begin{itemize}
+    \item Check \texttt{EXPORT\_MAX\_ROWS} setting
+    \item Verify sufficient disk space
+    \item Monitor memory usage
+    \item Consider adding pagination
+\end{itemize}
+
+\subsection{Appendix E: API Response Examples}
+
+\subsubsection{Successful Query Response}
+\begin{lstlisting}[language=JSON]
+{
+    "sql_query": "SELECT * FROM distributors WHERE is_active = 1",
+    "results": [
+        {
+            "distributor_id": 1,
+            "name": "North Distribution Co",
+            "address": "123 Main St",
+            "contact_phone": "555-0100",
+            "contact_email": "contact@northdist.com",
+            "registration_date": "2024-01-15",
+            "is_active": 1
+        }
+    ],
+    "columns": ["distributor_id", "name", "address", 
+                "contact_phone", "contact_email", 
+                "registration_date", "is_active"],
+    "row_count": 15,
+    "has_more": false,
+    "success": true,
+    "model_used": "llama3:8b",
+    "lora_trained": true
+}
+\end{lstlisting}
+
+\subsubsection{Error Response}
+\begin{lstlisting}[language=JSON]
+{
+    "error": "Query contains dangerous keyword: DELETE. Only SELECT queries are allowed.",
+    "sql_query": "DELETE FROM distributors WHERE distributor_id = 1"
+}
+\end{lstlisting}
+
+\subsection{Appendix F: Project File Structure}
+\begin{verbatim}
+DataSense/
+├── README.md
+├── HOW_TO_RUN.txt
+├── PROJECT_STRUCTURE.md
+├── datasense.tex
+├── frontend/
+│   ├── app/
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── globals.css
+│   │   ├── api/
+│   │   ├── examples/
+│   │   └── test_models/
+│   ├── components/
+│   │   ├── ChatInput.tsx
+│   │   ├── Message.tsx
+│   │   ├── Sidebar.tsx
+│   │   ├── DataVisualization.tsx
+│   │   ├── Header.tsx
+│   │   └── theme-provider.tsx
+│   ├── hooks/
+│   │   ├── useConnectionStatus.ts
+│   │   ├── useConversations.ts
+│   │   └── useTheme.ts
+│   ├── utils/
+│   │   ├── chartAnalyzer.ts
+│   │   ├── constants.ts
+│   │   ├── helpers.ts
+│   │   └── translations.ts
+│   ├── types/
+│   │   └── index.ts
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── tailwind.config.ts
+└── orchestrator/
+    ├── app.py
+    ├── query_executor.py
+    ├── query_validator.py
+    ├── db_connector.py
+    ├── business_context.py
+    ├── query_store.py
+    ├── database_schema.json
+    ├── datasense.md
+    ├── requirements.txt
+    ├── .env
+    ├── business_contexts/
+    │   ├── 01_company_overview.md
+    │   ├── 02_key_business_rules.md
+    │   ├── 03_flows_statuses.md
+    │   ├── 04_inventory_financials.md
+    │   └── 05_common_scenarios.md
+    └── training/
+        ├── RUN_ME.ps1
+        ├── train_lora.py
+        ├── dataset.jsonl
+        ├── chunks.jsonl
+        ├── rules.jsonl
+        └── lora_adapter/
+\end{verbatim}
+
+\subsection{Appendix G: Credits and Acknowledgments}
+
+\subsubsection{Development Team}
+\begin{itemize}
+    \item \textbf{Minhajul Bhuiyan}: Full-stack development, AI integration, system architecture
+    \item \textbf{Mahin Ahmed}: Frontend development, UI/UX design, database design
+\end{itemize}
+
+\subsubsection{Technologies and Frameworks}
+\begin{itemize}
+    \item Next.js and React teams
+    \item Flask and Python community
+    \item Ollama developers
+    \item Meta AI (Llama models)
+    \item Alibaba Cloud (Qwen models)
+    \item DeepSeek AI
+    \item MySQL development team
+\end{itemize}
+
+\subsubsection{Open Source Libraries}
+\begin{itemize}
+    \item Recharts for data visualization
+    \item Tailwind CSS for styling
+    \item PyMySQL for database connectivity
+    \item openpyxl for Excel export
+    \item Transformers and PEFT for fine-tuning
+\end{itemize}
+
+\subsection{Appendix H: References and Resources}
+
+\begin{enumerate}
+    \item Next.js Documentation: \url{https://nextjs.org/docs}
+    \item React Documentation: \url{https://react.dev}
+    \item Flask Documentation: \url{https://flask.palletsprojects.com}
+    \item Ollama Documentation: \url{https://ollama.ai/docs}
+    \item MySQL Documentation: \url{https://dev.mysql.com/doc}
+    \item Tailwind CSS Documentation: \url{https://tailwindcss.com/docs}
+    \item TypeScript Handbook: \url{https://www.typescriptlang.org/docs}
+    \item Recharts Documentation: \url{https://recharts.org}
+    \item LoRA Paper: \textit{Low-Rank Adaptation of Large Language Models}
+    \item SQL Injection Prevention: OWASP Guidelines
+\end{enumerate}
+
+\end{document}
