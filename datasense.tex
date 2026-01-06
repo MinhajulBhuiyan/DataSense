@@ -21,13 +21,14 @@
 \usepackage{array}
 \usepackage{pifont}
 
-% Define custom colors
-\definecolor{datasensegreen}{HTML}{08834d}
-\definecolor{headerbg}{HTML}{08834d}
+% Define custom colors - UPDATED PRIMARY COLOR
+\definecolor{datasensegreen}{HTML}{00764c}
+\definecolor{headerbg}{HTML}{00764c}
 \definecolor{lightgreen}{HTML}{e8f5e9}
-\definecolor{lightgray}{HTML}{f5f5f5}
+\definecolor{lightgray}{HTML}{6e6f73}
 \definecolor{sectionbg}{HTML}{fff8e1}
 \definecolor{tablebg}{HTML}{f9f9f9}
+\definecolor{darkblue}{HTML}{1565C0}  % Darker blue
 
 \geometry{left=0.75in, right=0.75in, top=0.9in, bottom=0.9in, headheight=28pt}
 
@@ -78,15 +79,6 @@
     urlcolor=datasensegreen,
 }
 
-% Section styling
-\titleformat{\section}
-  {\normalfont\Large\bfseries\color{datasensegreen}}
-  {\thesection}{1em}{}
-  [\color{datasensegreen}\titlerule]
-
-\titleformat{\subsection}
-  {\normalfont\large\bfseries\color{datasensegreen!80}}
-  {\thesubsection}{1em}{}
 
 % Custom colored box for key sections
 \newtcolorbox{keybox}[1][]{
@@ -117,7 +109,7 @@
 
 \title{\textbf{DataSense: Natural Language to SQL Query Interface}\\
 \large{A Comprehensive Technical Report}}
-\author{Minhajul Bhuiyan \and Mahin Ahmed}
+\author{Minhajul Abedin Bhuiyan \and Mahmudul Islam Mahin}
 \date{January 6, 2026}
 
 \begin{document}
@@ -130,10 +122,10 @@
 % Background color
 \fill[black!2] (current page.south west) rectangle (current page.north east);
 
-% Decorative rectangles with gradients
+% Decorative rectangles with gradients - UPDATED COLORS
 \shade[
-left color=Emerald, 
-right color=Emerald!40,
+left color=datasensegreen, 
+right color=datasensegreen!40,
 transform canvas ={rotate around ={45:($(current page.north west)+(0,-6)$)}}] 
 ($(current page.north west)+(0,-6)$) rectangle ++(9,1.5);
 
@@ -151,29 +143,29 @@ transform canvas ={rotate around ={45:($(current page.north west)+(.5,-10)$)}}]
 ($(current page.north west)+(1.5,-9.55)$) rectangle ++(7,.6);
 
 \shade[
-left color=Green!70,
-right color=Green!50,
+left color=datasensegreen!70,
+right color=datasensegreen!50,
 rounded corners=0.4cm,
 transform canvas ={rotate around ={45:($(current page.north)+(-1.5,-3)$)}}]
 ($(current page.north)+(-1.5,-3)$) rectangle ++(9,0.8);
 
 \shade[
-left color=ForestGreen!80,
-right color=ForestGreen!60,
+left color=datasensegreen!80,
+right color=datasensegreen!60,
 rounded corners=0.9cm,
 transform canvas ={rotate around ={45:($(current page.north)+(-3,-8)$)}}] 
 ($(current page.north)+(-3,-8)$) rectangle ++(15,1.8);
 
 \shade[
-left color=Green,
-right color=Emerald,
+left color=datasensegreen,
+right color=datasensegreen!70,
 rounded corners=0.9cm,
 transform canvas ={rotate around ={45:($(current page.north west)+(4,-15.5)$)}}]
 ($(current page.north west)+(4,-15.5)$) rectangle ++(30,1.8);
 
 \shade[
-left color=RoyalBlue,
-right color=Emerald,
+left color=darkblue,
+right color=datasensegreen,
 rounded corners=0.75cm,
 transform canvas ={rotate around ={45:($(current page.north west)+(13,-10)$)}}]
 ($(current page.north west)+(13,-10)$) rectangle ++(15,1.5);
@@ -191,8 +183,8 @@ transform canvas ={rotate around ={45:($(current page.north west)+(19,-5.65)$)}}
 ($(current page.north west)+(19,-5.65)$) rectangle ++(15,0.8);
 
 \shade[
-left color=ForestGreen!90,
-right color=Green!70,
+left color=datasensegreen!90,
+right color=datasensegreen!70,
 rounded corners=0.6cm,
 transform canvas ={rotate around ={45:($(current page.north west)+(20,-9)$)}}] 
 ($(current page.north west)+(20,-9)$) rectangle ++(14,1.2);
@@ -208,36 +200,46 @@ align=right,
 black!75
 ]
 {
-{\fontsize{25}{30} \selectfont \bf TECHNICAL \\[10pt] REPORT}
+{\fontsize{21}{30} \selectfont \bf TECHNICAL \\[10pt] REPORT}
 } 
 node[
 midway,
 right=0.25cm,
 text width=6cm,
 align=left,
-ForestGreen]
+datasensegreen]
 {
-{\fontsize{72}{86.4} \selectfont 2026}
+{\fontsize{45}{86.4} \selectfont DLTD}
 };
 
 % Title and authors
-\node[align=center] at ($(current page.center)+(0,-5)$) 
+\node[align=center] at ($(current page.center)+(0,-6)$) 
 {
 {\fontsize{50}{60} \selectfont \bf {{DataSense}}} \\[0.5cm]
 {\fontsize{28}{33.6} \selectfont {{Natural Language to SQL}}} \\[1cm]
-{\fontsize{16}{19.2} \selectfont \textcolor{ForestGreen}{ \bf Minhajul Bhuiyan \& Mahin Ahmed}}\\[5pt]
-Ice Cream Distribution Management\\[3pt]
-A Comprehensive Technical Report};
+{\fontsize{16}{19.2} \selectfont \textcolor{datasensegreen}{ \bf Minhajul Abedin Bhuiyan}}\\[3pt]
+{\fontsize{16}{19.2} \selectfont \textcolor{datasensegreen}{ \bf Mahmudul Islam Mahin}}};
+% Logo at bottom
+\node[align=center] at ($(current page.south)+(0,3)$) 
+{
+\includegraphics[width=3cm]{data-limited.png}\\[0.1cm]
+};
 \end{tikzpicture}
+
+
 
 \newpage
 
-\maketitle
+%\maketitle
 \thispagestyle{empty}
 
+
+\vspace*{\fill}
 \begin{abstract}
 DataSense is a modern full-stack Natural Language to SQL (NL2SQL) application that enables non-technical users to query complex databases using plain English. Designed for an ice cream manufacturing and distribution company, the system provides an intelligent interface for data exploration, business intelligence, and reporting. This report presents a comprehensive technical overview of the system architecture, implementation details, key features, and design decisions that make DataSense a production-ready enterprise solution.
 \end{abstract}
+\vspace*{\fill}
+
 
 \newpage
 \tableofcontents
