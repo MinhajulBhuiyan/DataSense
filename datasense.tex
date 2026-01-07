@@ -283,11 +283,28 @@ DataSense is a Natural Language–to–SQL application that enables users to que
 \end{keybox}
 
 \subsection{Project Timeline}
-Project timeline and milestones will be added here. This subsection will contain start/end dates, major milestones (prototype, training, internal testing, public release), and any relevant schedule notes.
+\begin{table}[H]
+\centering
+\rowcolors{2}{tablebg}{white}
+\begin{tabular}{|L{3cm}|L{3cm}|L{5cm}|}
+\hline
+\rowcolor{headerbg}
+\textcolor{white}{\textbf{Phase}} & \textcolor{white}{\textbf{Date}} & \textcolor{white}{\textbf{Deliverable}} \\ \hline
+Prototype & Dec 2025 & Basic NL2SQL with Flask + React \\ \hline
+Alpha & Jan 2026 & Full-stack MVP with validation \\ \hline
+Beta & Jan 2026 & Chart generation, export system \\ \hline
+V1.0 (Current) & Jan 2026 & Production-ready core features \\ \hline
+V1.1 (Planned) & Feb 2026 & Authentication, caching \\ \hline
+V2.0 (Planned) & Q2 2026 & Multi-DB, scheduling, advanced AI \\ \hline
+\end{tabular}
+\caption{Project Timeline and Release Milestones}
+\end{table}
+
 
 % \subsection{Where -- System Architecture}
 % High-level system architecture and deployment topology details are presented in Section~\ref{sec:architecture}. See Section~2 for the full System Architecture discussion.
 
+\newpage
 \section{System Architecture}
 
 \subsection{High-Level Architecture}
@@ -536,7 +553,7 @@ The system constructs prompts with three main components:
 \end{enumerate}
 
 \subsubsection{Smart Schema Filtering}
-To optimize token usage and improve accuracy, the system implements intelligent schema filtering:
+To optimize token usage and improve accuracy, the system focuses intelligent schema filtering:
 \begin{enumerate}
     \item Detects which tables are relevant to the user's question.
     \item Includes only those table definitions in the prompt.
@@ -676,6 +693,7 @@ Extended Accessibility & Full ARIA compliance, screen reader testing & \xmark \\
 \noindent\textbf{Progress:}\hspace{1cm}\textcolor{datasensegreen}{\rule{0.54\linewidth}{8pt}}\textcolor{orange}{\rule{0.11\linewidth}{8pt}}\textcolor{red}{\rule{0.11\linewidth}{8pt}}\hspace{0.5cm}\textbf{72\%}
 
 
+\newpage
 \section{Performance Optimization}
 
 \subsection{Performance Components \& Status}
@@ -711,7 +729,7 @@ Code Splitting & Frontend bundle optimization & \xmark \\ \hline
 \noindent\textbf{Progress:}\hspace{1.5cm}\textcolor{datasensegreen}{\rule{0.1\linewidth}{8pt}}\textcolor{orange}{\rule{0.05\linewidth}{8pt}}\textcolor{red}{\rule{0.55\linewidth}{8pt}}\hspace{0.5cm}\textbf{15\%}
 
 
-
+\newpage
 \section{Testing and Quality Assurance}
 
 \subsection{Testing Components \& Status}
@@ -781,37 +799,7 @@ Mobile Testing & iOS/Android browser testing & \xmark \\ \hline
     \item Voice input support
 \end{itemize}
 
-\section{Best Practices and Lessons Learned}
-
-\subsection{Development Best Practices}
-\begin{enumerate}
-    \item \textbf{Type Safety}: Use TypeScript for frontend to catch errors early
-    \item \textbf{Component Modularity}: Keep components small and focused
-    \item \textbf{API Versioning}: Plan for future API changes
-    \item \textbf{Error Handling}: Graceful degradation and user-friendly messages
-    \item \textbf{Logging}: Comprehensive logging for debugging
-    \item \textbf{Documentation}: Inline comments and external documentation
-\end{enumerate}
-
-\subsection{Security Best Practices}
-\begin{enumerate}
-    \item \textbf{Input Validation}: Never trust user input
-    \item \textbf{Least Privilege}: Database user with minimal permissions
-    \item \textbf{Environment Variables}: Keep secrets out of code
-    \item \textbf{HTTPS}: Use SSL/TLS in production
-    \item \textbf{CORS Configuration}: Restrict allowed origins
-    \item \textbf{Rate Limiting}: Prevent abuse and DoS attacks
-\end{enumerate}
-
-\subsection{Performance Best Practices}
-\begin{enumerate}
-    \item \textbf{Connection Pooling}: Reuse database connections
-    \item \textbf{Query Optimization}: Use indexes and avoid N+1 queries
-    \item \textbf{Caching}: Cache static data and frequent queries
-    \item \textbf{Lazy Loading}: Load data only when needed
-    \item \textbf{Code Splitting}: Split frontend bundles for faster loading
-\end{enumerate}
-
+\newpage
 \section{Overall Progress Summary}
 
 This section provides a comprehensive overview of the DataSense project's implementation status, tracking completion across all major components and layers.
@@ -823,169 +811,112 @@ The following table summarizes completion status across the system architecture:
 \begin{table}[H]
 \centering
 \rowcolors{2}{tablebg}{white}
-\begin{tabular}{|L{4cm}|C{2.5cm}|L{5.5cm}|}
+\begin{tabular}{|L{5cm}|L{6.5cm}|C{2cm}|}
 \hline
 \rowcolor{headerbg}
-\textcolor{white}{\textbf{Layer}} & \textcolor{white}{\textbf{Completion}} & \textcolor{white}{\textbf{Status}} \\ \hline
-Database Layer & 100\% & 23 tables, normalized schema, migrations \\ \hline
-Backend API & 100\% & Flask REST API, all endpoints functional \\ \hline
-AI Integration & 100\% & Ollama integration, multi-model support \\ \hline
-Query Validation & 100\% & Whitelist/blacklist, SQL injection prevention \\ \hline
-Business Logic & 95\% & Core flows complete, minor edge cases \\ \hline
-Frontend UI & 100\% & Next.js, all components implemented \\ \hline
-Data Visualization & 90\% & Chart generation, more types planned \\ \hline
-Export System & 100\% & Preview/export pattern, XLSX streaming \\ \hline
-Authentication & 0\% & Planned for Phase 2 \\ \hline
-Testing & 60\% & Model testing complete, unit tests partial \\ \hline
-Documentation & 95\% & Technical report, inline docs, README \\ \hline
-Deployment & 85\% & Local setup complete, production pending \\ \hline
+\textcolor{white}{\textbf{Layer/Component}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Status}} \\ \hline
+\multicolumn{3}{|c|}{\textbf{Completed Layers (100\%)}} \\ \hline
+Database Architecture & 23 normalized tables, referential integrity, read-only safety & \cmark \\ \hline
+\multicolumn{3}{|c|}{\textbf{In Progress Layers}} \\ \hline
+Backend API (58\%) & 10 components done, 2 in-progress, 7 pending & \pmark \\ \hline
+User Interface (72\%) & 10 components done, 2 in-progress, 2 pending & \pmark \\ \hline
+AI \& NLP (40\%) & 6 components done, 5 in-progress, 7 pending & \pmark \\ \hline
+Performance Optimization (15\%) & 2 components done, 1 in-progress, 11 pending & \pmark \\ \hline
+Testing \& QA (15\%) & 2 components done, 1 in-progress, 11 pending & \pmark \\ \hline
+\multicolumn{3}{|c|}{\textbf{Pending Layers}} \\ \hline
+Authentication System & JWT, OAuth2, RBAC, role-based access & \xmark \\ \hline
+Production Deployment & Docker containers, Kubernetes orchestration & \xmark \\ \hline
+Advanced Caching & Redis integration, query result caching & \xmark \\ \hline
+API Documentation & Swagger/OpenAPI specification & \xmark \\ \hline
+CI/CD Pipeline & Automated testing and deployment & \xmark \\ \hline
+Monitoring \& Logging & Prometheus metrics, structured logging & \xmark \\ \hline
 \end{tabular}
 \caption{Implementation Progress by System Layer}
 \end{table}
 
+\noindent\textbf{Overall System Progress:}\hspace{0.5cm}\textcolor{datasensegreen}{\rule{0.20\linewidth}{8pt}}\textcolor{orange}{\rule{0.10\linewidth}{8pt}}\textcolor{red}{\rule{0.30\linewidth}{8pt}}\hspace{0.5cm}\textbf{35\%}
+
+
+
 \subsection{Completion Breakdown}
 
-\subsubsection{Completed (100\%)}
+\subsubsection{Completed}
 
 \begin{infobox}[Fully Implemented Features]
 \begin{itemize}
     \item \textbf{Natural language to SQL conversion} using Ollama LLMs
     \item \textbf{Multi-model support} (Llama 3, Qwen, SQLCoder, DeepSeek)
-    \item \textbf{Database schema design} (23 normalised table)
+    \item \textbf{Database schema design} (23 normalised tables with referential integrity)
     \item \textbf{Read-only enforcement} for database safety
     \item \textbf{Business context integration} (5 markdown files loaded dynamically)
+    \item \textbf{Six REST API endpoints} (query, export, models, health, test, schema)
+    \item \textbf{SQL validation system} (whitelist/blacklist, injection prevention)
     \item \textbf{Preview and export pattern} (50-row preview, full XLSX export)
+    \item \textbf{Token-based export system} with secure generation and validation
     \item \textbf{Server-side cursor streaming} for large datasets
     \item \textbf{Intelligent chart generation} (bar, line, pie, scatter, area)
+    \item \textbf{Interactive data visualization} with auto-suggestion and tooltips
     \item \textbf{Conversation management} (up to 20 conversations, rename/delete)
     \item \textbf{Theme system} (light/dark mode with next-themes)
     \item \textbf{All React components} (8 components: ChatInput, Message, Sidebar, etc.)
     \item \textbf{Custom hooks} (useConnectionStatus, useConversations, useTheme)
     \item \textbf{Connection status monitoring} with auto-reconnect
-    \item \textbf{Error handling and logging} across all endpoints
+    \item \textbf{Model comparison testing tool} for accuracy and performance validation
+    \item \textbf{SQL injection security tests} passed
+    \item \textbf{Centralized error handling} across all endpoints
     \item \textbf{Environment-based configuration} (.env for secrets)
-    \item \textbf{Monitoring and observability} (logging, metrics dashboard)
-    \item \textbf{LoRA fine-tuning system} (training scripts, adapters ready)
+    \item \textbf{Health monitoring endpoint} for system status
+    \item \textbf{Training dataset} (120 curated business queries)
     \item \textbf{Technical documentation} (comprehensive LaTeX report)
-    \item \textbf{GitHub repository} with version control
+    \item \textbf{GitHub repository} with version control (32 commits, 2 contributors)
 \end{itemize}
 \end{infobox}
 
-\subsubsection{In Progress (Partially Complete)}
+\subsubsection{In Progress (Partially Completed)}
 
 \begin{tcolorbox}[colback=yellow!10, colframe=orange!60, title=\textbf{Active Development}, boxrule=0.6pt, arc=2mm]
 \begin{itemize}
-    \item \textbf{All Eloquent models with relationships} (Entity relationship model)
-    \item \textbf{Query validation system} (whitelist, blacklist, injection prevention)
-    \item \textbf{Responsive UI design} (mobile-first Tailwind CSS)
-    \item \textbf{Advanced chart types} (heatmaps, treemaps)
-    \item \textbf{Query caching layer} (Redis integration planned)
-    \item \textbf{Performance optimization} (virtual scrolling, pagination)
-    \item \textbf{Unit test coverage}
+    \item \textbf{Backend components} (Query Store, Schema Endpoint)
+    \item \textbf{AI pipeline components} (Prompt Builder, Query Processor, Result Formatter)
+    \item \textbf{Smart schema filtering} (Context-aware table detection)
+    \item \textbf{Dataset generation} (Automated training query generation)
+    \item \textbf{Responsive UI design} (Mobile-first Tailwind CSS refinements)
+    \item \textbf{Advanced chart types} (Heatmaps, treemaps implementation)
+    \item \textbf{Query wrapping optimization} (Schema-aware LIMIT application)
+    \item \textbf{Cross-browser testing} (Chrome, Firefox, Safari, Edge validation)
 \end{itemize}
 \end{tcolorbox}
 
-\subsubsection{Pending (Not Started)}
+\subsubsection{Pending}
 
 \begin{tcolorbox}[colback=red!5, colframe=red!40, title=\textbf{Future Roadmap}, boxrule=0.6pt, arc=2mm]
 \begin{itemize}
     \item \textbf{User authentication system} (JWT, OAuth2, RBAC)
+    \item \textbf{Backend services} (Rate Limiter, Logging Service, Metrics Collector)
+    \item \textbf{Redis caching layer} (Query result and response caching)
+    \item \textbf{Async task queue} (Celery for background jobs)
+    \item \textbf{API documentation} (Swagger/OpenAPI specification)
+    \item \textbf{LoRA training automation} (Fine-tuning pipeline)
+    \item \textbf{Advanced NLP features} (Multi-turn context, Query explanation, Voice input)
+    \item \textbf{Model enhancements} (Model caching, Query suggestions, Anomaly detection)
+    \item \textbf{Performance optimization} (Virtual scrolling, Pagination, CDN, Connection pooling)
+    \item \textbf{Extended testing} (Unit tests, Integration tests, E2E tests, Performance tests)
+    \item \textbf{CI/CD pipeline} (Automated testing and deployment)
     \item \textbf{Multi-database support} (PostgreSQL, SQL Server adapters)
     \item \textbf{Query scheduling} (Cron-based reports, email delivery)
-    \item \textbf{Query sharing and collaboration} (share links, team workspaces)
-    \item \textbf{Advanced NLP features} (context retention, multi-turn refinement)
-    \item \textbf{Voice input support} (Web Speech API integration)
-    \item \textbf{Mobile app} (React Native or PWA)
-    \item \textbf{Admin dashboard} (user management, query analytics)
-    \item \textbf{Rate limiting and quotas} (API throttling per user)
-    \item \textbf{API documentation} (Swagger/OpenAPI)
-    \item \textbf{Production deployment} (Docker containers, k8s)
-    \item \textbf{Audit logging} (compliance tracking, query history export)
-    \item \textbf{Real-time collaboration} (WebSocket-based shared sessions)
-    \item \textbf{Data masking} (PII redaction for sensitive fields)
+    \item \textbf{Query sharing and collaboration} (Share links, team workspaces)
+    \item \textbf{Mobile app} (PWA or React Native packaging)
+    \item \textbf{Admin dashboard} (User management, query analytics)
+    \item \textbf{Production deployment} (Docker containers, Kubernetes orchestration)
+    \item \textbf{Advanced security} (Audit logging, Data masking, Real-time collaboration)
 \end{itemize}
 \end{tcolorbox}
 
-\subsection{Development Metrics}
+% \subsection{Timeline and Milestones}
 
-\begin{table}[H]
-\centering
-\rowcolors{2}{tablebg}{white}
-\begin{tabular}{|L{5cm}|R{3cm}|}
-\hline
-\rowcolor{headerbg}
-\textcolor{white}{\textbf{Metric}} & \textcolor{white}{\textbf{Count}} \\ \hline
-Total Lines of Code (LoC) & $\sim$8,500 \\ \hline
-Backend Files (Python) & 12 \\ \hline
-Frontend Files (TypeScript/React) & 23 \\ \hline
-React Components & 8 \\ \hline
-API Endpoints & 6 \\ \hline
-Database Tables & 23 \\ \hline
-Business Context Files & 5 \\ \hline
-Training Examples & 120 \\ \hline
-Dependencies (Frontend) & 13 \\ \hline
-Dependencies (Backend) & 8 \\ \hline
-Documentation Pages & 52 \\ \hline
-Git Commits & $\sim$150+ \\ \hline
-\end{tabular}
-\caption{Project Development Metrics}
-\end{table}
-
-\subsection{Quality Assurance Status}
-
-\begin{itemize}
-    \item \cmark \textbf{Code Standards}: ESLint (frontend), PEP 8 (backend)
-    \item \cmark \textbf{Type Safety}: TypeScript 5 with strict mode
-    \item \cmark \textbf{Security Validation}: SQL injection tests passing
-    \item \cmark \textbf{Model Accuracy}: \textgreater 90\% correct SQL generation
-    \item \cmark \textbf{Performance}: \textless 5s response time for typical queries
-    \item \xmark \textbf{E2E Tests}: Planned (not yet implemented)
-    \item \cmark \textbf{Cross-browser Testing}: Chrome, Firefox, Safari, Edge
-    \item \cmark \textbf{Mobile Responsiveness}: Verified on iOS and Android
-\end{itemize}
-
-\subsection{Timeline and Milestones}
-
-\begin{table}[H]
-\centering
-\rowcolors{2}{tablebg}{white}
-\begin{tabular}{|L{3cm}|L{3cm}|L{5cm}|}
-\hline
-\rowcolor{headerbg}
-\textcolor{white}{\textbf{Phase}} & \textcolor{white}{\textbf{Date}} & \textcolor{white}{\textbf{Deliverable}} \\ \hline
-Prototype & Dec 2025 & Basic NL2SQL with Flask + React \\ \hline
-Alpha & Jan 2026 & Full-stack MVP with validation \\ \hline
-Beta & Jan 2026 & Chart generation, export system \\ \hline
-V1.0 (Current) & Jan 2026 & Production-ready core features \\ \hline
-V1.1 (Planned) & Feb 2026 & Authentication, caching \\ \hline
-V2.0 (Planned) & Q2 2026 & Multi-DB, scheduling, advanced AI \\ \hline
-\end{tabular}
-\caption{Project Timeline and Release Milestones}
-\end{table}
-
-\subsection{Team Contributions}
-
-\begin{itemize}
-    \item \textbf{Minhajul Abedin Bhuiyan}: Full-stack development, AI integration, system architecture, backend API, database design, LoRA training, documentation
-    \item \textbf{Mahmudul Islam Mahin}: Frontend development, UI/UX design, component library, chart visualization, theme system, responsive design
-\end{itemize}
-
-\subsection{Next Sprint Priorities}
-
-\begin{enumerate}
-    \item Complete unit test coverage (\textgreater 80\%)
-    \item Deploy to staging environment for internal testing
-    \item Implement basic authentication (JWT)
-    \item Add Redis caching layer for frequent queries
-    \item Complete API documentation (Swagger)
-    \item Optimize chart rendering performance
-    \item Add more example queries to training dataset
-    \item Set up CI/CD pipeline (GitHub Actions)
-\end{enumerate}
-
+\newpage
 \section{Conclusion}
 
-\subsection{Project Summary}
 DataSense successfully demonstrates how modern AI technologies can democratize data access in enterprise environments. By combining state-of-the-art LLMs with robust engineering practices, the system provides a safe, efficient, and user-friendly interface for database querying.
 
 \subsection{Key Achievements}
@@ -1020,315 +951,5 @@ DataSense provides significant business value:
     \item Scales easily to handle growing data volumes
     \item Provides audit trail for all queries
 \end{itemize}
-
-\subsection{Final Thoughts}
-DataSense represents a successful implementation of Natural Language to SQL technology in a real-world business context. The system demonstrates that with careful design, proper validation, and user-centered development, AI can be safely and effectively integrated into enterprise data workflows. The modular architecture and comprehensive documentation ensure that the system can be maintained, extended, and scaled to meet future business needs.
-
-\newpage
-\section{Appendices}
-
-\subsection{Appendix A: Database Schema Reference}
-
-\subsubsection{Core Tables Summary}
-\begin{table}[H]
-\centering
-\rowcolors{2}{tablebg}{white}
-\begin{tabular}{|L{4cm}|L{3cm}|L{5cm}|}
-\hline
-\rowcolor{headerbg}
-\textcolor{white}{\textbf{Table}} & \textcolor{white}{\textbf{Primary Key}} & \textcolor{white}{\textbf{Purpose}} \\ \hline
-distributors & distributor\_id & Customer master data \\ \hline
-products & product\_id & Product catalog \\ \hline
-orders & order\_id & Customer orders \\ \hline
-order\_items & order\_item\_id & Order line items \\ \hline
-invoices & invoice\_id & Invoice headers \\ \hline
-invoice\_items & invoice\_item\_id & Invoice line items \\ \hline
-payments & payment\_id & Payment records \\ \hline
-refunds & refund\_id & Refund transactions \\ \hline
-sales\_returns & return\_id & Return requests \\ \hline
-return\_items & return\_item\_id & Return line items \\ \hline
-cancellations & cancellation\_id & Cancellations \\ \hline
-inventory\_transactions & tx\_id & Stock movements \\ \hline
-vehicles & vehicle\_id & Delivery vehicles \\ \hline
-load\_plans & load\_plan\_id & Delivery schedules \\ \hline
-load\_plan\_items & load\_plan\_item\_id & Load assignments \\ \hline
-challans & challan\_id & Delivery documents \\ \hline
-gate\_passes & gate\_pass\_id & Exit passes \\ \hline
-\end{tabular}
-\caption{Core Database Tables}
-\end{table}
-
-\subsection{Appendix B: Example Queries}
-
-\subsubsection{Distributors}
-\begin{lstlisting}[language=SQL]
--- All active distributors
-SELECT * FROM distributors WHERE is_active = 1;
-
--- Distributor with highest orders
-SELECT d.name, COUNT(o.order_id) as order_count
-FROM distributors d
-JOIN orders o ON d.distributor_id = o.distributor_id
-GROUP BY d.distributor_id
-ORDER BY order_count DESC;
-\end{lstlisting}
-
-\subsubsection{Inventory}
-\begin{lstlisting}[language=SQL]
--- Low stock products
-SELECT name, current_stock 
-FROM products 
-WHERE current_stock < 100;
-
--- Inventory movements by type
-SELECT tx_type, SUM(quantity) as total_quantity
-FROM inventory_transactions
-GROUP BY tx_type;
-\end{lstlisting}
-
-\subsubsection{Financial}
-\begin{lstlisting}[language=SQL]
--- Net revenue calculation
-SELECT 
-    SUM(i.total_amount) - COALESCE(SUM(sr.total_returned_amount), 0) 
-    AS net_revenue
-FROM invoices i
-LEFT JOIN sales_returns sr ON i.invoice_id = sr.invoice_id;
-
--- Outstanding payments
-SELECT 
-    d.name,
-    i.invoice_id,
-    i.total_amount - COALESCE(SUM(p.amount), 0) AS outstanding
-FROM invoices i
-JOIN distributors d ON i.distributor_id = d.distributor_id
-LEFT JOIN payments p ON i.invoice_id = p.invoice_id
-GROUP BY i.invoice_id
-HAVING outstanding > 0;
-\end{lstlisting}
-
-\subsection{Appendix C: Configuration Templates}
-
-\subsubsection{Backend .env Template}
-\begin{lstlisting}[language=bash]
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=datasense_user
-DB_PASSWORD=secure_password_here
-DB_NAME=datasense
-
-# Ollama Configuration
-OLLAMA_API_URL=http://localhost:11434/api/generate
-
-# Optional: Performance Tuning
-PREVIEW_LIMIT=50
-EXPORT_MAX_ROWS=200000
-EXPORT_ROW_WARNING_THRESHOLD=10000
-\end{lstlisting}
-
-\subsubsection{Frontend constants.ts}
-\begin{lstlisting}[language=TypeScript]
-export const API_BASE_URL = 'http://localhost:5001/api';
-
-export const STORAGE_KEYS = {
-  THEME: 'datasense-theme',
-  LANGUAGE: 'datasense-language',
-  SELECTED_MODEL: 'datasense-selected-model',
-  CONVERSATIONS: 'datasense-conversations',
-  CURRENT_CONVERSATION: 'datasense-current-conversation',
-  SIDEBAR_OPEN: 'datasense-sidebar-open',
-} as const;
-
-export const PRIMARY_COLOR = '#08834d';
-export const MAX_RECENT_QUERIES = 10;
-export const MAX_CONVERSATIONS = 20;
-export const TEXTAREA_MAX_HEIGHT = 200;
-\end{lstlisting}
-
-\subsection{Appendix D: Troubleshooting Guide}
-
-\subsubsection{Common Issues}
-
-\textbf{Issue}: Backend not connecting to database
-
-\textbf{Solution}:
-\begin{itemize}
-    \item Verify \texttt{.env} file has correct credentials
-    \item Check MySQL server is running
-    \item Test network connectivity to database host
-    \item Verify database user has SELECT privileges
-\end{itemize}
-
-\textbf{Issue}: Frontend can't reach backend
-
-\textbf{Solution}:
-\begin{itemize}
-    \item Ensure backend is running on port 5001
-    \item Check \texttt{API\_BASE\_URL} in \texttt{constants.ts}
-    \item Verify CORS is enabled in Flask
-    \item Check firewall settings
-\end{itemize}
-
-\textbf{Issue}: Ollama models not responding
-
-\textbf{Solution}:
-\begin{itemize}
-    \item Verify Ollama is running: \texttt{ollama list}
-    \item Pull required models: \texttt{ollama pull llama3:8b}
-    \item Check Ollama API URL in \texttt{.env}
-    \item Review Ollama logs for errors
-\end{itemize}
-
-\textbf{Issue}: Export fails for large datasets
-
-\textbf{Solution}:
-\begin{itemize}
-    \item Check \texttt{EXPORT\_MAX\_ROWS} setting
-    \item Verify sufficient disk space
-    \item Monitor memory usage
-    \item Consider adding pagination
-\end{itemize}
-
-\subsection{Appendix E: API Response Examples}
-
-\subsubsection{Successful Query Response}
-\begin{lstlisting}[language=JSON]
-{
-    "sql_query": "SELECT * FROM distributors WHERE is_active = 1",
-    "results": [
-        {
-            "distributor_id": 1,
-            "name": "North Distribution Co",
-            "address": "123 Main St",
-            "contact_phone": "555-0100",
-            "contact_email": "contact@northdist.com",
-            "registration_date": "2024-01-15",
-            "is_active": 1
-        }
-    ],
-    "columns": ["distributor_id", "name", "address", 
-                "contact_phone", "contact_email", 
-                "registration_date", "is_active"],
-    "row_count": 15,
-    "has_more": false,
-    "success": true,
-    "model_used": "llama3:8b",
-    "lora_trained": true
-}
-\end{lstlisting}
-
-\subsubsection{Error Response}
-\begin{lstlisting}[language=JSON]
-{
-    "error": "Query contains dangerous keyword: DELETE. Only SELECT queries are allowed.",
-    "sql_query": "DELETE FROM distributors WHERE distributor_id = 1"
-}
-\end{lstlisting}
-
-\subsection{Appendix F: Project File Structure}
-\begin{verbatim}
-DataSense/
-├── README.md
-├── HOW_TO_RUN.txt
-├── PROJECT_STRUCTURE.md
-├── datasense.tex
-├── frontend/
-│   ├── app/
-│   │   ├── layout.tsx
-│   │   ├── page.tsx
-│   │   ├── globals.css
-│   │   ├── api/
-│   │   ├── examples/
-│   │   └── test_models/
-│   ├── components/
-│   │   ├── ChatInput.tsx
-│   │   ├── Message.tsx
-│   │   ├── Sidebar.tsx
-│   │   ├── DataVisualization.tsx
-│   │   ├── Header.tsx
-│   │   └── theme-provider.tsx
-│   ├── hooks/
-│   │   ├── useConnectionStatus.ts
-│   │   ├── useConversations.ts
-│   │   └── useTheme.ts
-│   ├── utils/
-│   │   ├── chartAnalyzer.ts
-│   │   ├── constants.ts
-│   │   ├── helpers.ts
-│   │   └── translations.ts
-│   ├── types/
-│   │   └── index.ts
-│   ├── package.json
-│   ├── tsconfig.json
-│   └── tailwind.config.ts
-└── orchestrator/
-    ├── app.py
-    ├── query_executor.py
-    ├── query_validator.py
-    ├── db_connector.py
-    ├── business_context.py
-    ├── query_store.py
-    ├── database_schema.json
-    ├── datasense.md
-    ├── requirements.txt
-    ├── .env
-    ├── business_contexts/
-    │   ├── 01_company_overview.md
-    │   ├── 02_key_business_rules.md
-    │   ├── 03_flows_statuses.md
-    │   ├── 04_inventory_financials.md
-    │   └── 05_common_scenarios.md
-    └── training/
-        ├── RUN_ME.ps1
-        ├── train_lora.py
-        ├── dataset.jsonl
-        ├── chunks.jsonl
-        ├── rules.jsonl
-        └── lora_adapter/
-\end{verbatim}
-
-\subsection{Appendix G: Credits and Acknowledgments}
-
-\subsubsection{Development Team}
-\begin{itemize}
-    \item \textbf{Minhajul Bhuiyan}: Full-stack development, AI integration, system architecture
-    \item \textbf{Mahin Ahmed}: Frontend development, UI/UX design, database design
-\end{itemize}
-
-\subsubsection{Technologies and Frameworks}
-\begin{itemize}
-    \item Next.js and React teams
-    \item Flask and Python community
-    \item Ollama developers
-    \item Meta AI (Llama models)
-    \item Alibaba Cloud (Qwen models)
-    \item DeepSeek AI
-    \item MySQL development team
-\end{itemize}
-
-\subsubsection{Open Source Libraries}
-\begin{itemize}
-    \item Recharts for data visualization
-    \item Tailwind CSS for styling
-    \item PyMySQL for database connectivity
-    \item openpyxl for Excel export
-    \item Transformers and PEFT for fine-tuning
-\end{itemize}
-
-\subsection{Appendix H: References and Resources}
-
-\begin{enumerate}
-    \item Next.js Documentation: \url{https://nextjs.org/docs}
-    \item React Documentation: \url{https://react.dev}
-    \item Flask Documentation: \url{https://flask.palletsprojects.com}
-    \item Ollama Documentation: \url{https://ollama.ai/docs}
-    \item MySQL Documentation: \url{https://dev.mysql.com/doc}
-    \item Tailwind CSS Documentation: \url{https://tailwindcss.com/docs}
-    \item TypeScript Handbook: \url{https://www.typescriptlang.org/docs}
-    \item Recharts Documentation: \url{https://recharts.org}
-    \item LoRA Paper: \textit{Low-Rank Adaptation of Large Language Models}
-    \item SQL Injection Prevention: OWASP Guidelines
-\end{enumerate}
 
 \end{document}
