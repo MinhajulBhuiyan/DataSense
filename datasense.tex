@@ -123,6 +123,7 @@
 % Checkmark and cross symbols
 \newcommand{\cmark}{\textcolor{datasensegreen}{\ding{51}}}
 \newcommand{\xmark}{\textcolor{red}{\ding{55}}}
+\newcommand{\pmark}{\textcolor{orange}{\ding{108}}}
 
 \title{\textbf{DataSense: Natural Language to SQL Query Interface}\\
 \large{A Comprehensive Technical Report}}
@@ -323,7 +324,6 @@ DataSense follows a modern three-tier architecture consisting of:
     \item \textbf{Excel Export}: openpyxl 3.1
     \item \textbf{CORS}: flask-cors 4.0
     \item \textbf{Environment}: python-dotenv 1.0
-    \item \textbf{HTTP Client}: requests 2.31
 \end{itemize}
 \end{infobox}
 
@@ -333,22 +333,10 @@ DataSense follows a modern three-tier architecture consisting of:
     \item \textbf{LLM Engine}: Ollama
     \item \textbf{Models}: Llama 3 8B, Qwen 2.5 Coder, SQLCoder 7B, DeepSeek Coder 6.7B
     \item \textbf{Fine-tuning}: Optional LoRA adapters
-    \item \textbf{Training}: Transformers, PEFT, PyTorch
+    \item \textbf{Training}: Transformers, PyTorch
 \end{itemize}
 \end{infobox}
 
-\subsection{Component Architecture}
-
-\subsubsection{Frontend Components}
-\begin{itemize}
-    \item \textbf{page.tsx}: Main chat interface with conversation orchestration
-    \item \textbf{ChatInput}: Dynamic textarea with auto-resize and submission controls
-    \item \textbf{Message}: Message display with SQL visualization and results table
-    \item \textbf{Sidebar}: Navigation with conversation management and settings
-    \item \textbf{DataVisualization}: Intelligent chart generation component
-    \item \textbf{ThemeProvider}: Global theme state management
-    \item \textbf{Header}: Application branding and navigation
-\end{itemize}
 
 \section{Version Control \& GitHub}
 
@@ -384,16 +372,19 @@ DataSense follows a modern three-tier architecture consisting of:
 \begin{table}[H]
 \centering
 \rowcolors{2}{tablebg}{white}
-\begin{tabular}{@{}L{4.5cm}L{7.5cm}C{2.5cm}@{}}
+\begin{tabular}{|L{4.5cm}|L{7.5cm}|C{2.5cm}|}
+\hline
 \rowcolor{headerbg}
-\textcolor{white}{\textbf{Category}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Status}} \\ \midrule
+\textcolor{white}{\textbf{Category}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Status}} \\ \hline
 Schema Design & 23 normalized tables covering business operations, financials, inventory, and logistics & Complete \\
-Data Integrity & Referential constraints and immutable recording patterns ensure data consistency and audit trails & Implemented \\
-Security Model & Read-only enforcement with query validation and access controls & Active \\
-Performance & Preview/export pattern with server-side streaming for large datasets & Optimized \\
+Data Integrity & Referential constraints and immutable recording patterns ensure data consistency and audit trails & Implemented \\ \hline
+Security Model & Read-only enforcement with query validation and access controls & Active \\ \hline
+Performance & Preview/export pattern with server-side streaming for large datasets & Optimized \\ \hline
 \end{tabular}
 \caption{Database Architecture Overview}
 \end{table}
+
+\noindent\textbf{Database Progress:}\hspace{2cm}\textcolor{datasensegreen}{\rule{0.5\linewidth}{8pt}}\hspace{0.5cm}\textbf{100\%}
 
 \subsection{Key Design Principles}
 
@@ -404,18 +395,15 @@ Performance & Preview/export pattern with server-side streaming for large datase
     \item \textbf{Read-Only Safety}: Application layer enforces query-only access protecting data from unauthorized modifications
 \end{itemize}
 
-\subsection{Database Progress}
 
-\noindent\textbf{Database Progress:}\hspace{2cm}\textcolor{datasensegreen}{\rule{0.5\linewidth}{8pt}}\hspace{0.5cm}\textbf{100\%}
 
 \section{AI and Natural Language Processing}
 
 \subsection{LLM Integration}
 
-\subsubsection{Model Selection}
-DataSense supports multiple LLM models via Ollama:
+\begin{keybox}[Supported LLM Models via Ollama]
 \begin{enumerate}
-    \item \textbf{Llama 3 8B} (Default)
+    \item \textbf{Llama 3 8B (Default)}
     \begin{itemize}
         \item General-purpose model
         \item Excellent instruction following
@@ -442,6 +430,9 @@ DataSense supports multiple LLM models via Ollama:
         \item Good balance of speed and accuracy
     \end{itemize}
 \end{enumerate}
+\end{keybox}
+
+\noindent\textbf{Model Integration Status:}\hspace{2cm}\textcolor{datasensegreen}{\rule{0.5\linewidth}{8pt}}\hspace{0.5cm}\textbf{100\%}
 
 \subsection{Prompt Engineering}
 
@@ -456,68 +447,73 @@ The system constructs prompts with three main components:
 
 \subsubsection{Smart Schema Filtering}
 To optimize token usage and improve accuracy, the system implements intelligent schema filtering:
-Smart schema filtering detects which tables are relevant to the user's question and includes only those table definitions in the prompt. This reduces token usage and improves model accuracy without exposing the full schema when not needed.
-
-\subsection{LoRA Fine-tuning}
-
-\subsubsection{Training Dataset}
-The system includes 120 curated training examples in JSONL format:
-\begin{itemize}
-    \item Business-specific queries
-    \item Common reporting scenarios
-    \item Complex join patterns
-    \item Aggregation and grouping examples
-\end{itemize}
-
-\subsubsection{Training Process}
-Fine-tuning is simplified through a PowerShell script:
-Training is initiated via the \texttt{orchestrator/training/RUN\_ME.ps1} script; the process automates dependency installation, model download, and adapter training.
-
-The script:
 \begin{enumerate}
-    \item Installs required packages (transformers, peft, torch)
-    \item Downloads base model (DistilGPT-2)
-    \item Trains LoRA adapter (1-100 steps, configurable)
-    \item Saves adapter to \texttt{lora\_adapter/}
-    \item Completes in approximately 30 seconds
+    \item Detects which tables are relevant to the user's question.
+    \item Includes only those table definitions in the prompt.
+    \item Reduces token usage and improves model accuracy without exposing the full schema.
 \end{enumerate}
 
-\subsubsection{LoRA Benefits}
-\begin{itemize}
-    \item Domain-specific accuracy improvement
-    \item Minimal storage overhead (adapter only)
-    \item Fast training (single-step possible)
-    \item No modification to base model
-    \item Easy deployment and rollback
-\end{itemize}
+\subsection{Training Process}
+\begin{enumerate}
+    \item Curated dataset of 120 business queries.
+    \item Automated script builds compact LoRA adapter.
+    \item Enhances accuracy with fast deployment.
+\end{enumerate}
 
+\subsection{AI Components \& Pipeline Status}
+
+\begin{table}[H]
+\centering
+\rowcolors{2}{tablebg}{white}
+\begin{tabular}{|L{5cm}|L{6.5cm}|C{2cm}|}
+\hline
+\rowcolor{headerbg}
+\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Status}} \\ \hline
+\multicolumn{3}{|c|}{\textbf{Completed Components}} \\ \hline
+LLM Integration & Multi-model support via Ollama & \cmark \\ \hline
+Business Context Loader & Domain knowledge injection & \cmark \\ \hline
+Query Validator & SQL safety and injection checks & \cmark \\ \hline
+Input Validation & User query validation & \cmark \\ \hline
+SQL Cleaner & Markdown/formatting removal & \cmark \\ \hline
+Query Executor & Safe execution with limits & \cmark \\ \hline
+\multicolumn{3}{|c|}{\textbf{In Progress Components}} \\ \hline
+Prompt Builder & Dynamic LLM prompt construction & \pmark \\ \hline
+Query Processor & NL to SQL conversion pipeline & \pmark \\ \hline
+Result Formatter & Data response formatting & \pmark \\ \hline
+Dataset Generator & Business query examples & \pmark \\ \hline
+Smart Schema Filter & Context-aware table detection & \pmark \\ \hline
+\multicolumn{3}{|c|}{\textbf{Pending Components}} \\ \hline
+LoRA Training Script & Automated fine-tuning & \xmark \\ \hline
+Model Caching & Response caching system & \xmark \\ \hline
+Query Suggestion & Auto-complete predictions & \xmark \\ \hline
+Voice Input & Speech-to-text integration & \xmark \\ \hline
+Multi-turn Context & Conversation history tracking & \xmark \\ \hline
+Query Explanation & Natural language SQL breakdown & \xmark \\ \hline
+Anomaly Detection & Result pattern analysis & \xmark \\ \hline
+\end{tabular}
+\caption{AI Components Implementation Status}
+\end{table}
+
+\noindent\textbf{Progress:}\hspace{1cm}\textcolor{datasensegreen}{\rule{0.25\linewidth}{8pt}}\textcolor{orange}{\rule{0.21\linewidth}{8pt}}\textcolor{red}{\rule{0.29\linewidth}{8pt}}\hspace{0.5cm}\textbf{40\%}
 
 
 \section{User Interface Design}
-
 \subsection{Design Philosophy}
 DataSense UI follows modern design principles:
 \begin{itemize}
     \item \textbf{Simplicity}: Clean, uncluttered interface
-    \item \textbf{Responsiveness}: Mobile-first design
-    \item \textbf{Accessibility}: ARIA labels, keyboard shortcuts
+    % \item \textbf{Responsiveness}: Mobile-first design
+    % \item \textbf{Accessibility}: ARIA labels, keyboard shortcuts
     \item \textbf{Feedback}: Real-time status indicators
     \item \textbf{Consistency}: Unified color scheme and typography
 \end{itemize}
 
-\subsection{Color Scheme}
-\begin{itemize}
-    \item \textbf{Primary}: \texttt{\#08834d} (DataSense green)
-    \item \textbf{Light Theme}: Gray-based palette with white backgrounds
-    \item \textbf{Dark Theme}: Dark gray backgrounds with high contrast text
-    \item \textbf{Accent Colors}: Blue, amber, red for status indicators
-\end{itemize}
 
 \subsection{Key UI Components}
 
 \subsubsection{Chat Interface}
 \begin{itemize}
-    \item Message bubbles with role-based styling
+    %\item Message bubbles with role-based styling
     \item User messages: right-aligned, dark background
     \item Assistant messages: centered, light background
     \item SQL queries: syntax-highlighted code blocks
@@ -526,15 +522,15 @@ DataSense UI follows modern design principles:
 
 \subsubsection{Input Area}
 \begin{itemize}
-    \item Auto-resizing textarea (max 200px height)
+    %\item Auto-resizing textarea (max 200px height)
     \item Send button (enabled when text present)
     \item Stop button (during query execution)
-    \item Keyboard shortcuts (Enter to send, Shift+Enter for newline)
+    %\item Keyboard shortcuts (Enter to send, Shift+Enter for newline)
 \end{itemize}
 
 \subsubsection{Sidebar}
 \begin{itemize}
-    \item Collapsible design (mobile-friendly)
+    \item Collapsible design 
     \item Conversation list with rename/delete actions
     \item New chat button
     \item Settings modal trigger
@@ -547,16 +543,6 @@ DataSense UI follows modern design principles:
 \subsubsection{Intelligent Chart Detection}
 The system analyzes result data to suggest appropriate chart types:
 
-\begin{enumerate}
-    \item \textbf{Column Analysis}
-    \begin{itemize}
-        \item Detect data types (numeric, categorical, temporal, boolean)
-        \item Count unique values
-        \item Identify null values
-        \item Sample data for patterns
-    \end{itemize}
-    
-    \item \textbf{Chart Suggestions}
     \begin{itemize}
         \item \textbf{Bar Chart}: Categorical + numeric columns
         \item \textbf{Horizontal Bar}: Many categories (better readability)
@@ -566,174 +552,73 @@ The system analyzes result data to suggest appropriate chart types:
         \item \textbf{Scatter Plot}: Two numeric columns (correlation)
     \end{itemize}
     
-    \item \textbf{Chart Generation}
-    \begin{itemize}
-        \item Data transformation for chart format
-        \item Professional color palette
-        \item Responsive sizing
-        \item Interactive tooltips
-        \item Legend display
-    \end{itemize}
-\end{enumerate}
 
+\subsection{UI Components \& Status}
 
-\section{Conversation Management}
+\begin{table}[H]
+\centering
+\rowcolors{2}{tablebg}{white}
+\begin{tabular}{|L{5cm}|L{6.5cm}|C{2cm}|}
+\hline
+\rowcolor{headerbg}
+\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Status}} \\ \hline
+\multicolumn{3}{|c|}{\textbf{Completed Components}} \\ \hline
+Design Prompting Interface & Structured prompt input with validation & \cmark \\ \hline
+Theme System & Light/dark mode with next-themes & \cmark \\ \hline
+Color Scheme & Primary green, accent colors (blue, amber, red) & \cmark \\ \hline
+Chat Interface & Message bubbles, SQL highlighting, result tables & \cmark \\ \hline
+Input Area & Auto-resize textarea, send/stop controls, shortcuts & \cmark \\ \hline
+Sidebar & Collapsible, conversations, settings, theme toggle & \cmark \\ \hline
+Bar/Line/Pie Charts & Basic chart types with Recharts & \cmark \\ \hline
+Area/Scatter Charts & Volume emphasis and correlation plots & \cmark \\ \hline
+Chart Auto-suggestion & Intelligent chart type detection & \cmark \\ \hline
+Interactive Tooltips & Hover-based data display & \cmark \\ \hline
+\multicolumn{3}{|c|}{\textbf{In Progress Components}} \\ \hline
+Responsive UI & Mobile-first Tailwind CSS refinements & \pmark \\ \hline
+Advanced Charts & Heatmaps, treemaps planned & \pmark \\ \hline
+\multicolumn{3}{|c|}{\textbf{Pending Components}} \\ \hline
+Mobile App & PWA or React Native packaging & \xmark \\ \hline
+Extended Accessibility & Full ARIA compliance, screen reader testing & \xmark \\ \hline
+\end{tabular}
+\caption{UI Components Implementation Status}
+\end{table}
 
-\subsection{Features}
-\begin{itemize}
-    \item \textbf{Multiple Conversations}: Up to 20 conversations stored
-    \item \textbf{Auto-Naming}: First user message becomes conversation name
-    \item \textbf{Manual Rename}: Click to edit conversation names
-    \item \textbf{Deletion}: Remove unwanted conversations
-    \item \textbf{Switching}: Easy navigation between conversations
-    \item \textbf{Persistence}: localStorage-based storage (client-side)
-\end{itemize}
-
-\subsection{Message Structure}
-Each message contains:
-\begin{itemize}
-    \item Unique ID (timestamp + random string)
-    \item Role (user or assistant)
-    \item Content (natural language text)
-    \item SQL query (if applicable)
-    \item Results array (if applicable)
-    \item Column names (if applicable)
-    \item Error message (if applicable)
-    \item Timestamp
-    \item Like/dislike status
-    \item Export token (if applicable)
-\end{itemize}
-
-\subsection{Storage Implementation}
-\begin{lstlisting}[language=JavaScript]
-const saveConversations = (conversations) => {
-    localStorage.setItem(
-        'datasense-conversations',
-        JSON.stringify(conversations)
-    );
-};
-
-const loadConversations = () => {
-    const saved = localStorage.getItem('datasense-conversations');
-    return saved ? JSON.parse(saved) : [];
-};
-\end{lstlisting}
+\noindent\textbf{Progress:}\hspace{1cm}\textcolor{datasensegreen}{\rule{0.54\linewidth}{8pt}}\textcolor{orange}{\rule{0.11\linewidth}{8pt}}\textcolor{red}{\rule{0.11\linewidth}{8pt}}\hspace{0.5cm}\textbf{72\%}
 
 
 \section{Performance Optimization}
 
-\subsection{Preview and Export Pattern}
+\subsection{Performance Components \& Status}
 
-\subsubsection{Problem Statement}
-Large query results (10,000+ rows) cause:
-\begin{itemize}
-    \item Slow initial response times
-    \item High memory consumption
-    \item Poor user experience
-    \item Browser performance issues
-\end{itemize}
+\begin{table}[H]
+\centering
+\rowcolors{2}{tablebg}{white}
+\begin{tabular}{|L{5cm}|L{6.5cm}|C{2cm}|}
+\hline
+\rowcolor{headerbg}
+\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Status}} \\ \hline
+\multicolumn{3}{|c|}{\textbf{Completed Components}} \\ \hline
+Preview/Export Pattern & 50-row preview with full XLSX export & \cmark \\ \hline
+Server-Side Cursor & Streaming for large dataset exports & \cmark \\ \hline
+\multicolumn{3}{|c|}{\textbf{In Progress Components}} \\ \hline
+Query Wrapping & Schema-aware LIMIT application & \pmark \\ \hline
+\multicolumn{3}{|c|}{\textbf{Pending Components}} \\ \hline
+Redis Caching & Query result caching layer & \xmark \\ \hline
+Virtual Scrolling & Large table rendering optimization & \xmark \\ \hline
+Result Pagination & Server-side page navigation & \xmark \\ \hline
+WebSocket Updates & Real-time query status streaming & \xmark \\ \hline
+CDN Integration & Frontend asset delivery optimization & \xmark \\ \hline
+Database Read Replicas & Horizontal scaling for queries & \xmark \\ \hline
+Connection Pooling & Persistent DB connection management & \xmark \\ \hline
+Index Optimization & Automated index recommendations & \xmark \\ \hline
+Query Plan Analysis & Explain-based optimization hints & \xmark \\ \hline
+Lazy Loading & On-demand data fetching & \xmark \\ \hline
+Code Splitting & Frontend bundle optimization & \xmark \\ \hline
+\end{tabular}
+\caption{Performance Optimization Implementation Status}
+\end{table}
 
-\subsubsection{Solution: Two-Phase Approach}
-
-\textbf{Phase 1: Preview (Immediate)}
-\begin{enumerate}
-    \item Execute query with LIMIT 51
-    \item Return first 50 rows immediately
-    \item Display in UI within seconds
-    \item Generate export token if more rows exist
-\end{enumerate}
-
-\textbf{Phase 2: Export (On-Demand)}
-\begin{enumerate}
-    \item User clicks "Download Excel" button
-    \item Backend validates token
-    \item Streams full result using server-side cursor
-    \item Generates XLSX file with openpyxl
-    \item Downloads to user's browser
-\end{enumerate}
-
-\subsubsection{Implementation}
-\begin{lstlisting}[language=Python]
-# Preview with limit
-PREVIEW_LIMIT = 50
-PREVIEW_CHECK = PREVIEW_LIMIT + 1
-
-success, rows, columns = executor.db.execute_query_with_limit(
-    cleaned_query, PREVIEW_CHECK
-)
-
-if len(rows) <= PREVIEW_LIMIT:
-    # Return all rows
-    return jsonify({
-        'results': format_results(rows),
-        'has_more': False
-    })
-else:
-    # Return preview + token
-    preview_rows = rows[:PREVIEW_LIMIT]
-    token = create_token(cleaned_query)
-    return jsonify({
-        'results': format_results(preview_rows),
-        'has_more': True,
-        'export_token': token
-    })
-\end{lstlisting}
-
-\subsection{Server-Side Cursor Streaming}
-
-For export operations, server-side cursors prevent memory overflow:
-\begin{lstlisting}[language=Python]
-def stream_query_with_columns(self, query: str):
-    cursor = self.connection.cursor(pymysql.cursors.SSCursor)
-    cursor.execute(query)
-    columns = [desc[0] for desc in cursor.description]
-    
-    def generator():
-        while True:
-            rows = cursor.fetchmany(1000)
-            if not rows:
-                break
-            for r in rows:
-                yield r
-    
-    return columns, generator()
-\end{lstlisting}
-
-Benefits:
-\begin{itemize}
-    \item Constant memory usage
-    \item Handles millions of rows
-    \item Progressive processing
-    \item Lower latency
-\end{itemize}
-
-\subsection{Database Query Optimization}
-
-\subsubsection{Schema-Aware Query Wrapping}
-\begin{lstlisting}[language=SQL]
-SELECT * FROM (
-    -- User's original query
-    SELECT * FROM distributors WHERE is_active = 1
-) AS _sub LIMIT 51;
-\end{lstlisting}
-
-This approach:
-\begin{itemize}
-    \item Preserves original query logic
-    \item Applies limit safely
-    \item Avoids query rewriting errors
-    \item Maintains column aliases
-\end{itemize}
-
-\subsubsection{Index Recommendations}
-For optimal performance, the following indexes are recommended:
-\begin{itemize}
-    \item Primary keys (auto-indexed)
-    \item Foreign keys for joins
-    \item Status columns for filtering
-    \item Date columns for range queries
-    \item Frequently queried columns
-\end{itemize}
+\noindent\textbf{Progress:}\hspace{1.5cm}\textcolor{datasensegreen}{\rule{0.1\linewidth}{8pt}}\textcolor{orange}{\rule{0.05\linewidth}{8pt}}\textcolor{red}{\rule{0.55\linewidth}{8pt}}\hspace{0.5cm}\textbf{15\%}
 
 
 
@@ -842,21 +727,22 @@ The following table summarizes completion status across the system architecture:
 \begin{table}[H]
 \centering
 \rowcolors{2}{tablebg}{white}
-\begin{tabular}{@{}L{4cm}C{2.5cm}L{5.5cm}@{}}
+\begin{tabular}{|L{4cm}|C{2.5cm}|L{5.5cm}|}
+\hline
 \rowcolor{headerbg}
-\textcolor{white}{\textbf{Layer}} & \textcolor{white}{\textbf{Completion}} & \textcolor{white}{\textbf{Status}} \\ \midrule
-Database Layer & 100\% & 23 tables, normalized schema, migrations \\
-Backend API & 100\% & Flask REST API, all endpoints functional \\
-AI Integration & 100\% & Ollama integration, multi-model support \\
-Query Validation & 100\% & Whitelist/blacklist, SQL injection prevention \\
-Business Logic & 95\% & Core flows complete, minor edge cases \\
-Frontend UI & 100\% & Next.js, all components implemented \\
-Data Visualization & 90\% & Chart generation, more types planned \\
-Export System & 100\% & Preview/export pattern, XLSX streaming \\
-Authentication & 0\% & Planned for Phase 2 \\
-Testing & 60\% & Model testing complete, unit tests partial \\
-Documentation & 95\% & Technical report, inline docs, README \\
-Deployment & 85\% & Local setup complete, production pending \\ \bottomrule
+\textcolor{white}{\textbf{Layer}} & \textcolor{white}{\textbf{Completion}} & \textcolor{white}{\textbf{Status}} \\ \hline
+Database Layer & 100\% & 23 tables, normalized schema, migrations \\ \hline
+Backend API & 100\% & Flask REST API, all endpoints functional \\ \hline
+AI Integration & 100\% & Ollama integration, multi-model support \\ \hline
+Query Validation & 100\% & Whitelist/blacklist, SQL injection prevention \\ \hline
+Business Logic & 95\% & Core flows complete, minor edge cases \\ \hline
+Frontend UI & 100\% & Next.js, all components implemented \\ \hline
+Data Visualization & 90\% & Chart generation, more types planned \\ \hline
+Export System & 100\% & Preview/export pattern, XLSX streaming \\ \hline
+Authentication & 0\% & Planned for Phase 2 \\ \hline
+Testing & 60\% & Model testing complete, unit tests partial \\ \hline
+Documentation & 95\% & Technical report, inline docs, README \\ \hline
+Deployment & 85\% & Local setup complete, production pending \\ \hline
 \end{tabular}
 \caption{Implementation Progress by System Layer}
 \end{table}
@@ -929,21 +815,22 @@ Deployment & 85\% & Local setup complete, production pending \\ \bottomrule
 \begin{table}[H]
 \centering
 \rowcolors{2}{tablebg}{white}
-\begin{tabular}{@{}L{5cm}R{3cm}@{}}
+\begin{tabular}{|L{5cm}|R{3cm}|}
+\hline
 \rowcolor{headerbg}
-\textcolor{white}{\textbf{Metric}} & \textcolor{white}{\textbf{Count}} \\ \midrule
-Total Lines of Code (LoC) & $\sim$8,500 \\
-Backend Files (Python) & 12 \\
-Frontend Files (TypeScript/React) & 23 \\
-React Components & 8 \\
-API Endpoints & 6 \\
-Database Tables & 23 \\
-Business Context Files & 5 \\
-Training Examples & 120 \\
-Dependencies (Frontend) & 13 \\
-Dependencies (Backend) & 8 \\
-Documentation Pages & 52 \\
-Git Commits & $\sim$150+ \\ \bottomrule
+\textcolor{white}{\textbf{Metric}} & \textcolor{white}{\textbf{Count}} \\ \hline
+Total Lines of Code (LoC) & $\sim$8,500 \\ \hline
+Backend Files (Python) & 12 \\ \hline
+Frontend Files (TypeScript/React) & 23 \\ \hline
+React Components & 8 \\ \hline
+API Endpoints & 6 \\ \hline
+Database Tables & 23 \\ \hline
+Business Context Files & 5 \\ \hline
+Training Examples & 120 \\ \hline
+Dependencies (Frontend) & 13 \\ \hline
+Dependencies (Backend) & 8 \\ \hline
+Documentation Pages & 52 \\ \hline
+Git Commits & $\sim$150+ \\ \hline
 \end{tabular}
 \caption{Project Development Metrics}
 \end{table}
@@ -966,15 +853,16 @@ Git Commits & $\sim$150+ \\ \bottomrule
 \begin{table}[H]
 \centering
 \rowcolors{2}{tablebg}{white}
-\begin{tabular}{@{}L{3cm}L{3cm}L{5cm}@{}}
+\begin{tabular}{|L{3cm}|L{3cm}|L{5cm}|}
+\hline
 \rowcolor{headerbg}
-\textcolor{white}{\textbf{Phase}} & \textcolor{white}{\textbf{Date}} & \textcolor{white}{\textbf{Deliverable}} \\ \midrule
-Prototype & Dec 2025 & Basic NL2SQL with Flask + React \\
-Alpha & Jan 2026 & Full-stack MVP with validation \\
-Beta & Jan 2026 & Chart generation, export system \\
-V1.0 (Current) & Jan 2026 & Production-ready core features \\
-V1.1 (Planned) & Feb 2026 & Authentication, caching \\
-V2.0 (Planned) & Q2 2026 & Multi-DB, scheduling, advanced AI \\ \bottomrule
+\textcolor{white}{\textbf{Phase}} & \textcolor{white}{\textbf{Date}} & \textcolor{white}{\textbf{Deliverable}} \\ \hline
+Prototype & Dec 2025 & Basic NL2SQL with Flask + React \\ \hline
+Alpha & Jan 2026 & Full-stack MVP with validation \\ \hline
+Beta & Jan 2026 & Chart generation, export system \\ \hline
+V1.0 (Current) & Jan 2026 & Production-ready core features \\ \hline
+V1.1 (Planned) & Feb 2026 & Authentication, caching \\ \hline
+V2.0 (Planned) & Q2 2026 & Multi-DB, scheduling, advanced AI \\ \hline
 \end{tabular}
 \caption{Project Timeline and Release Milestones}
 \end{table}
@@ -1049,26 +937,27 @@ DataSense represents a successful implementation of Natural Language to SQL tech
 \begin{table}[H]
 \centering
 \rowcolors{2}{tablebg}{white}
-\begin{tabular}{@{}L{4cm}L{3cm}L{5cm}@{}}
+\begin{tabular}{|L{4cm}|L{3cm}|L{5cm}|}
+\hline
 \rowcolor{headerbg}
-\textcolor{white}{\textbf{Table}} & \textcolor{white}{\textbf{Primary Key}} & \textcolor{white}{\textbf{Purpose}} \\ \midrule
-distributors & distributor\_id & Customer master data \\
-products & product\_id & Product catalog \\
-orders & order\_id & Customer orders \\
-order\_items & order\_item\_id & Order line items \\
-invoices & invoice\_id & Invoice headers \\
-invoice\_items & invoice\_item\_id & Invoice line items \\
-payments & payment\_id & Payment records \\
-refunds & refund\_id & Refund transactions \\
-sales\_returns & return\_id & Return requests \\
-return\_items & return\_item\_id & Return line items \\
-cancellations & cancellation\_id & Cancellations \\
-inventory\_transactions & tx\_id & Stock movements \\
-vehicles & vehicle\_id & Delivery vehicles \\
-load\_plans & load\_plan\_id & Delivery schedules \\
-load\_plan\_items & load\_plan\_item\_id & Load assignments \\
-challans & challan\_id & Delivery documents \\
-gate\_passes & gate\_pass\_id & Exit passes \\ \bottomrule
+\textcolor{white}{\textbf{Table}} & \textcolor{white}{\textbf{Primary Key}} & \textcolor{white}{\textbf{Purpose}} \\ \hline
+distributors & distributor\_id & Customer master data \\ \hline
+products & product\_id & Product catalog \\ \hline
+orders & order\_id & Customer orders \\ \hline
+order\_items & order\_item\_id & Order line items \\ \hline
+invoices & invoice\_id & Invoice headers \\ \hline
+invoice\_items & invoice\_item\_id & Invoice line items \\ \hline
+payments & payment\_id & Payment records \\ \hline
+refunds & refund\_id & Refund transactions \\ \hline
+sales\_returns & return\_id & Return requests \\ \hline
+return\_items & return\_item\_id & Return line items \\ \hline
+cancellations & cancellation\_id & Cancellations \\ \hline
+inventory\_transactions & tx\_id & Stock movements \\ \hline
+vehicles & vehicle\_id & Delivery vehicles \\ \hline
+load\_plans & load\_plan\_id & Delivery schedules \\ \hline
+load\_plan\_items & load\_plan\_item\_id & Load assignments \\ \hline
+challans & challan\_id & Delivery documents \\ \hline
+gate\_passes & gate\_pass\_id & Exit passes \\ \hline
 \end{tabular}
 \caption{Core Database Tables}
 \end{table}
