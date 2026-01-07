@@ -21,6 +21,17 @@
 \usepackage{array}
 \usepackage{pifont}
 
+% Table of contents styling
+\usepackage{tocloft}
+% Color ToC title and spacing
+\renewcommand{\cfttoctitlefont}{\color{datasensegreen}\huge\bfseries}
+\renewcommand{\cftaftertoctitle}{\vspace{0.5em}}
+% Make dot leaders and page numbers green
+\renewcommand{\cftdot}{\textcolor{datasensegreen}{.}}
+\renewcommand{\cftsecpagefont}{\color{datasensegreen}}
+\renewcommand{\cftsubsecpagefont}{\color{datasensegreen}}
+\renewcommand{\cftsubsubsecpagefont}{\color{datasensegreen}}
+
 % Define custom colors - UPDATED PRIMARY COLOR
 \definecolor{datasensegreen}{HTML}{00764c}
 \definecolor{headerbg}{HTML}{00764c}
