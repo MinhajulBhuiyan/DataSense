@@ -397,6 +397,96 @@ Performance & Preview/export pattern with server-side streaming for large datase
 
 
 
+\section{Backend Architecture}
+
+\subsection{Flask API Server}
+
+The backend is built on Flask 3.0, providing a lightweight yet powerful RESTful API that orchestrates all system operations. The architecture emphasizes modularity, security, and maintainability.
+
+\subsection{API Endpoints}
+
+The system exposes six primary REST endpoints for complete functionality:
+
+\begin{table}[H]
+\centering
+\rowcolors{2}{tablebg}{white}
+\begin{tabular}{|L{3.5cm}|L{2cm}|L{6cm}|}
+\hline
+\rowcolor{headerbg}
+\textcolor{white}{\textbf{Endpoint}} & \textcolor{white}{\textbf{Method}} & \textcolor{white}{\textbf{Purpose}} \\ \hline
+/api/query & POST & Processes natural language queries, returns SQL and results \\ \hline
+/api/export & POST & Exports full query results to XLSX using token \\ \hline
+/api/models & GET & Lists available Ollama models \\ \hline
+/api/health & GET & System health check and database connectivity \\ \hline
+/api/test & POST & Model comparison testing endpoint \\ \hline
+/api/schema & GET & Returns database schema information \\ \hline
+\end{tabular}
+\caption{Backend API Endpoints}
+\end{table}
+
+\subsection{Backend Components \& Status}
+
+\begin{table}[H]
+\centering
+\rowcolors{2}{tablebg}{white}
+\begin{tabular}{|L{5cm}|L{6.5cm}|C{2cm}|}
+\hline
+\rowcolor{headerbg}
+\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Status}} \\ \hline
+\multicolumn{3}{|c|}{\textbf{Completed Components}} \\ \hline
+Flask API Server & REST API with CORS and error handling & \cmark \\ \hline
+Database Connector & PyMySQL connection with pooling & \cmark \\ \hline
+Query Executor & Safe SQL execution with limits & \cmark \\ \hline
+Query Validator & Whitelist/blacklist SQL validation & \cmark \\ \hline
+Business Context Loader & Markdown file parser and loader & \cmark \\ \hline
+Export Token Manager & Secure token generation and validation & \cmark \\ \hline
+Health Check Endpoint & System status monitoring & \cmark \\ \hline
+Model List Endpoint & Ollama model enumeration & \cmark \\ \hline
+Error Handler & Centralized exception handling & \cmark \\ \hline
+Environment Config & .env based configuration & \cmark \\ \hline
+\multicolumn{3}{|c|}{\textbf{In Progress Components}} \\ \hline
+Query Store & Persistent query history storage & \pmark \\ \hline
+Schema Endpoint & Dynamic schema discovery & \pmark \\ \hline
+\multicolumn{3}{|c|}{\textbf{Pending Components}} \\ \hline
+Authentication Service & JWT-based user authentication & \xmark \\ \hline
+Rate Limiter & Request throttling per user/IP & \xmark \\ \hline
+Cache Layer & Redis-based response caching & \xmark \\ \hline
+Async Task Queue & Celery for background jobs & \xmark \\ \hline
+API Documentation & Swagger/OpenAPI spec & \xmark \\ \hline
+Logging Service & Structured logging with rotation & \xmark \\ \hline
+Metrics Collector & Prometheus metrics export & \xmark \\ \hline
+\end{tabular}
+\caption{Backend Components Implementation Status}
+\end{table}
+
+\noindent\textbf{Progress:}\hspace{1cm}\textcolor{datasensegreen}{\rule{0.40\linewidth}{8pt}}\textcolor{orange}{\rule{0.08\linewidth}{8pt}}\textcolor{red}{\rule{0.28\linewidth}{8pt}}\hspace{0.5cm}\textbf{58\%}
+
+\subsection{Security Measures}
+
+The backend implements multiple security layers:
+
+\begin{itemize}
+    \item \textbf{Read-Only Database User}: Prevents destructive operations at database level
+    \item \textbf{SQL Injection Prevention}: Multi-layer validation with whitelist and blacklist
+    \item \textbf{Query Keyword Filtering}: Blocks DELETE, UPDATE, INSERT, DROP, ALTER, TRUNCATE
+    \item \textbf{CORS Configuration}: Controlled cross-origin access
+    \item \textbf{Environment Isolation}: Secrets stored in .env files
+    \item \textbf{Token-Based Export}: Secure export system with time-limited tokens
+\end{itemize}
+
+\subsection{Error Handling}
+
+Comprehensive error handling ensures graceful degradation:
+
+\begin{enumerate}
+    \item \textbf{Database Connection Errors}: Automatic retry with exponential backoff
+    \item \textbf{LLM Timeout Handling}: Fallback responses for slow model responses
+    \item \textbf{Validation Errors}: Clear user-facing error messages
+    \item \textbf{SQL Execution Errors}: Safe error reporting without exposing schema
+    \item \textbf{Export Failures}: Token invalidation and user notification
+\end{enumerate}
+
+
 \section{AI and Natural Language Processing}
 
 \subsection{LLM Integration}
@@ -624,32 +714,38 @@ Code Splitting & Frontend bundle optimization & \xmark \\ \hline
 
 \section{Testing and Quality Assurance}
 
-\subsection{Model Testing}
-The system includes a model comparison tool (\texttt{test\_models.py}) that:
-\begin{itemize}
-    \item Tests multiple models against example queries
-    \item Measures response time and accuracy
-    \item Posts results to frontend test page (\texttt{/test\_models})
-    \item Generates statistical reports (avg, median, min, max)
-\end{itemize}
+\subsection{Testing Components \& Status}
 
-\subsection{Testing Strategy}
-\begin{enumerate}
-    \item \textbf{Unit Tests}: Individual component testing
-    \item \textbf{Integration Tests}: API endpoint testing
-    \item \textbf{End-to-End Tests}: Full workflow validation
-    \item \textbf{Performance Tests}: Load and stress testing
-    \item \textbf{Security Tests}: SQL injection attempts
-    \item \textbf{Usability Tests}: User acceptance testing
-\end{enumerate}
+\begin{table}[H]
+\centering
+\rowcolors{2}{tablebg}{white}
+\begin{tabular}{|L{5cm}|L{6.5cm}|C{2cm}|}
+\hline
+\rowcolor{headerbg}
+\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Status}} \\ \hline
+\multicolumn{3}{|c|}{\textbf{Completed Components}} \\ \hline
+Model Comparison Tool & Multi-model accuracy and timing tests & \cmark \\ \hline
+SQL Injection Tests & Security validation for query inputs & \cmark \\ \hline
+\multicolumn{3}{|c|}{\textbf{In Progress Components}} \\ \hline
+Cross-browser Testing & Chrome, Firefox, Safari, Edge validation & \pmark \\ \hline
+\multicolumn{3}{|c|}{\textbf{Pending Components}} \\ \hline
+Unit Test Suite & Individual component testing coverage & \xmark \\ \hline
+Integration Tests & API endpoint validation & \xmark \\ \hline
+End-to-End Tests & Full workflow automation & \xmark \\ \hline
+Performance Tests & Load and stress testing & \xmark \\ \hline
+Usability Tests & User acceptance testing & \xmark \\ \hline
+Test Coverage Reports & Code coverage metrics generation & \xmark \\ \hline
+CI/CD Pipeline & Automated test execution on commits & \xmark \\ \hline
+Regression Suite & Automated regression testing & \xmark \\ \hline
+API Contract Tests & Request/response schema validation & \xmark \\ \hline
+Accessibility Tests & WCAG compliance validation & \xmark \\ \hline
+Mobile Testing & iOS/Android browser testing & \xmark \\ \hline
+\end{tabular}
+\caption{Testing \& QA Implementation Status}
+\end{table}
 
-\subsection{Quality Metrics}
-\begin{itemize}
-    \item Query accuracy: \textgreater 90\% correct SQL generation
-    \item Response time: \textless 5 seconds for typical queries
-    \item System availability: \textgreater 99\% uptime
-    \item Error rate: \textless 1\% for valid inputs
-\end{itemize}
+\noindent\textbf{Progress:}\hspace{1.5cm}\textcolor{datasensegreen}{\rule{0.1\linewidth}{8pt}}\textcolor{orange}{\rule{0.05\linewidth}{8pt}}\textcolor{red}{\rule{0.55\linewidth}{8pt}}\hspace{0.5cm}\textbf{15\%}
+
 
 \section{Future Enhancements}
 
