@@ -20,6 +20,7 @@
 \usepackage{colortbl}
 \usepackage{array}
 \usepackage{pifont}
+\usetikzlibrary{calc, positioning}
 
 % Table of contents styling
 \usepackage{tocloft}
@@ -254,7 +255,7 @@ datasensegreen]
 
 \vspace*{\fill}
 \begin{abstract}
-DataSense is a modern full-stack Natural Language to SQL (NL2SQL) application that enables non-technical users to query complex databases using plain English. Designed for an ice cream manufacturing and distribution company, the system provides an intelligent interface for data exploration, business intelligence, and reporting. This report presents a comprehensive technical overview of the system architecture, implementation details, key features, and design decisions that make DataSense a production-ready enterprise solution.
+DataSense is a modern full-stack Natural Language to SQL (NL2SQL) application that enables non-technical users to query complex databases using plain English. Designed for Data Limited, the system provides an intelligent interface for data exploration, business intelligence, and reporting. This report presents a comprehensive technical overview of the system architecture, implementation details, key features, and design decisions that make DataSense a production-ready enterprise solution.
 \end{abstract}
 \vspace*{\fill}
 
@@ -282,29 +283,6 @@ DataSense is a Natural Language–to–SQL application that enables users to que
 \end{enumerate}
 \end{keybox}
 
-\subsection{Project Timeline}
-\begin{table}[H]
-\centering
-\rowcolors{2}{tablebg}{white}
-\begin{tabular}{|L{3cm}|L{3cm}|L{5cm}|}
-\hline
-\rowcolor{headerbg}
-\textcolor{white}{\textbf{Phase}} & \textcolor{white}{\textbf{Date}} & \textcolor{white}{\textbf{Deliverable}} \\ \hline
-Prototype & Dec 2025 & Basic NL2SQL with Flask + React \\ \hline
-Alpha & Jan 2026 & Full-stack MVP with validation \\ \hline
-Beta & Jan 2026 & Chart generation, export system \\ \hline
-V1.0 (Current) & Jan 2026 & Production-ready core features \\ \hline
-V1.1 (Planned) & Feb 2026 & Authentication, caching \\ \hline
-V2.0 (Planned) & Q2 2026 & Multi-DB, scheduling, advanced AI \\ \hline
-\end{tabular}
-\caption{Project Timeline and Release Milestones}
-\end{table}
-
-
-% \subsection{Where -- System Architecture}
-% High-level system architecture and deployment topology details are presented in Section~\ref{sec:architecture}. See Section~2 for the full System Architecture discussion.
-
-\newpage
 \section{System Architecture}
 
 \subsection{High-Level Architecture}
@@ -354,7 +332,7 @@ DataSense follows a modern three-tier architecture consisting of:
 \end{itemize}
 \end{infobox}
 
-
+\newpage
 \section{Version Control \& GitHub}
 
 \begin{keybox}[Repository Health Summary]
@@ -374,7 +352,7 @@ DataSense follows a modern three-tier architecture consisting of:
 \hfill
 \begin{minipage}{0.48\linewidth}
 \begin{itemize}
-    \item \textbf{Total commits}: 32
+    \item \textbf{Total commits}: 43
     \item \textbf{Contributors}: 2
 \end{itemize}
 \end{minipage}
@@ -708,25 +686,22 @@ Extended Accessibility & Full ARIA compliance, screen reader testing & \xmark \\
 \multicolumn{3}{|c|}{\textbf{Completed Components}} \\ \hline
 Preview/Export Pattern & 50-row preview with full XLSX export & \cmark \\ \hline
 Server-Side Cursor & Streaming for large dataset exports & \cmark \\ \hline
+Connection Auto-Reconnect & Automatic DB reconnection on failure & \cmark \\ \hline
 \multicolumn{3}{|c|}{\textbf{In Progress Components}} \\ \hline
-Query Wrapping & Schema-aware LIMIT application & \pmark \\ \hline
+Query Wrapping & Automatic LIMIT application & \pmark \\ \hline
 \multicolumn{3}{|c|}{\textbf{Pending Components}} \\ \hline
-Redis Caching & Query result caching layer & \xmark \\ \hline
-Virtual Scrolling & Large table rendering optimization & \xmark \\ \hline
-Result Pagination & Server-side page navigation & \xmark \\ \hline
-WebSocket Updates & Real-time query status streaming & \xmark \\ \hline
-CDN Integration & Frontend asset delivery optimization & \xmark \\ \hline
-Database Read Replicas & Horizontal scaling for queries & \xmark \\ \hline
-Connection Pooling & Persistent DB connection management & \xmark \\ \hline
-Index Optimization & Automated index recommendations & \xmark \\ \hline
-Query Plan Analysis & Explain-based optimization hints & \xmark \\ \hline
-Lazy Loading & On-demand data fetching & \xmark \\ \hline
-Code Splitting & Frontend bundle optimization & \xmark \\ \hline
+Redis Caching & Cache repeated query results & \xmark \\ \hline
+Virtual Scrolling & Render large tables efficiently & \xmark \\ \hline
+Result Pagination & Navigate large result sets & \xmark \\ \hline
+WebSocket Updates & Real-time query execution status & \xmark \\ \hline
+Query Timeout Handling & Cancel long-running queries & \xmark \\ \hline
+Memory Management & Limit result set memory usage & \xmark \\ \hline
+Database Connection Pool & Reuse connections efficiently & \xmark \\ \hline
 \end{tabular}
 \caption{Performance Optimization Implementation Status}
 \end{table}
 
-\noindent\textbf{Progress:}\hspace{1.5cm}\textcolor{datasensegreen}{\rule{0.1\linewidth}{8pt}}\textcolor{orange}{\rule{0.05\linewidth}{8pt}}\textcolor{red}{\rule{0.55\linewidth}{8pt}}\hspace{0.5cm}\textbf{15\%}
+\noindent\textbf{Progress:}\hspace{1.5cm}\textcolor{datasensegreen}{\rule{0.15\linewidth}{8pt}}\textcolor{orange}{\rule{0.05\linewidth}{8pt}}\textcolor{red}{\rule{0.50\linewidth}{8pt}}\hspace{0.5cm}\textbf{37\%}
 
 
 \newpage
@@ -743,26 +718,26 @@ Code Splitting & Frontend bundle optimization & \xmark \\ \hline
 \textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Status}} \\ \hline
 \multicolumn{3}{|c|}{\textbf{Completed Components}} \\ \hline
 Model Comparison Tool & Multi-model accuracy and timing tests & \cmark \\ \hline
+Connection Diagnostics & Database and Ollama connectivity tests & \cmark \\ \hline
 SQL Injection Tests & Security validation for query inputs & \cmark \\ \hline
+Manual QA Testing & Core workflow validation and bug fixes & \cmark \\ \hline
 \multicolumn{3}{|c|}{\textbf{In Progress Components}} \\ \hline
-Cross-browser Testing & Chrome, Firefox, Safari, Edge validation & \pmark \\ \hline
+Query Validation Tests & Edge cases for SQL generation & \pmark \\ \hline
 \multicolumn{3}{|c|}{\textbf{Pending Components}} \\ \hline
-Unit Test Suite & Individual component testing coverage & \xmark \\ \hline
-Integration Tests & API endpoint validation & \xmark \\ \hline
-End-to-End Tests & Full workflow automation & \xmark \\ \hline
-Performance Tests & Load and stress testing & \xmark \\ \hline
-Usability Tests & User acceptance testing & \xmark \\ \hline
-Test Coverage Reports & Code coverage metrics generation & \xmark \\ \hline
-CI/CD Pipeline & Automated test execution on commits & \xmark \\ \hline
-Regression Suite & Automated regression testing & \xmark \\ \hline
-API Contract Tests & Request/response schema validation & \xmark \\ \hline
-Accessibility Tests & WCAG compliance validation & \xmark \\ \hline
-Mobile Testing & iOS/Android browser testing & \xmark \\ \hline
+Unit Tests & Backend functions and React components & \xmark \\ \hline
+API Integration Tests & REST endpoint validation & \xmark \\ \hline
+End-to-End Tests & Automated user workflow testing & \xmark \\ \hline
+Export Functionality Tests & XLSX generation and download & \xmark \\ \hline
+Chart Rendering Tests & Visualization accuracy validation & \xmark \\ \hline
+Load Testing & Concurrent user simulation & \xmark \\ \hline
+Error Handling Tests & Edge case and failure scenarios & \xmark \\ \hline
+Responsive Design Tests & Multi-device layout validation & \xmark \\ \hline
 \end{tabular}
 \caption{Testing \& QA Implementation Status}
 \end{table}
 
-\noindent\textbf{Progress:}\hspace{1.5cm}\textcolor{datasensegreen}{\rule{0.1\linewidth}{8pt}}\textcolor{orange}{\rule{0.05\linewidth}{8pt}}\textcolor{red}{\rule{0.55\linewidth}{8pt}}\hspace{0.5cm}\textbf{15\%}
+\noindent\textbf{Progress:}\hspace{1.5cm}\textcolor{datasensegreen}{\rule{0.22\linewidth}{8pt}}\textcolor{orange}{\rule{0.05\linewidth}{8pt}}\textcolor{red}{\rule{0.45\linewidth}{8pt}}\hspace{0.5cm}\textbf{30\%}
+
 
 
 \section{Future Enhancements}
@@ -800,6 +775,93 @@ Mobile Testing & iOS/Android browser testing & \xmark \\ \hline
 \end{itemize}
 
 \newpage
+\section{Challenges and Obstacles}
+
+Throughout the development of DataSense, the team encountered various technical, operational, and learning-related challenges. This section categorizes the key obstacles faced during implementation, ranked by severity.
+
+\subsection{Challenge Classification}
+
+\subsubsection{CRITICAL Challenges}
+
+\begin{tcolorbox}[colback=red!10, colframe=red!70, title=\textbf{Critical Severity - Project-Blocking Issues}, boxrule=0.8pt, arc=2mm]
+\begin{itemize}
+    
+    \item \textbf{Database Connection Failures}: Intermittent network connectivity issues between application and MySQL server necessitated connection pooling and automatic reconnection strategies
+    
+
+    \item \textbf{Hardware Barrier - GPU Unavailability}: Lack of GPU resources on deployment server prevented local model training, necessitating reliance on pre-trained models and external Ollama service
+
+    \item \textbf{Time Wasted on Template Solutions}: Backend template-based handlers and Parser reduced flexibility; switched to an AI-first custom implementation.
+
+   \item \textbf{Version Control Issues}: While working directly on the deployment server prevented smooth committing and pushing changes to GitHub.
+    
+    \item \textbf{Server Downtime}: Unpredictable outages in the company’s internal server infrastructure disrupted development and testing cycles.
+
+    \item \textbf{Insufficient Monitoring \& Observability}: Missing centralized logs, metrics, and alerts, causing slow incident detection
+
+    \item \textbf{Single-Point-of-Failure}: Core services lacked redundancy, risking total outage
+
+\end{itemize}
+\end{tcolorbox}
+
+\subsubsection{MAJOR Challenges}
+
+\begin{tcolorbox}[colback=orange!10, colframe=orange!70, title=\textbf{Major Severity - Significant Impact Issues}, boxrule=0.7pt, arc=2mm]
+\begin{itemize}
+   
+    \item \textbf{New Technology Exploration}: Limited prior experience with Ollama, LoRA fine-tuning, and NL2SQL systems required extensive research, experimentation, and learning
+    
+    \item \textbf{Frequent Requirement Changes}: Evolving business needs and feature requests required flexible architecture and iterative development approach
+
+    \item \textbf{LLM API Rate Limiting}: Model inference timeouts and rate limits during peak usage required implementation of queuing systems and timeout handling    
+    
+    \item \textbf{LLM Accuracy and Consistency}: Inconsistent SQL generation quality across different models required extensive prompt engineering and model comparison testing
+    
+    \item \textbf{Large Dataset Performance}: Initial implementations struggled with result sets exceeding 10,000 rows, requiring preview/export pattern and server-side streaming
+    
+    \item \textbf{Schema Complexity Management}: Complex 23-table schema with intricate relationships made it difficult for LLMs to generate accurate queries without smart filtering
+    
+    \item \textbf{State Management Complexity}: Managing conversation history, theme preferences, and connection status across components required careful React hook design
+\end{itemize}
+\end{tcolorbox}
+
+\subsubsection{MINOR Challenges}
+
+\begin{tcolorbox}[colback=yellow!10, colframe=yellow!70, colbacktitle=yellow!70, coltitle=black, fonttitle=\bfseries, title=\textbf{Minor Severity - Manageable Issues}, boxrule=0.6pt, arc=2mm]
+\begin{itemize}
+    \item \textbf{Initial Documentation Gaps}: Lack of comprehensive business context documentation at project start required iterative refinement of markdown files
+      
+    \item \textbf{Framework Learning Curve}: Team unfamiliarity with Python libraries and backend tooling required dedicated learning time
+
+    \item \textbf{Git Merge Conflicts}: Concurrent development on overlapping features caused frequent merge conflicts, resolved through better branch management and communication
+    
+    \item \textbf{Environment Configuration}: Managing different .env configurations across development, testing, and deployment environments caused occasional debugging delays
+    
+    \item \textbf{Color Scheme Iterations}: Multiple revisions to achieve the final green color palette and dark mode compatibility
+    
+    \item \textbf{Export Format Limitations}: Initial CSV export implementation had encoding issues, requiring switch to XLSX format
+    
+    \item \textbf{TypeScript Type Errors}: Strict type checking in TypeScript occasionally slowed development but improved code quality
+\end{itemize}
+\end{tcolorbox}
+
+\subsection{Mitigation Strategies}
+
+To address these challenges, the team implemented several key strategies:
+
+\begin{itemize}
+    
+    \item \textbf{Iterative Development}: Frequent feedback loops and a flexible architecture to accommodate changing requirements
+    
+    \item \textbf{Extensive Testing}: Model comparison framework, security validation, and cross-browser testing to ensure reliability
+    
+    \item \textbf{Performance Optimization}: Preview/export pattern, server-side streaming, and smart schema filtering to handle large datasets
+    
+    \item \textbf{Team Communication}: Regular standups, code reviews, and knowledge sharing sessions to minimize conflicts and improve collaboration
+    
+\end{itemize}
+
+\newpage
 \section{Overall Progress Summary}
 
 This section provides a comprehensive overview of the DataSense project's implementation status, tracking completion across all major components and layers.
@@ -815,7 +877,7 @@ The following table summarizes completion status across the system architecture:
 \hline
 \rowcolor{headerbg}
 \textcolor{white}{\textbf{Layer/Component}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Status}} \\ \hline
-\multicolumn{3}{|c|}{\textbf{Completed Layers (100\%)}} \\ \hline
+\multicolumn{3}{|c|}{\textbf{Completed Layers}} \\ \hline
 Database Architecture & 23 normalized tables, referential integrity, read-only safety & \cmark \\ \hline
 \multicolumn{3}{|c|}{\textbf{In Progress Layers}} \\ \hline
 Backend API (58\%) & 10 components done, 2 in-progress, 7 pending & \pmark \\ \hline
@@ -868,7 +930,7 @@ Monitoring \& Logging & Prometheus metrics, structured logging & \xmark \\ \hlin
     \item \textbf{Health monitoring endpoint} for system status
     \item \textbf{Training dataset} (120 curated business queries)
     \item \textbf{Technical documentation} (comprehensive LaTeX report)
-    \item \textbf{GitHub repository} with version control (32 commits, 2 contributors)
+    \item \textbf{GitHub repository} with version control
 \end{itemize}
 \end{infobox}
 
@@ -903,7 +965,6 @@ Monitoring \& Logging & Prometheus metrics, structured logging & \xmark \\ \hlin
     \item \textbf{Extended testing} (Unit tests, Integration tests, E2E tests, Performance tests)
     \item \textbf{CI/CD pipeline} (Automated testing and deployment)
     \item \textbf{Multi-database support} (PostgreSQL, SQL Server adapters)
-    \item \textbf{Query scheduling} (Cron-based reports, email delivery)
     \item \textbf{Query sharing and collaboration} (Share links, team workspaces)
     \item \textbf{Mobile app} (PWA or React Native packaging)
     \item \textbf{Admin dashboard} (User management, query analytics)
