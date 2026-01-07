@@ -360,11 +360,21 @@ DataSense follows a modern three-tier architecture consisting of:
 
 \vspace{0.5em}
 
-\begin{tabular}{@{}p{0.45\linewidth} p{0.45\linewidth}@{}}
-\textbf{Status}: Active development      & \textbf{Branch}: \texttt{main} \\
-\textbf{Total commits}: 32               & \textbf{Contributors}: 2       \\
-\end{tabular}
+\begin{minipage}{0.48\linewidth}
+\begin{itemize}
+    \item \textbf{Status}: Active development
+    \item \textbf{Branch}: \texttt{main}
+\end{itemize}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\linewidth}
+\begin{itemize}
+    \item \textbf{Total commits}: 32
+    \item \textbf{Contributors}: 2
+\end{itemize}
+\end{minipage}
 \end{keybox}
+
 
 
 \section{Database Architecture}
@@ -481,64 +491,134 @@ The script:
     \item Easy deployment and rollback
 \end{itemize}
 
-\section{Security and Safety Mechanisms}
 
-\subsection{Query Validation}
 
-\subsubsection{Multi-Layer Validation}
-DataSense implements comprehensive query validation:
+\section{User Interface Design}
+
+\subsection{Design Philosophy}
+DataSense UI follows modern design principles:
+\begin{itemize}
+    \item \textbf{Simplicity}: Clean, uncluttered interface
+    \item \textbf{Responsiveness}: Mobile-first design
+    \item \textbf{Accessibility}: ARIA labels, keyboard shortcuts
+    \item \textbf{Feedback}: Real-time status indicators
+    \item \textbf{Consistency}: Unified color scheme and typography
+\end{itemize}
+
+\subsection{Color Scheme}
+\begin{itemize}
+    \item \textbf{Primary}: \texttt{\#08834d} (DataSense green)
+    \item \textbf{Light Theme}: Gray-based palette with white backgrounds
+    \item \textbf{Dark Theme}: Dark gray backgrounds with high contrast text
+    \item \textbf{Accent Colors}: Blue, amber, red for status indicators
+\end{itemize}
+
+\subsection{Key UI Components}
+
+\subsubsection{Chat Interface}
+\begin{itemize}
+    \item Message bubbles with role-based styling
+    \item User messages: right-aligned, dark background
+    \item Assistant messages: centered, light background
+    \item SQL queries: syntax-highlighted code blocks
+    \item Results: responsive data tables
+\end{itemize}
+
+\subsubsection{Input Area}
+\begin{itemize}
+    \item Auto-resizing textarea (max 200px height)
+    \item Send button (enabled when text present)
+    \item Stop button (during query execution)
+    \item Keyboard shortcuts (Enter to send, Shift+Enter for newline)
+\end{itemize}
+
+\subsubsection{Sidebar}
+\begin{itemize}
+    \item Collapsible design (mobile-friendly)
+    \item Conversation list with rename/delete actions
+    \item New chat button
+    \item Settings modal trigger
+    \item Theme toggle
+    \item Connection status indicator
+\end{itemize}
+
+\subsection{Data Visualization}
+
+\subsubsection{Intelligent Chart Detection}
+The system analyzes result data to suggest appropriate chart types:
 
 \begin{enumerate}
-    \item \textbf{Whitelist Approach}: Only specific operations allowed
-    \begin{lstlisting}[language=Python]
-ALLOWED_KEYWORDS = ['SELECT', 'SHOW', 
-                   'DESCRIBE', 'DESC', 'EXPLAIN']
-    \end{lstlisting}
-    
-    \item \textbf{Blacklist Check}: Dangerous operations blocked
-    \begin{lstlisting}[language=Python]
-DANGEROUS_KEYWORDS = ['INSERT', 'UPDATE', 'DELETE', 
-                     'DROP', 'CREATE', 'ALTER', 
-                     'TRUNCATE', 'GRANT', 'REVOKE']
-    \end{lstlisting}
-    
-    \item \textbf{SQL Injection Prevention}: Pattern detection
+    \item \textbf{Column Analysis}
     \begin{itemize}
-        \item Multi-statement queries blocked
-        \item SQL comments removed
-        \item Suspicious patterns flagged
+        \item Detect data types (numeric, categorical, temporal, boolean)
+        \item Count unique values
+        \item Identify null values
+        \item Sample data for patterns
+    \end{itemize}
+    
+    \item \textbf{Chart Suggestions}
+    \begin{itemize}
+        \item \textbf{Bar Chart}: Categorical + numeric columns
+        \item \textbf{Horizontal Bar}: Many categories (better readability)
+        \item \textbf{Pie Chart}: Few categories (2-8) with proportions
+        \item \textbf{Line Chart}: Temporal + numeric (trend analysis)
+        \item \textbf{Area Chart}: Temporal + numeric (volume emphasis)
+        \item \textbf{Scatter Plot}: Two numeric columns (correlation)
+    \end{itemize}
+    
+    \item \textbf{Chart Generation}
+    \begin{itemize}
+        \item Data transformation for chart format
+        \item Professional color palette
+        \item Responsive sizing
+        \item Interactive tooltips
+        \item Legend display
     \end{itemize}
 \end{enumerate}
 
-\subsubsection{Read-Only Enforcement}
-All database operations are strictly read-only:
+
+\section{Conversation Management}
+
+\subsection{Features}
 \begin{itemize}
-    \item No INSERT, UPDATE, or DELETE operations
-    \item No schema modifications
-    \item No privilege changes
-    \item SELECT queries only
+    \item \textbf{Multiple Conversations}: Up to 20 conversations stored
+    \item \textbf{Auto-Naming}: First user message becomes conversation name
+    \item \textbf{Manual Rename}: Click to edit conversation names
+    \item \textbf{Deletion}: Remove unwanted conversations
+    \item \textbf{Switching}: Easy navigation between conversations
+    \item \textbf{Persistence}: localStorage-based storage (client-side)
 \end{itemize}
 
-\subsection{Connection Security}
+\subsection{Message Structure}
+Each message contains:
+\begin{itemize}
+    \item Unique ID (timestamp + random string)
+    \item Role (user or assistant)
+    \item Content (natural language text)
+    \item SQL query (if applicable)
+    \item Results array (if applicable)
+    \item Column names (if applicable)
+    \item Error message (if applicable)
+    \item Timestamp
+    \item Like/dislike status
+    \item Export token (if applicable)
+\end{itemize}
 
-\subsubsection{Environment-Based Configuration}
-Sensitive credentials stored in environment variables:
-\begin{lstlisting}[language=bash]
-DB_HOST=your-host-ip
-DB_PORT=3306
-DB_USER=your-username
-DB_PASSWORD=your-password
-DB_NAME=datasense
-OLLAMA_API_URL=http://ip:port/api/generate
+\subsection{Storage Implementation}
+\begin{lstlisting}[language=JavaScript]
+const saveConversations = (conversations) => {
+    localStorage.setItem(
+        'datasense-conversations',
+        JSON.stringify(conversations)
+    );
+};
+
+const loadConversations = () => {
+    const saved = localStorage.getItem('datasense-conversations');
+    return saved ? JSON.parse(saved) : [];
+};
 \end{lstlisting}
 
-\subsubsection{Connection Management}
-\begin{itemize}
-    \item Auto-reconnect on connection loss
-    \item Connection timeout (10 seconds)
-    \item Proper connection cleanup
-    \item Error handling and logging
-\end{itemize}
 
 \section{Performance Optimization}
 
@@ -655,130 +735,6 @@ For optimal performance, the following indexes are recommended:
     \item Frequently queried columns
 \end{itemize}
 
-\section{User Interface Design}
-
-\subsection{Design Philosophy}
-DataSense UI follows modern design principles:
-\begin{itemize}
-    \item \textbf{Simplicity}: Clean, uncluttered interface
-    \item \textbf{Responsiveness}: Mobile-first design
-    \item \textbf{Accessibility}: ARIA labels, keyboard shortcuts
-    \item \textbf{Feedback}: Real-time status indicators
-    \item \textbf{Consistency}: Unified color scheme and typography
-\end{itemize}
-
-\subsection{Color Scheme}
-\begin{itemize}
-    \item \textbf{Primary}: \texttt{\#08834d} (DataSense green)
-    \item \textbf{Light Theme}: Gray-based palette with white backgrounds
-    \item \textbf{Dark Theme}: Dark gray backgrounds with high contrast text
-    \item \textbf{Accent Colors}: Blue, amber, red for status indicators
-\end{itemize}
-
-\subsection{Key UI Components}
-
-\subsubsection{Chat Interface}
-\begin{itemize}
-    \item Message bubbles with role-based styling
-    \item User messages: right-aligned, dark background
-    \item Assistant messages: centered, light background
-    \item SQL queries: syntax-highlighted code blocks
-    \item Results: responsive data tables
-\end{itemize}
-
-\subsubsection{Input Area}
-\begin{itemize}
-    \item Auto-resizing textarea (max 200px height)
-    \item Send button (enabled when text present)
-    \item Stop button (during query execution)
-    \item Keyboard shortcuts (Enter to send, Shift+Enter for newline)
-\end{itemize}
-
-\subsubsection{Sidebar}
-\begin{itemize}
-    \item Collapsible design (mobile-friendly)
-    \item Conversation list with rename/delete actions
-    \item New chat button
-    \item Settings modal trigger
-    \item Theme toggle
-    \item Connection status indicator
-\end{itemize}
-
-\subsection{Data Visualization}
-
-\subsubsection{Intelligent Chart Detection}
-The system analyzes result data to suggest appropriate chart types:
-
-\begin{enumerate}
-    \item \textbf{Column Analysis}
-    \begin{itemize}
-        \item Detect data types (numeric, categorical, temporal, boolean)
-        \item Count unique values
-        \item Identify null values
-        \item Sample data for patterns
-    \end{itemize}
-    
-    \item \textbf{Chart Suggestions}
-    \begin{itemize}
-        \item \textbf{Bar Chart}: Categorical + numeric columns
-        \item \textbf{Horizontal Bar}: Many categories (better readability)
-        \item \textbf{Pie Chart}: Few categories (2-8) with proportions
-        \item \textbf{Line Chart}: Temporal + numeric (trend analysis)
-        \item \textbf{Area Chart}: Temporal + numeric (volume emphasis)
-        \item \textbf{Scatter Plot}: Two numeric columns (correlation)
-    \end{itemize}
-    
-    \item \textbf{Chart Generation}
-    \begin{itemize}
-        \item Data transformation for chart format
-        \item Professional color palette
-        \item Responsive sizing
-        \item Interactive tooltips
-        \item Legend display
-    \end{itemize}
-\end{enumerate}
-
-\section{Conversation Management}
-
-\subsection{Features}
-\begin{itemize}
-    \item \textbf{Multiple Conversations}: Up to 20 conversations stored
-    \item \textbf{Auto-Naming}: First user message becomes conversation name
-    \item \textbf{Manual Rename}: Click to edit conversation names
-    \item \textbf{Deletion}: Remove unwanted conversations
-    \item \textbf{Switching}: Easy navigation between conversations
-    \item \textbf{Persistence}: localStorage-based storage (client-side)
-\end{itemize}
-
-\subsection{Message Structure}
-Each message contains:
-\begin{itemize}
-    \item Unique ID (timestamp + random string)
-    \item Role (user or assistant)
-    \item Content (natural language text)
-    \item SQL query (if applicable)
-    \item Results array (if applicable)
-    \item Column names (if applicable)
-    \item Error message (if applicable)
-    \item Timestamp
-    \item Like/dislike status
-    \item Export token (if applicable)
-\end{itemize}
-
-\subsection{Storage Implementation}
-\begin{lstlisting}[language=JavaScript]
-const saveConversations = (conversations) => {
-    localStorage.setItem(
-        'datasense-conversations',
-        JSON.stringify(conversations)
-    );
-};
-
-const loadConversations = () => {
-    const saved = localStorage.getItem('datasense-conversations');
-    return saved ? JSON.parse(saved) : [];
-};
-\end{lstlisting}
 
 
 \section{Testing and Quality Assurance}
