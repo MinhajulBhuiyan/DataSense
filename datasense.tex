@@ -354,182 +354,49 @@ DataSense follows a modern three-tier architecture consisting of:
 
 \begin{keybox}[Repository Health Summary]
 \begin{itemize}
-    \item \textbf{Repository}: \href{https://github.com/MinhajulBhuiyan/DataSense}{github.com/MinhajulBhuiyan/DataSense}
-    \item \textbf{Status}: Active development
-    \item \textbf{Branch}: \texttt{main}
-    \item \textbf{Total commits}: 32
-    \item \textbf{Contributors}: 2
-    \item \textbf{Open issues}: 0
+    \item \textbf{Repository}: 
+    \href{https://github.com/MinhajulBhuiyan/DataSense}{github.com/MinhajulBhuiyan/DataSense}
+\end{itemize}
+
+\vspace{0.5em}
+
+\begin{tabular}{@{}p{0.45\linewidth} p{0.45\linewidth}@{}}
+\textbf{Status}: Active development      & \textbf{Branch}: \texttt{main} \\
+\textbf{Total commits}: 32               & \textbf{Contributors}: 2       \\
+\end{tabular}
 \end{keybox}
 
-\section{Database Design}
+
+\section{Database Architecture}
 
 \subsection{Schema Overview}
-The DataSense database consists of 23 tables normalized to Third Normal Form (3NF), organized into the following functional groups:
 
-\subsubsection{Core Business Tables}
-\begin{itemize}
-    \item \textbf{distributors}: Customer/distributor master data
-    \item \textbf{products}: Ice cream product catalog with stock levels
-    \item \textbf{orders}: Customer orders with status tracking
-    \item \textbf{order\_items}: Order line items with pricing
-    \item \textbf{invoices}: Invoices generated from orders
-    \item \textbf{invoice\_items}: Invoice line items with delivery tracking
-\end{itemize}
-
-\subsubsection{Financial Tables}
-\begin{itemize}
-    \item \textbf{payments}: Payment records from distributors
-    \item \textbf{refunds}: Refund transactions with status tracking
-    \item \textbf{sales\_returns}: Return requests from distributors
-    \item \textbf{return\_items}: Line items for returns
-    \item \textbf{cancellations}: Order and invoice cancellations
-\end{itemize}
-
-\subsubsection{Inventory Tables}
-\begin{itemize}
-    \item \textbf{inventory\_transactions}: All stock movements with transaction types
-    \item \textbf{detailed\_fg\_store\_req}: Finished goods store requests
-    \item \textbf{detailed\_fg\_store\_req\_det}: Store request line items
-\end{itemize}
-
-\subsubsection{Logistics Tables}
-\begin{itemize}
-    \item \textbf{vehicles}: Delivery vehicle master
-    \item \textbf{load\_plans}: Delivery schedules by vehicle
-    \item \textbf{load\_plan\_items}: Invoices assigned to load plans
-    \item \textbf{challans}: Delivery challans (shipping documents)
-    \item \textbf{gate\_passes}: Exit gate passes for deliveries
-\end{itemize}
-
-\subsubsection{Denormalized View Tables}
-\begin{itemize}
-    \item \textbf{detailed\_invoice}: Denormalized invoice header with metadata
-    \item \textbf{detailed\_inv\_details}: Denormalized invoice line items
-    \item \textbf{detailed\_order}: Denormalized order header
-    \item \textbf{detailed\_order\_details}: Denormalized order line items
-\end{itemize}
+\begin{table}[H]
+\centering
+\rowcolors{2}{tablebg}{white}
+\begin{tabular}{@{}L{4.5cm}L{7.5cm}C{2.5cm}@{}}
+\rowcolor{headerbg}
+\textcolor{white}{\textbf{Category}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Status}} \\ \midrule
+Schema Design & 23 normalized tables covering business operations, financials, inventory, and logistics & Complete \\
+Data Integrity & Referential constraints and immutable recording patterns ensure data consistency and audit trails & Implemented \\
+Security Model & Read-only enforcement with query validation and access controls & Active \\
+Performance & Preview/export pattern with server-side streaming for large datasets & Optimized \\
+\end{tabular}
+\caption{Database Architecture Overview}
+\end{table}
 
 \subsection{Key Design Principles}
 
-\subsubsection{Immutability}
-The schema follows an immutable data pattern where original records (orders, invoices) are never modified. All adjustments are recorded in separate tables:
 \begin{itemize}
-    \item Returns recorded in \texttt{sales\_returns} and \texttt{return\_items}
-    \item Cancellations recorded in \texttt{cancellations}
-    \item Refunds recorded in \texttt{refunds}
-    \item Inventory adjustments in \texttt{inventory\_transactions}
+    \item \textbf{Data Immutability}: Original transaction records remain unchanged; adjustments recorded separately in dedicated tables for complete audit trail and historical accuracy
+    \item \textbf{Referential Integrity}: All relationships between tables enforced through constraints ensuring data consistency across the system
+    \item \textbf{Status Flow Control}: Business processes follow defined state transitions (orders, invoices, returns, refunds) preventing invalid operations
+    \item \textbf{Read-Only Safety}: Application layer enforces query-only access protecting data from unauthorized modifications
 \end{itemize}
 
-This design ensures:
-\begin{itemize}
-    \item Complete audit trail
-    \item Historical data preservation
-    \item Simplified rollback procedures
-    \item Accurate financial reporting
-\end{itemize}
+\subsection{Database Progress}
 
-\subsubsection{Referential Integrity}
-All relationships are enforced through foreign key constraints:
-\begin{lstlisting}[language=SQL]
-FOREIGN KEY (invoice_id) 
-    REFERENCES invoices(invoice_id)
-FOREIGN KEY (product_id) 
-    REFERENCES products(product_id)
-\end{lstlisting}
-
-\subsubsection{Status Flow Management}
-Status fields use ENUM types to enforce valid states:
-\begin{itemize}
-    \item Orders: \texttt{placed → invoiced → cancelled}
-    \item Invoices: \texttt{invoiced → partial\_delivered → fully\_delivered → returned/cancelled}
-    \item Returns: \texttt{pending → processed}
-    \item Refunds: \texttt{pending → issued → processed}
-\end{itemize}
-
-\section{Business Logic and Workflows}
-
-\subsection{Order Processing Flow}
-
-\begin{enumerate}
-    \item \textbf{Order Placement}: Distributor places order
-    \begin{itemize}
-        \item Record created in \texttt{orders} table
-        \item Line items in \texttt{order\_items}
-        \item Status: \texttt{placed}
-    \end{itemize}
-    
-    \item \textbf{Invoice Generation}: Order converted to invoice
-    \begin{itemize}
-        \item Invoice created with reference to order
-        \item Stock deducted via \texttt{inventory\_transactions}
-        \item Transaction type: \texttt{sale\_deduct}
-        \item Order status: \texttt{invoiced}
-    \end{itemize}
-    
-    \item \textbf{Delivery Planning}: Invoice assigned to vehicle
-    \begin{itemize}
-        \item Load plan created for vehicle
-        \item Invoice added to \texttt{load\_plan\_items}
-        \item Challan and gate pass auto-generated
-    \end{itemize}
-    
-    \item \textbf{Delivery Execution}: Products delivered to distributor
-    \begin{itemize}
-        \item Update \texttt{quantity\_delivered} in \texttt{invoice\_items}
-        \item Update \texttt{delivered\_amount} in \texttt{invoices}
-        \item Invoice status: \texttt{partial\_delivered} or \texttt{fully\_delivered}
-    \end{itemize}
-\end{enumerate}
-
-\subsection{Return Processing Flow}
-
-\begin{enumerate}
-    \item \textbf{Return Initiation}: Distributor requests return
-    \begin{itemize}
-        \item Return record created in \texttt{sales\_returns}
-        \item Line items in \texttt{return\_items}
-        \item Status: \texttt{pending}
-    \end{itemize}
-    
-    \item \textbf{Return Processing}: Return approved and processed
-    \begin{itemize}
-        \item Stock added back via \texttt{inventory\_transactions}
-        \item Transaction type: \texttt{return\_add}
-        \item Return status: \texttt{processed}
-    \end{itemize}
-    
-    \item \textbf{Refund Issuance}: Money returned to distributor
-    \begin{itemize}
-        \item Refund record created in \texttt{refunds}
-        \item Reference to return record
-        \item Refund status: \texttt{pending → issued → processed}
-    \end{itemize}
-\end{enumerate}
-
-\subsection{Inventory Management}
-
-\subsubsection{Transaction Types}
-\begin{itemize}
-    \item \textbf{production\_add}: Manufacturing adds new stock
-    \item \textbf{sale\_deduct}: Stock removed for invoicing
-    \item \textbf{return\_add}: Stock restored from returns
-    \item \textbf{cancellation\_add}: Stock restored from cancellations
-\end{itemize}
-
-\subsubsection{Stock Calculation}
-Current stock is maintained in \texttt{products.current\_stock} and updated via database triggers:
-
-\begin{lstlisting}[language=SQL]
-CREATE TRIGGER update_stock_after_transaction
-AFTER INSERT ON inventory_transactions
-FOR EACH ROW
-BEGIN
-    UPDATE products 
-    SET current_stock = current_stock + NEW.quantity
-    WHERE product_id = NEW.product_id;
-END;
-\end{lstlisting}
+\noindent\textbf{Database Progress:}\hspace{2cm}\textcolor{datasensegreen}{\rule{0.5\linewidth}{8pt}}\hspace{0.5cm}\textbf{100\%}
 
 \section{AI and Natural Language Processing}
 
@@ -579,35 +446,7 @@ The system constructs prompts with three main components:
 
 \subsubsection{Smart Schema Filtering}
 To optimize token usage and improve accuracy, the system implements intelligent schema filtering:
-
-\begin{lstlisting}[language=Python]
-def build_prompt(query_text: str) -> str:
-    matched_tables = []
-    q = query_text.lower()
-    
-    for table in SCHEMA_JSON.get('tables', []):
-        name = table.get('name', '').lower()
-        if name in q or name.replace('_', ' ') in q:
-            matched_tables.append(table)
-    
-    if matched_tables:
-        # Include only relevant tables
-        schema_section = format_tables(matched_tables)
-    else:
-        # Fallback to full schema
-        schema_section = DATABASE_SCHEMA
-    
-    return f"""You are a SQL expert for DataSense.
-    {BUSINESS_CONTEXT}
-    {schema_section}
-    
-    Rules:
-    1) Only use tables/columns present above
-    2) Return ONLY the SQL query, no explanation
-    
-    User question: {query_text}
-    SQL:"""
-\end{lstlisting}
+Smart schema filtering detects which tables are relevant to the user's question and includes only those table definitions in the prompt. This reduces token usage and improves model accuracy without exposing the full schema when not needed.
 
 \subsection{LoRA Fine-tuning}
 
@@ -622,10 +461,7 @@ The system includes 120 curated training examples in JSONL format:
 
 \subsubsection{Training Process}
 Fine-tuning is simplified through a PowerShell script:
-\begin{lstlisting}[language=bash]
-cd orchestrator/training
-.\RUN_ME.ps1
-\end{lstlisting}
+Training is initiated via the \texttt{orchestrator/training/RUN\_ME.ps1} script; the process automates dependency installation, model download, and adapter training.
 
 The script:
 \begin{enumerate}
@@ -1077,6 +913,7 @@ Deployment & 85\% & Local setup complete, production pending \\ \bottomrule
 \begin{itemize}
     \item \textbf{Natural language to SQL conversion} using Ollama LLMs
     \item \textbf{Multi-model support} (Llama 3, Qwen, SQLCoder, DeepSeek)
+    \item \textbf{Database schema design} (23 normalised table)
     \item \textbf{Read-only enforcement} for database safety
     \item \textbf{Business context integration} (5 markdown files loaded dynamically)
     \item \textbf{Preview and export pattern} (50-row preview, full XLSX export)
@@ -1089,6 +926,7 @@ Deployment & 85\% & Local setup complete, production pending \\ \bottomrule
     \item \textbf{Connection status monitoring} with auto-reconnect
     \item \textbf{Error handling and logging} across all endpoints
     \item \textbf{Environment-based configuration} (.env for secrets)
+    \item \textbf{Monitoring and observability} (logging, metrics dashboard)
     \item \textbf{LoRA fine-tuning system} (training scripts, adapters ready)
     \item \textbf{Technical documentation} (comprehensive LaTeX report)
     \item \textbf{GitHub repository} with version control
@@ -1099,17 +937,13 @@ Deployment & 85\% & Local setup complete, production pending \\ \bottomrule
 
 \begin{tcolorbox}[colback=yellow!10, colframe=orange!60, title=\textbf{Active Development}, boxrule=0.6pt, arc=2mm]
 \begin{itemize}
-    \item \textbf{Database schema design} (23 tables via 37 migrations)
-    \item \textbf{All Eloquent models with relationships} (47 models)
+    \item \textbf{All Eloquent models with relationships} (Entity relationship model)
     \item \textbf{Query validation system} (whitelist, blacklist, injection prevention)
     \item \textbf{Responsive UI design} (mobile-first Tailwind CSS)
-    \item \textbf{Advanced chart types} (heatmaps, treemaps — 90\% complete)
+    \item \textbf{Advanced chart types} (heatmaps, treemaps)
     \item \textbf{Query caching layer} (Redis integration planned)
     \item \textbf{Performance optimization} (virtual scrolling, pagination)
-    \item \textbf{Unit test coverage} (60\% — backend tests exist, frontend partial)
-    \item \textbf{API documentation} (Swagger/OpenAPI in progress)
-    \item \textbf{Production deployment} (Docker containers ready, k8s pending)
-    \item \textbf{Monitoring and observability} (logging done, metrics dashboard pending)
+    \item \textbf{Unit test coverage}
 \end{itemize}
 \end{tcolorbox}
 
@@ -1117,15 +951,17 @@ Deployment & 85\% & Local setup complete, production pending \\ \bottomrule
 
 \begin{tcolorbox}[colback=red!5, colframe=red!40, title=\textbf{Future Roadmap}, boxrule=0.6pt, arc=2mm]
 \begin{itemize}
-    \item \textbf{User authentication system} (JWT, OAuth2, role-based access)
+    \item \textbf{User authentication system} (JWT, OAuth2, RBAC)
     \item \textbf{Multi-database support} (PostgreSQL, SQL Server adapters)
-    \item \textbf{Query scheduling} (cron-based reports, email delivery)
+    \item \textbf{Query scheduling} (Cron-based reports, email delivery)
     \item \textbf{Query sharing and collaboration} (share links, team workspaces)
     \item \textbf{Advanced NLP features} (context retention, multi-turn refinement)
     \item \textbf{Voice input support} (Web Speech API integration)
     \item \textbf{Mobile app} (React Native or PWA)
     \item \textbf{Admin dashboard} (user management, query analytics)
     \item \textbf{Rate limiting and quotas} (API throttling per user)
+    \item \textbf{API documentation} (Swagger/OpenAPI)
+    \item \textbf{Production deployment} (Docker containers, k8s)
     \item \textbf{Audit logging} (compliance tracking, query history export)
     \item \textbf{Real-time collaboration} (WebSocket-based shared sessions)
     \item \textbf{Data masking} (PII redaction for sensitive fields)
